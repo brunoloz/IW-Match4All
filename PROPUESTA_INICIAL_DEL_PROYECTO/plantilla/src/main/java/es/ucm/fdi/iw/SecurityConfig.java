@@ -60,7 +60,7 @@ public class SecurityConfig {
 			)
       .authorizeHttpRequests(authorize -> authorize
 				.requestMatchers("/css/**", "/js/**", "/img/**", "/", "/error").permitAll()
-				.requestMatchers("/patata").permitAll() 
+				.requestMatchers("/match4all").permitAll() 
 				.requestMatchers("/api/**").permitAll()            // <-- public api access
 				.requestMatchers("/admin/**").hasRole("ADMIN")	   // <-- administration
 				.requestMatchers("/user/**").hasRole("USER")	     // <-- logged-in users

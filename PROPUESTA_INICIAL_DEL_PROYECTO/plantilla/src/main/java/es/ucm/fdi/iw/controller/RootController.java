@@ -37,8 +37,8 @@ public class RootController {
         return "index";
     }
 
-    @GetMapping("/patata")      //ruta
-    public String patata(Model model) { //nombre da igual
-        return "patata";            //nombre de vista
+    @GetMapping("/match4all")      //ruta
+    public String match4all(Model model) { //nombre da igual
+        return "match4all";            //nombre de vista
     }
 }

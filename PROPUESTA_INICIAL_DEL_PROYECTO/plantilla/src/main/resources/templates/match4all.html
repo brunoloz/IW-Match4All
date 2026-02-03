@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html class="h-100" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <th:block th:replace="~{fragments/head :: header}" />
+    <title>IW: Match4All</title>
+</head>
+
+<body class="d-flex flex-column h-100">
+    <header th:replace="~{fragments/nav.html :: nav}"></header>
+
+    <main class="flex-shrink-0">
+        <div class="container mb-5">
+            <div class="text-center mt-5">
+                <h1 class="display-4">Match4All</h1>
+                <p class="lead">Proyecto de Ingeniería Web</p>
+                <p class="text-muted">Desarrollado por: Siro Fernández García, Pablo Rodríguez González y Bruno Lozano Clemente </p>
+            </div>
+
+            <hr class="my-4">
+
+            <section class="mt-4">
+                <h2>1. Introducción y Propósito</h2>
+                <p>
+                    Match4All es una plataforma web diseñada para centralizar y profesionalizar la gestión de encuentros de fútbol amateur. 
+                    Su objetivo es sustituir métodos informales como grupos de chat o hojas de cálculo por una herramienta robusta que gestione ligas, 
+                    amistosos y estadísticas en tiempo real, conectando a organizadores, jugadores y árbitros.
+                </p>
+            </section>
+
+            <section class="mt-5">
+                <h2>2. Definición de Roles y Permisos</h2>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">Administrador</h5>
+                                <p class="card-text">Gestor de la plataforma encargado de la creación y configuración de ligas, torneos, gestión de campos y horarios.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">Usuarios</h5>
+                                <ul class="small">
+                                    <li><strong>Capitán:</strong> Inscribe al equipo, gestiona la plantilla y acepta retos.</li>
+                                    <li><strong>Jugador:</strong> Visualiza calendario y estadísticas personales. Puede pertenecer a un equipo.</li>
+                                    <li><strong>Invitado:</strong> Acceso a información general y estadísticas. No tiene cuenta en la pagina.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">Árbitro</h5>
+                                <p class="card-text">Perfil independiente encargado de la gestión de actas digitales, introducción de goles, tarjetas e incidencias.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="mt-5">
+                <h2>3. ¿Qué podremos ver en la página?</h2>
+                <ul class="list-group">
+                    <li class="list-group-item">Información de todas las competiciones (tablas de clasificación y datos de partidos).</li>
+                    <li class="list-group-item">Información detallada de cada equipo (plantilla, estadísticas y próximos partidos).</li>
+                    <li class="list-group-item">Gestión de perfiles de usuario y visualización de perfiles ajenos.</li>
+                </ul>
+            </section>
+
+            <section class="container mt-5 mb-5">
+                <h2 class="text-center mb-4">Equipo de Desarrollo</h2>
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="card h-100 border-0 shadow-sm text-center">
+                            <div class="p-4">
+                                <img th:src="@{/img/user.jpg}" class="rounded-circle img-thumbnail mb-3" alt="Siro Fernández García" style="width: 150px; height: 150px; object-fit: cover;">
+                                <h5 class="card-title mb-1">Siro Fernández García</h5>
+                                <p class="text-danger small fw-bold">Desarrollador</p>
+                                <p class="card-text text-muted">Apasionado por el desarrollo web.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="card h-100 border-0 shadow-sm text-center">
+                            <div class="p-4">
+                                <img th:src="@{/img/user.jpg}" class="rounded-circle img-thumbnail mb-3" alt="Pablo Rodríguez González" style="width: 150px; height: 150px; object-fit: cover;">
+                                <h5 class="card-title mb-1">Pablo Rodríguez González</h5>
+                                <p class="text-danger small fw-bold">Desarrollador</p>
+                                <p class="card-text text-muted">Buena destreza en el desarrollo de algoritmos.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="card h-100 border-0 shadow-sm text-center">
+                            <div class="p-4">
+                                <img th:src="@{/img/user.jpg}" class="rounded-circle img-thumbnail mb-3" alt="Bruno Lozano Clemente" style="width: 150px; height: 150px; object-fit: cover;">
+                                <h5 class="card-title mb-1">Bruno Lozano Clemente</h5>
+                                <p class="text-danger small fw-bold">Desarrollador</p>
+                                <p class="card-text text-muted">Especialista en la gestión de bases de datos.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <div class="text-center mt-3">
+                    <img src="img/logomatch4all.png" class="img-fluid" alt="Logo Match4All" style="max-height: 250px;">
+                    <p class="text-muted small">Plataforma para la gestión de fútbol amateur </p>
+            </div>
+
+        </div>
+    </main>
+
+    <th:block th:replace="~{fragments/footer.html :: footer}" />
+</body>
+
+</html>
