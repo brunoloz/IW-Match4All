@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html class="h-100" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <th:block th:replace="~{fragments/head :: header}" />
+    <title>IW: Match4All</title>
+</head>
+
+<body class="d-flex flex-column h-100">
+    <header th:replace="~{fragments/nav.html :: nav}"></header>
+
+    <main class="flex-shrink-0">
+        <div class="container mb-5">
+            <div class="text-center mt-5">
+                <h1 class="display-4"><strong>Match4All</strong></h1>
+                <p class="lead">Proyecto de Ingeniería Web</p>
+                <p class="text-muted">Desarrollado por: Siro Fernández García, Pablo Rodríguez González y Bruno Lozano Clemente </p>
+            </div>
+
+            <section class="container mt-5 mb-5">
+                <h2 class="text-center mb-4">Equipo de Desarrollo</h2>
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="card h-100 border-0 shadow-sm text-center">
+                            <div class="p-4">
+                                <img th:src="@{/img/siro.jpg}" class="rounded-circle img-thumbnail mb-3" alt="Siro Fernández García" style="width: 150px; height: 150px; object-fit: cover;">
+                                <h5 class="card-title mb-1">Siro Fernández García</h5>
+                                <p class="text-danger small fw-bold">Desarrollador</p>
+                                <p class="card-text text-muted">Estudiante Ingeniería Informática.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="card h-100 border-0 shadow-sm text-center">
+                            <div class="p-4">
+                                <img th:src="@{/img/pablo.jpg}" class="rounded-circle img-thumbnail mb-3" alt="Pablo Rodríguez González" style="width: 150px; height: 150px; object-fit: cover;">
+                                <h5 class="card-title mb-1">Pablo Rodríguez González</h5>
+                                <p class="text-danger small fw-bold">Desarrollador</p>
+                                <p class="card-text text-muted">Estudiante Ingeniería Informática.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="card h-100 border-0 shadow-sm text-center">
+                            <div class="p-4">
+                                <img th:src="@{/img/bruno.jpg}" class="rounded-circle img-thumbnail mb-3" alt="Bruno Lozano Clemente" style="width: 150px; height: 150px; object-fit: cover;">
+                                <h5 class="card-title mb-1">Bruno Lozano Clemente</h5>
+                                <p class="text-danger small fw-bold">Desarrollador</p>
+                                <p class="card-text text-muted">Estudiante Ingeniería de Computadores.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <div class="text-center mt-3">
+                    <img src="img/logomatch4all.png" class="img-fluid" alt="Logo Match4All" style="max-height: 750px;">
+                    <p class="text-muted small">Plataforma para la gestión de fútbol amateur </p>
+            </div>
+
+        </div>
+    </main>
+
+    <th:block th:replace="~{fragments/footer.html :: footer}" />
+</body>
+
+</html>

@@ -34,11 +34,42 @@ public class RootController {
 
 	@GetMapping("/")
     public String index(Model model) {
-        return "index";
+        return "fragments/index";
     }
 
-    @GetMapping("/match4all")      //ruta
+    @GetMapping("/vistaprincipal")      //ruta
     public String match4all(Model model) { //nombre da igual
-        return "match4all";            //nombre de vista
+        return "vistaprincipal";            //nombre de vista
     }
+
+    @GetMapping("/vistaperfil")      //ruta
+    public String vistaperfil(Model model) { //nombre da igual
+        return "vistaperfil";            //nombre de vista
+    }
+
+    @GetMapping("/vistagestionequipo")      //ruta
+    public String vistagestionequipo(Model model) { //nombre da igual
+        return "vistagestionequipo";            //nombre de vista
+    }
+
+    @GetMapping("/vistacompeticiones")      //ruta
+    public String vistacompeticiones(Model model) { //nombre da igual
+        return "vistacompeticiones";            //nombre de vista
+    }
+
+    @GetMapping("/vistaactapartido")      //ruta
+    public String vistaactapartido(Model model) { //nombre da igual
+        return "vistaactapartido";            //nombre de vista
+    }
+
+    @GetMapping("/vistapaneladmin")      //ruta
+    public String vistapaneladmin(Model model) { //nombre da igual
+        return "vistapaneladmin";            //nombre de vista
+    }
+
+    @GetMapping("/autores")      //ruta
+    public String autores(Model model) { //nombre da igual
+        return "autores";            //nombre de vista
+    }
+
 }

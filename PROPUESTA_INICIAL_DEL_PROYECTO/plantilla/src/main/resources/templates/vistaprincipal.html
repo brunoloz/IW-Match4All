@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html class="h-100" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <th:block th:replace="~{fragments/head :: header}" />
+    <title>IW: Match4All - Vista Principal</title>
+</head>
+
+<body class="d-flex flex-column h-100">
+    <header th:replace="~{fragments/nav.html :: nav}"></header>
+
+    <main class="flex-shrink-0">
+        <div class="container mb-5">
+            <div class="text-center mt-5">
+                <h1 class="display-4"><strong>Vista Principal</strong></h1>
+                <p class="lead text-primary fw-bold">La Puerta de Entrada</p>
+                <p class="text-muted">Vista pública diseñada para captar nuevos usuarios y mostrar la actividad de la plataforma.</p>
+            </div>
+
+            <hr class="my-4">
+
+            <section class="mt-4">
+                <h2>Sección de "Próximos Partidos"</h2>
+                <div class="p-4 border rounded bg-light">
+                    <p style="font-size: 24px;">
+                        Consiste en un <strong>carrusel dinámico</strong> que muestra los encuentros que están por empezar. 
+                        Permite a los visitantes ver de un vistazo la actividad inmediata del sitio sin necesidad de estar registrados.
+                    </p>
+                </div>
+            </section>
+
+            <section class="mt-5">
+                <h2>Datos de Impacto o Slogans atractivos</h2>
+                <div class="row text-center">
+                    <div class="col-md-6">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body" style="font-size: 24px; background-color: #d4edda;">
+                                <h5 class="card-title fw-bold">Equipos</h5>
+                                <p class="card-text text-success display-6 fw-bold">500</p>
+                                <p class="small">Equipos registrados actualmente.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body" style="font-size: 24px; background-color: #fff3cd;">
+                                <h5 class="card-title fw-bold">Goles</h5>
+                                <p class="card-text text-warning display-6 fw-bold">1.200</p>
+                                <p class="small">Goles marcados en la plataforma.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="mt-5 mb-5">
+                <h2>Navegación y Lógica de Acceso</h2>
+                <div class="card border-info">
+                    <div class="card-body" style="font-size: 20px;">
+                        <ul>
+                            <li> Botones claros y directos hacia los formularios de <strong>Registro</strong> y <strong>Login</strong> en el encabezado.</li>
+                            <li><strong>Redirección Automática:</strong> El sistema incluye un control de sesión; si un usuario ya autenticado intenta acceder a esta página, es redirigido automáticamente al <strong>Perfil Personal</strong>.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <th:block th:replace="~{fragments/footer.html :: footer}" />
+</body>
+
+</html>

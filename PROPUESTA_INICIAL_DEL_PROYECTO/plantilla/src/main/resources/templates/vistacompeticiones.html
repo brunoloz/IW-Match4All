@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html class="h-100" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <th:block th:replace="~{fragments/head :: header}" />
+    <title>IW: Match4All - Central de Competiciones</title>
+</head>
+
+<body class="d-flex flex-column h-100">
+    <header th:replace="~{fragments/nav.html :: nav}"></header>
+
+    <main class="flex-shrink-0">
+        <div class="container mb-5">
+            <div class="text-center mt-5">
+                <h1 class="display-4"><strong>Vista 3: Central de Competiciones</strong></h1>
+                <p class="lead text-primary fw-bold">El Periódico Deportivo</p>
+                <p class="text-muted">La vista con mayor tráfico de la plataforma, donde se monitoriza el estado de las ligas y el rendimiento competitivo.</p>
+            </div>
+
+            <hr class="my-4">
+
+            <section class="mt-4">
+                <h2>Tabla de Clasificación</h2>
+                <div class="p-4 border rounded shadow-sm bg-white">
+                    <p style="font-size: 24px;">
+                        Presentación de datos estadísticos. Incluye las métricas clásicas de competición: <strong>PTS</strong> (Puntos), <strong>PJ</strong> (Partidos Jugados), <strong>PG</strong> (Partidos Ganados), <strong>PE</strong> (Partidos Empatados)
+                        y <strong>PP</strong> (Partidos Perdidos).
+                    </p>
+                </div>
+            </section>
+
+            <section class="mt-5">
+                <h2>Calendario de Jornadas</h2>
+                <div class="card h-100 shadow-sm border-secondary">
+                    <div class="card-body" style="font-size: 24px; background-color: #f8f9fa;">
+                        <h5 class="card-title fw-bold">Selector Dinámico</h5>
+                        <p class="card-text">
+                            Interfaz que permite filtrar por <strong>jornada</strong> (Fecha 1, Fecha 2...) visualizando los resultados pasados y los emparejamientos futuros.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="mt-5">
+                <h2>Rankings e Individualidades</h2>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card h-100 shadow-sm border-info">
+                            <div class="card-body" style="background-color: #e3f2fd;">
+                                <h5 class="card-title fw-bold text-center">🏆 "Pichichis"</h5>
+                                <p style="font-size: 20px;">Ranking de los máximos goleadores de la competición.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card h-100 shadow-sm border-info">
+                            <div class="card-body" style="background-color: #e3f2fd;">
+                                <h5 class="card-title fw-bold text-center">🧤 Guante de Oro</h5>
+                                <p style="font-size: 20px;">Seguimiento de los mejores porteros basado en goles encajados.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="mt-5 mb-5">
+                <h2>Navegación e Interactividad</h2>
+                <div class="card border-primary">
+                    <div class="card-body" style="font-size: 22px; background-color: #e8f5e9;">
+                        <p>Cada elemento de la central actúa como un acceso directo:</p>
+                        <ul style="font-size: 20px;">
+                            <li><strong>Clic en Equipo:</strong> Redirige a la <em>Ficha de Equipo</em> (Versión pública de la Vista 2).</li>
+                            <li><strong>Clic en Partido:</strong> Redirige a la <em>Ficha del Partido</em> para ver el acta y detalles técnicos.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <th:block th:replace="~{fragments/footer.html :: footer}" />
+</body>
+
+</html>

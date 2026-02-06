@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html class="h-100" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <th:block th:replace="~{fragments/head :: header}" />
+    <title>IW: Match4All - Acta de Partido</title>
+</head>
+
+<body class="d-flex flex-column h-100">
+    <header th:replace="~{fragments/nav.html :: nav}"></header>
+
+    <main class="flex-shrink-0">
+        <div class="container mb-5">
+            <div class="text-center mt-5">
+                <h1 class="display-4"><strong>Vista 4: Acta de Partido</strong></h1>
+                <p class="lead text-primary fw-bold">Gestión de Resultados</p>
+                <p class="text-muted">Herramienta del árbitro para el registro oficial de eventos y cierre de jornada.</p>
+            </div>
+
+            <hr class="my-4">
+
+            <section class="mt-4">
+                <h2>Selector de Eventos y Autores</h2>
+                <div class="p-4 border rounded shadow-sm bg-white">
+                    <p style="font-size: 24px;">
+                        Interfaz para asignar eventos (goles o tarjetas) a jugadores específicos. Al seleccionar un evento, el sistema despliega la lista de la plantilla para asegurar que los datos se vinculen correctamente a cada usuario.
+                    </p>
+                </div>
+            </section>
+
+            <section class="mt-4">
+                <h2>Detalles sobre el partido</h2>
+                <div class="p-4 border rounded shadow-sm bg-white">
+                    <p style="font-size: 24px;">
+                        Bloque de texto donde el árbitro puede añadir incidencias ocurridas durante el partido, además de información
+                        adicional (cambios realizados por los equipos, infracciones...).
+                    </p>
+                </div>
+            </section>
+
+            <section class="mt-5">
+                <h2>Verificación Final del Acta</h2>
+                <div class="card h-100 shadow-sm border-success">
+                    <div class="card-body" style="font-size: 24px; background-color: #d4edda;">
+                        <p class="card-text">
+                            Resumen de confirmación previo al envío. Una vez validada, la información actualiza de forma automática las clasificaciones y estadísticas globales en la <strong>Central de Competiciones</strong>.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="mt-5 mb-5">
+                <h2>Navegación</h2>
+                <div class="card border-dark">
+                    <div class="card-body bg-light" style="font-size: 22px;">
+                        <p>Tras el envío del acta, el árbitro retorna a su <strong>Perfil Personal</strong>, dejando el partido cerrado y no editable para garantizar la integridad de la liga.</p>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <th:block th:replace="~{fragments/footer.html :: footer}" />
+</body>
+
+</html>

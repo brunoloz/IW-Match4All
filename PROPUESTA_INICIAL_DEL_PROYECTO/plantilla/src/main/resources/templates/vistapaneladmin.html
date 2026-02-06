@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html class="h-100" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <th:block th:replace="~{fragments/head :: header}" />
+    <title>IW: Match4All - Panel de Administración</title>
+</head>
+
+<body class="d-flex flex-column h-100">
+    <header th:replace="~{fragments/nav.html :: nav}"></header>
+
+    <main class="flex-shrink-0">
+        <div class="container mb-5">
+            <div class="text-center mt-5">
+                <h1 class="display-4"><strong>Vista 5: Panel de Administración</strong></h1>
+                <p class="lead text-primary fw-bold">La Torre de Control</p>
+                <p class="text-muted">Interfaz exclusiva para usuarios con rol de administrador.</p>
+            </div>
+
+            <hr class="my-4">
+
+            <section class="mt-4">
+                <h2>Gestor de Ligas</h2>
+                <div class="p-4 border rounded shadow-sm bg-white">
+                    <p style="font-size: 24px;">
+                        Permite definir nuevas competiciones, establecer el cupo máximo de equipos participantes y gestionar los periodos de inscripción.
+                    </p>
+                </div>
+            </section>
+
+            <section class="mt-5">
+                <h2>Matchmaking Automático</h2>
+                <div class="card h-100 shadow-sm border-primary">
+                    <div class="card-body" style="font-size: 24px; background-color: #e3f2fd;">
+                        <h5 class="card-title fw-bold text-primary">Generador de Calendario</h5>
+                        <p class="card-text">
+                            Herramienta que mediante un solo clic procesa la lista de equipos inscritos y genera automáticamente todos los enfrentamientos y jornadas de la temporada.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="mt-5">
+                <h2>Moderación y Supervisión</h2>
+                <div class="card h-100 shadow-sm border-dark">
+                    <div class="card-body" style="font-size: 24px; background-color: #f8f9fa;">
+                        <p class="card-text">
+                            Capacidad de intervención directa sobre la base de datos para <strong>suspender usuarios</strong>, gestionar reportes o <strong>corregir actas arbitrales</strong> en caso de disputas técnicas o errores humanos.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="mt-5 mb-5">
+                <h2>Navegación</h2>
+                <div class="card border-danger">
+                    <div class="card-body" style="font-size: 22px; background-color: #fff5f5;">
+                        <p>
+                            Como superusuario, el administrador tiene privilegios para saltar desde este panel a cualquier otra vista del sistema (Fichas de Equipo, Actas...) con permisos de edición total.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <th:block th:replace="~{fragments/footer.html :: footer}" />
+</body>
+
+</html>

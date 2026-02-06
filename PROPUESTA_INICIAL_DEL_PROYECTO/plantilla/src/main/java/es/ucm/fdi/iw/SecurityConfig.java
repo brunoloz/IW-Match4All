@@ -60,7 +60,13 @@ public class SecurityConfig {
 			)
       .authorizeHttpRequests(authorize -> authorize
 				.requestMatchers("/css/**", "/js/**", "/img/**", "/", "/error").permitAll()
-				.requestMatchers("/match4all").permitAll() 
+				.requestMatchers("/vistaprincipal").permitAll() 
+				.requestMatchers("/vistaperfil").permitAll()
+				.requestMatchers("/vistagestionequipo").permitAll()
+				.requestMatchers("/vistacompeticiones").permitAll()
+				.requestMatchers("/vistaactapartido").permitAll()
+				.requestMatchers("/vistapaneladmin").permitAll()
+				.requestMatchers("/autores").permitAll()
 				.requestMatchers("/api/**").permitAll()            // <-- public api access
 				.requestMatchers("/admin/**").hasRole("ADMIN")	   // <-- administration
 				.requestMatchers("/user/**").hasRole("USER")	     // <-- logged-in users
