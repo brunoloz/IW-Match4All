@@ -1,63 +1,429 @@
 <!DOCTYPE html>
-<html class="h-100" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <th:block th:replace="~{fragments/head :: header}" />
-    <title>IW: Match4All - Gestión de Equipo</title>
+    <title>IW: Match4All</title>
 </head>
 
-<body class="d-flex flex-column h-100">
+<body>
     <header th:replace="~{fragments/nav.html :: nav}"></header>
 
-    <main class="flex-shrink-0">
-        <div class="container mb-5">
-            <div class="text-center mt-5">
-                <h1 class="display-4"><strong>Vista 2: Gestión de Equipo</strong></h1>
-                <p class="lead text-primary fw-bold">El Vestuario Digital</p>
-                <p class="text-muted">Espacio dedicado a la administración interna, la cohesión del grupo y la toma de decisiones estratégicas.</p>
+    <main style="padding: 20px 12px;">
+        <div style="max-width: 1100px; margin: 0 auto;">
+            <div style="display: flex; flex-wrap: wrap; align-items: flex-start; gap: 12px;">
+                <section style="flex: 1 1 62%; min-width: 620px; border: 1px solid #ddd; border-radius: 8px;">
+                    <div style="padding: 12px; border-bottom: 1px solid #eee;">
+                        <h2 style="margin: 0;">Plantilla</h2>
+                    </div>
+                    <div>
+                        <div style="overflow-x: auto;">
+                            <table id="player-table" style="width: 100%; border-collapse: collapse;">
+                                <thead>
+                                    <tr>
+                                        <th style="text-align: left; border-bottom: 1px solid #eee; padding: 10px;">Jugador</th>
+                                        <th style="text-align: left; border-bottom: 1px solid #eee; padding: 10px;">Posición</th>
+                                        <th style="text-align: left; border-bottom: 1px solid #eee; padding: 10px;">Goles</th>
+                                        <th style="text-align: left; border-bottom: 1px solid #eee; padding: 10px;">Asistencias</th>
+                                        <th style="width: 56px; text-align: right; border-bottom: 1px solid #eee; padding: 10px;"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="player-list"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <section style="flex: 1 1 34%; min-width: 320px; display: flex; flex-direction: column; gap: 12px;">
+                    <div style="border: 1px solid #ddd; border-radius: 8px;">
+                        <div style="padding: 12px;">
+                            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                                <img th:src="@{/img/user.jpg}" src="/img/user.jpg" alt="Escudo del equipo" style="width: 72px; height: 72px; border-radius: 8px;">
+                                <div>
+                                    <h2 style="margin: 0;">Demo Team</h2>
+                                    <p style="margin: 0;">Temporada 2025/26</p>
+                                </div>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;">
+                                <div style="border: 1px solid #eee; text-align: center; padding: 8px;">
+                                    <div style="font-weight: 700;">3</div>
+                                    <small>Ligas</small>
+                                </div>
+                                <div style="border: 1px solid #eee; text-align: center; padding: 8px;">
+                                    <div style="font-weight: 700;">19</div>
+                                    <small>Goles</small>
+                                </div>
+                                <div style="border: 1px solid #eee; text-align: center; padding: 8px;">
+                                    <div id="team-size-stat" style="font-weight: 700;">0</div>
+                                    <small>Jugadores</small>
+                                </div>
+                            </div>
+
+                            <div th:if="${u != null && u.hasRole('ADMIN')}" style="margin-top: 10px;">
+                                <button id="toggle-manage" type="button" style="background: #0d6efd; color: #fff; border: 1px solid #0d6efd; border-radius: 6px; padding: 6px 10px;">Gestionar equipo</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="border: 1px solid #ddd; border-radius: 8px;">
+                        <div style="padding: 12px; border-bottom: 1px solid #eee;">
+                            <h3 style="margin: 0;">Ligas en juego</h3>
+                        </div>
+                        <div style="padding: 0;">
+                            <ul style="list-style: none; margin: 0; padding: 0;">
+                                <li style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-bottom: 1px solid #eee;">
+                                    <img th:src="@{/img/logomatch4all.png}" src="/img/logomatch4all.png" alt="Liga" style="width: 32px; height: 32px; border-radius: 6px;">
+                                    <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 10px; width: 100%;">
+                                        <span style="font-weight: 600;">Liga Match4All - Primera</span>
+                                        <span style="font-weight: 700; white-space: nowrap;">3º · 18 pts</span>
+                                    </div>
+                                </li>
+                                <li style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-bottom: 1px solid #eee;">
+                                    <img th:src="@{/img/logomatch4all.png}" src="/img/logomatch4all.png" alt="Liga" style="width: 32px; height: 32px; border-radius: 6px;">
+                                    <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 10px; width: 100%;">
+                                        <span style="font-weight: 600;">Copa Match4All</span>
+                                        <span style="font-weight: 700; white-space: nowrap;">1º · 9 pts</span>
+                                    </div>
+                                </li>
+                                <li style="display: flex; align-items: center; gap: 10px; padding: 10px 12px;">
+                                    <img th:src="@{/img/logomatch4all.png}" src="/img/logomatch4all.png" alt="Liga" style="width: 32px; height: 32px; border-radius: 6px;">
+                                    <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 10px; width: 100%;">
+                                        <span style="font-weight: 600;">Liga de Verano</span>
+                                        <span style="font-weight: 700; white-space: nowrap;">5º · 11 pts</span>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div id="admin-panel" th:if="${u != null && u.hasRole('ADMIN')}" style="border: 1px solid #ddd; border-radius: 8px;" hidden>
+                        <div style="padding: 12px; border-bottom: 1px solid #eee;">
+                            <h3 style="margin: 0;">Gestión de altas</h3>
+                        </div>
+                        <div style="padding: 12px;">
+                            <div style="margin-bottom: 12px;">
+                                <label for="existing-player-select" style="display: block; margin-bottom: 6px;">Añadir jugador existente</label>
+                                <div style="display: flex; gap: 8px;">
+                                    <select id="existing-player-select" style="flex: 1;"></select>
+                                    <button id="add-existing-player" type="button" style="background: #0d6efd; color: #fff; border: 1px solid #0d6efd; border-radius: 6px; padding: 6px 10px;">Añadir</button>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+                                    <h4 style="margin: 0;">Solicitudes de entrada</h4>
+                                    <span id="request-count" style="border: 1px solid #ddd; border-radius: 999px; padding: 2px 8px;">0</span>
+                                </div>
+                                <ul id="request-list" style="list-style: none; margin: 10px 0 0 0; padding: 0;"></ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
             </div>
-
-            <hr class="my-4">
-
-            <section class="mt-4">
-                <h2>Lista de Plantilla</h2>
-                <div class="p-4 border rounded shadow-sm bg-white">
-                    <p style="font-size: 24px;">
-                        Visualización detallada de los integrantes del equipo. Incluye datos como <strong>nombres</strong>, <strong>dorsales</strong> asignados y el <strong>estado de forma</strong> actual basado en los últimos partidos.
-                    </p>
-                </div>
-            </section>
-
-            <section class="mt-5">
-                <h2>Zona del Capitán (Acceso Restringido)</h2>
-                <div class="card h-100 shadow-sm border-danger">
-                    <div class="card-body" style="font-size: 24px; background-color: #fce4ec;">
-                        <h5 class="card-title fw-bold">Módulo de Seguridad:</h5>
-                        <p class="card-text">
-                            Panel exclusivo para el líder del equipo. Contiene las funciones vitales:
-                        </p>
-                        <ul style="font-size: 20px;">
-                            <li><strong>Gestión de Solicitudes:</strong> Panel para aceptar o rechazar nuevos jugadores que desean unirse.</li>
-                            <li><strong>Botón [Inscribir en Liga]:</strong> Permite formalizar la participación en torneos.</li>
-                            <li><strong>Baja de jugadores:</strong> Puede eliminar del equipo a un jugador.</li>
-                        </ul>
-                    </div>
-                </div>
-            </section>
-
-            <section class="mt-5 mb-5">
-                <h2>Navegación y Flujo de Trabajo</h2>
-                <div class="card border-primary">
-                    <div class="card-body" style="font-size: 22px; background-color: #e3f2fd;">
-                        <p>
-                            Al pulsar en <strong>Inscribir en Liga</strong>, el sistema redirige al usuario a la <strong>Central de Competiciones</strong> en el contexto del equipo seleccionado.
-                        </p>
-                    </div>
-                </div>
-            </section>
-
         </div>
     </main>
+
+    <script>
+        (() => {
+            const isAdmin = Boolean(config && config.admin);
+            const toggleManageBtn = document.getElementById('toggle-manage');
+            const adminPanel = document.getElementById('admin-panel');
+            const playerList = document.getElementById('player-list');
+            const teamSizeStat = document.getElementById('team-size-stat');
+            const requestList = document.getElementById('request-list');
+            const requestCount = document.getElementById('request-count');
+            const existingPlayerSelect = document.getElementById('existing-player-select');
+            const addExistingPlayerBtn = document.getElementById('add-existing-player');
+
+            const positionOptions = ['POR', 'LI', 'LD', 'DFC', 'MCD', 'MC', 'MCO', 'EI', 'ED', 'SD', 'DC'];
+            const players = [
+                { id: 1, name: 'Pablo Rodríguez', position: 'MC', goals: 2, assists: 5 },
+                { id: 2, name: 'Bruno Lozano', position: 'DC', goals: 7, assists: 3 },
+                { id: 3, name: 'Siro Fernández', position: 'DFC', goals: 1, assists: 2 }
+            ];
+
+            const pendingRequests = [
+                { id: 4, name: 'Mario Díaz', note: 'Delantero · solicitud pendiente' },
+                { id: 5, name: 'Lucía Romero', note: 'Portera · solicitud pendiente' }
+            ];
+
+            const existingPlayersPool = [
+                { id: 6, name: 'Álvaro Ruiz', position: 'ED', goals: 3, assists: 1 },
+                { id: 7, name: 'Marta Vega', position: 'MC', goals: 2, assists: 4 },
+                { id: 8, name: 'Irene Torres', position: 'LI', goals: 0, assists: 2 }
+            ];
+
+            let managementMode = false;
+
+            const getPositionCell = (player) => {
+                if (!managementMode || !isAdmin) {
+                    return `<span>${player.position}</span>`;
+                }
+
+                const options = positionOptions.map((position) => {
+                    const selected = position === player.position ? 'selected' : '';
+                    return `<option value="${position}" ${selected}>${position}</option>`;
+                }).join('');
+
+                return `<select data-action="change-position" data-id="${player.id}">${options}</select>`;
+            };
+
+            const getActionCell = (playerId) => {
+                if (!managementMode || !isAdmin) {
+                    return '';
+                }
+
+                return `
+                    <div data-menu style="position: relative;">
+                        <button type="button" aria-label="Más acciones" data-action="toggle-menu" data-id="${playerId}" style="width: 28px; height: 28px; background: #f0f6ff; color: #0d6efd; border: 1px solid #b9d3ff; border-radius: 50%;">⋮</button>
+                        <div data-dropdown style="position: absolute; bottom: calc(100% + 4px); right: 0; border: 1px solid #ddd; background: #fff; min-width: 160px; z-index: 10;" hidden>
+                            <button data-action="remove" data-id="${playerId}" style="width: 100%; text-align: left; color: #c62828; border: 0; background: #fff; padding: 8px;">Eliminar del equipo</button>
+                        </div>
+                    </div>
+                `;
+            };
+
+            const renderPlayers = () => {
+                playerList.innerHTML = '';
+
+                players.forEach((player) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td style="border-bottom: 1px solid #eee; padding: 10px; vertical-align: middle;">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <img src="/img/user.jpg" alt="Jugador" style="width: 28px; height: 28px; border-radius: 50%;">
+                                <span style="font-weight: 600;">${player.name}</span>
+                            </div>
+                        </td>
+                        <td style="border-bottom: 1px solid #eee; padding: 10px; vertical-align: middle;">${getPositionCell(player)}</td>
+                        <td style="border-bottom: 1px solid #eee; padding: 10px; vertical-align: middle;">${player.goals}</td>
+                        <td style="border-bottom: 1px solid #eee; padding: 10px; vertical-align: middle;">${player.assists}</td>
+                        <td style="width: 56px; text-align: right; border-bottom: 1px solid #eee; padding: 10px; vertical-align: middle;">${getActionCell(player.id)}</td>
+                    `;
+                    playerList.appendChild(row);
+                });
+
+                const size = String(players.length);
+                if (teamSizeStat) {
+                    teamSizeStat.textContent = size;
+                }
+            };
+
+            const renderRequests = () => {
+                if (!requestList || !requestCount) {
+                    return;
+                }
+
+                requestList.innerHTML = '';
+                requestCount.textContent = String(pendingRequests.length);
+
+                if (pendingRequests.length === 0) {
+                    const empty = document.createElement('li');
+                    empty.textContent = 'No hay solicitudes pendientes.';
+                    empty.style.padding = '10px 12px';
+                    requestList.appendChild(empty);
+                    return;
+                }
+
+                pendingRequests.forEach((request) => {
+                    const item = document.createElement('li');
+                    item.style.borderBottom = '1px solid #eee';
+                    item.style.padding = '10px 12px';
+                    item.innerHTML = `
+                        <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;">
+                            <div>
+                                <div style="font-weight: 600;">${request.name}</div>
+                                <small>${request.note}</small>
+                            </div>
+                            <div style="display: flex; gap: 8px;">
+                                <button data-action="approve" data-id="${request.id}" style="background: #198754; color: #fff; border: 1px solid #198754; border-radius: 6px; padding: 4px 8px;">Aceptar</button>
+                                <button data-action="reject" data-id="${request.id}" style="background: #dc3545; color: #fff; border: 1px solid #dc3545; border-radius: 6px; padding: 4px 8px;">Rechazar</button>
+                            </div>
+                        </div>
+                    `;
+                    requestList.appendChild(item);
+                });
+            };
+
+            const renderExistingPlayerSelect = () => {
+                if (!existingPlayerSelect) {
+                    return;
+                }
+
+                existingPlayerSelect.innerHTML = '';
+                if (existingPlayersPool.length === 0) {
+                    const option = document.createElement('option');
+                    option.value = '';
+                    option.textContent = 'No hay más jugadores disponibles';
+                    existingPlayerSelect.appendChild(option);
+                    existingPlayerSelect.disabled = true;
+                    if (addExistingPlayerBtn) {
+                        addExistingPlayerBtn.disabled = true;
+                    }
+                    return;
+                }
+
+                existingPlayerSelect.disabled = false;
+                if (addExistingPlayerBtn) {
+                    addExistingPlayerBtn.disabled = false;
+                }
+
+                existingPlayersPool.forEach((player) => {
+                    const option = document.createElement('option');
+                    option.value = String(player.id);
+                    option.textContent = player.name;
+                    existingPlayerSelect.appendChild(option);
+                });
+            };
+
+            playerList.addEventListener('click', (event) => {
+                const target = event.target;
+                if (!(target instanceof HTMLElement)) {
+                    return;
+                }
+
+                const action = target.getAttribute('data-action');
+                const id = Number(target.getAttribute('data-id'));
+                if (!action || Number.isNaN(id) || !isAdmin) {
+                    return;
+                }
+
+                if (action === 'toggle-menu') {
+                    const currentMenu = target.closest('[data-menu]');
+                    if (!currentMenu) {
+                        return;
+                    }
+                    playerList.querySelectorAll('[data-dropdown]').forEach((dropdown) => {
+                        if (!currentMenu.contains(dropdown)) {
+                            dropdown.hidden = true;
+                        }
+                    });
+                    const dropdown = currentMenu.querySelector('[data-dropdown]');
+                    if (dropdown) {
+                        dropdown.hidden = !dropdown.hidden;
+                    }
+                    return;
+                }
+
+                if (action === 'remove') {
+                    const index = players.findIndex((player) => player.id === id);
+                    if (index >= 0) {
+                        players.splice(index, 1);
+                        renderPlayers();
+                    }
+                }
+            });
+
+            playerList.addEventListener('change', (event) => {
+                const target = event.target;
+                if (!(target instanceof HTMLSelectElement)) {
+                    return;
+                }
+
+                const action = target.getAttribute('data-action');
+                const id = Number(target.getAttribute('data-id'));
+                if (action !== 'change-position' || Number.isNaN(id) || !isAdmin || !managementMode) {
+                    return;
+                }
+
+                const player = players.find((item) => item.id === id);
+                if (player) {
+                    player.position = target.value;
+                }
+            });
+
+            document.addEventListener('click', (event) => {
+                const target = event.target;
+                if (!(target instanceof HTMLElement)) {
+                    return;
+                }
+
+                if (!target.closest('[data-menu]')) {
+                    playerList.querySelectorAll('[data-dropdown]').forEach((dropdown) => {
+                        dropdown.hidden = true;
+                    });
+                }
+            });
+
+            if (requestList) {
+                requestList.addEventListener('click', (event) => {
+                    const target = event.target;
+                    if (!(target instanceof HTMLElement)) {
+                        return;
+                    }
+
+                    const action = target.getAttribute('data-action');
+                    const id = Number(target.getAttribute('data-id'));
+                    if (!action || Number.isNaN(id) || !isAdmin) {
+                        return;
+                    }
+
+                    const index = pendingRequests.findIndex((request) => request.id === id);
+                    if (index < 0) {
+                        return;
+                    }
+
+                    if (action === 'approve') {
+                        const approvedRequest = pendingRequests[index];
+                        players.push({
+                            id: Date.now(),
+                            name: approvedRequest.name,
+                            position: 'MC',
+                            goals: 0,
+                            assists: 0
+                        });
+                    }
+
+                    pendingRequests.splice(index, 1);
+                    renderPlayers();
+                    renderRequests();
+                });
+            }
+
+            if (addExistingPlayerBtn && existingPlayerSelect) {
+                addExistingPlayerBtn.addEventListener('click', () => {
+                    if (!isAdmin || existingPlayersPool.length === 0) {
+                        return;
+                    }
+
+                    const selectedId = Number(existingPlayerSelect.value);
+                    const selectedIndex = existingPlayersPool.findIndex((player) => player.id === selectedId);
+                    if (selectedIndex < 0) {
+                        return;
+                    }
+
+                    const selectedPlayer = existingPlayersPool[selectedIndex];
+                    players.push({
+                        id: Date.now(),
+                        name: selectedPlayer.name,
+                        position: selectedPlayer.position,
+                        goals: selectedPlayer.goals,
+                        assists: selectedPlayer.assists
+                    });
+
+                    existingPlayersPool.splice(selectedIndex, 1);
+                    renderPlayers();
+                    renderExistingPlayerSelect();
+                });
+            }
+
+            if (toggleManageBtn) {
+                toggleManageBtn.addEventListener('click', () => {
+                    managementMode = !managementMode;
+                    toggleManageBtn.textContent = managementMode ? 'Salir de gestión' : 'Gestionar equipo';
+                    if (adminPanel) {
+                        adminPanel.hidden = !managementMode;
+                    }
+                    renderPlayers();
+                });
+            }
+
+            renderPlayers();
+            renderRequests();
+            renderExistingPlayerSelect();
+        })();
+    </script>
 
     <th:block th:replace="~{fragments/footer.html :: footer}" />
 </body>
