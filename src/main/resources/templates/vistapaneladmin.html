@@ -1,71 +1,340 @@
 <!DOCTYPE html>
-<html class="h-100" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <th:block th:replace="~{fragments/head :: header}" />
-    <title>IW: Match4All - Panel de Administración</title>
+    <title>IW: Match4All - Panel Admin</title>
 </head>
 
-<body class="d-flex flex-column h-100">
+<body>
     <header th:replace="~{fragments/nav.html :: nav}"></header>
 
-    <main class="flex-shrink-0">
-        <div class="container mb-5">
-            <div class="text-center mt-5">
-                <h1 class="display-4"><strong>Vista 5: Panel de Administración</strong></h1>
-                <p class="lead text-primary fw-bold">La Torre de Control</p>
-                <p class="text-muted">Interfaz exclusiva para usuarios con rol de administrador.</p>
+    <main style="padding: 20px 12px;">
+        <div style="max-width: 1100px; margin: 0 auto;">
+            <!-- Header con acciones -->
+            <div style="margin-bottom: 20px;">
+                <h1 style="margin: 0 0 16px 0;">Panel de Administración</h1>
+                <div style="display: flex; gap: 12px; flex-wrap: wrap; position: relative;">
+                    <div style="flex: 1; min-width: 280px; position: relative;">
+                        <input id="global-search" type="text" placeholder="Buscar ligas, equipos o jugadores..." style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; box-sizing: border-box;">
+                        <div id="search-dropdown" style="position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: #fff; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); max-height: 360px; overflow-y: auto; display: none; z-index: 60;"></div>
+                    </div>
+                    <button id="btn-create-comp" type="button" style="background: #0d6efd; color: #fff; border: 1px solid #0d6efd; border-radius: 6px; padding: 10px 16px; cursor: pointer; font-weight: 600;">Crear Competición</button>
+                    <button id="btn-matchmaking" type="button" style="background: #198754; color: #fff; border: 1px solid #198754; border-radius: 6px; padding: 10px 16px; cursor: pointer; font-weight: 600;">Iniciar Matchmaking</button>
+                </div>
             </div>
 
-            <hr class="my-4">
-
-            <section class="mt-4">
-                <h2>Gestor de Ligas</h2>
-                <div class="p-4 border rounded shadow-sm bg-white">
-                    <p style="font-size: 24px;">
-                        Permite definir nuevas competiciones, establecer el cupo máximo de equipos participantes y gestionar los periodos de inscripción.
-                    </p>
+            <!-- Modal: Crear Competición -->
+            <div id="modal-create-comp" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); display: none; align-items: center; justify-content: center; z-index: 999;">
+                <div style="background: #fff; border-radius: 8px; padding: 24px; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);">
+                    <h2 style="margin: 0 0 20px 0;">Nueva Competición</h2>
+                    <form id="form-create-comp" style="display: flex; flex-direction: column; gap: 12px;">
+                        <div>
+                            <label style="display: block; margin-bottom: 4px; font-weight: 600;">Nombre</label>
+                            <input type="text" name="comp-name" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box;">
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 4px; font-weight: 600;">Tipo</label>
+                            <select name="comp-type" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box;">
+                                <option value="">Seleccionar</option>
+                                <option value="Liga">Liga</option>
+                                <option value="Copa">Copa</option>
+                                <option value="Torneo">Torneo</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 4px; font-weight: 600;">Máx. Equipos</label>
+                            <input type="number" name="comp-maxteams" min="2" value="16" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box;">
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 4px; font-weight: 600;">Inicio</label>
+                            <input type="date" name="comp-start" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box;">
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 4px; font-weight: 600;">Fin</label>
+                            <input type="date" name="comp-end" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box;">
+                        </div>
+                        <div style="display: flex; gap: 12px; margin-top: 12px;">
+                            <button type="submit" style="flex: 1; background: #0d6efd; color: #fff; border: 1px solid #0d6efd; border-radius: 6px; padding: 10px; cursor: pointer; font-weight: 600;">Crear</button>
+                            <button type="button" id="btn-close-modal" style="flex: 1; background: #6c757d; color: #fff; border: 1px solid #6c757d; border-radius: 6px; padding: 10px; cursor: pointer; font-weight: 600;">Cancelar</button>
+                        </div>
+                    </form>
                 </div>
-            </section>
+            </div>
 
-            <section class="mt-5">
-                <h2>Matchmaking Automático</h2>
-                <div class="card h-100 shadow-sm border-primary">
-                    <div class="card-body" style="font-size: 24px; background-color: #e3f2fd;">
-                        <h5 class="card-title fw-bold text-primary">Generador de Calendario</h5>
-                        <p class="card-text">
-                            Herramienta que mediante un solo clic procesa la lista de equipos inscritos y genera automáticamente todos los enfrentamientos y jornadas de la temporada.
-                        </p>
+            <!-- Modal: Matchmaking -->
+            <div id="modal-matchmaking" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); display: none; align-items: center; justify-content: center; z-index: 999;">
+                <div style="background: #fff; border-radius: 8px; padding: 24px; max-width: 500px; width: 90%; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);">
+                    <h2 style="margin: 0 0 16px 0;">Generar Matchmaking</h2>
+                    <p style="margin: 0 0 16px 0; color: #666; font-size: 14px;">Selecciona una competición para generar automáticamente los enfrentamientos.</p>
+                    <div style="margin-bottom: 16px;">
+                        <label style="display: block; margin-bottom: 6px; font-weight: 600;">Competición</label>
+                        <select id="matchmaking-select" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box;">
+                            <option value="">Seleccionar competición</option>
+                            <option value="1">Liga Match4All - Primera</option>
+                            <option value="2">Copa Match4All</option>
+                            <option value="3">Liga de Verano</option>
+                        </select>
+                    </div>
+                    <div style="display: flex; gap: 12px;">
+                        <button id="btn-exec-matchmaking" type="button" style="flex: 1; background: #198754; color: #fff; border: 1px solid #198754; border-radius: 6px; padding: 10px; cursor: pointer; font-weight: 600;">Ejecutar</button>
+                        <button type="button" onclick="document.getElementById('modal-matchmaking').style.display = 'none';" style="flex: 1; background: #6c757d; color: #fff; border: 1px solid #6c757d; border-radius: 6px; padding: 10px; cursor: pointer; font-weight: 600;">Cerrar</button>
                     </div>
                 </div>
-            </section>
+            </div>
 
-            <section class="mt-5">
-                <h2>Moderación y Supervisión</h2>
-                <div class="card h-100 shadow-sm border-dark">
-                    <div class="card-body" style="font-size: 24px; background-color: #f8f9fa;">
-                        <p class="card-text">
-                            Capacidad de intervención directa sobre la base de datos para <strong>suspender usuarios</strong>, gestionar reportes o <strong>corregir actas arbitrales</strong> en caso de disputas técnicas o errores humanos.
-                        </p>
+            <div style="margin-top: 24px;">
+                <section style="border: 1px solid #ddd; border-radius: 8px; margin-bottom: 16px;">
+                    <div style="padding: 12px; border-bottom: 1px solid #eee;">
+                        <h3 style="margin: 0;">Competiciones Activas</h3>
                     </div>
-                </div>
-            </section>
-
-            <section class="mt-5 mb-5">
-                <h2>Navegación</h2>
-                <div class="card border-danger">
-                    <div class="card-body" style="font-size: 22px; background-color: #fff5f5;">
-                        <p>
-                            Como superusuario, el administrador tiene privilegios para saltar desde este panel a cualquier otra vista del sistema (Fichas de Equipo, Actas...) con permisos de edición total.
-                        </p>
+                    <div style="padding: 12px;">
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <thead>
+                                <tr>
+                                    <th style="text-align: left; border-bottom: 1px solid #eee; padding: 10px;">Nombre</th>
+                                    <th style="text-align: left; border-bottom: 1px solid #eee; padding: 10px;">Tipo</th>
+                                    <th style="text-align: left; border-bottom: 1px solid #eee; padding: 10px;">Equipos</th>
+                                    <th style="text-align: left; border-bottom: 1px solid #eee; padding: 10px;">Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="padding: 10px; border-bottom: 1px solid #eee;">Liga Match4All - Primera</td>
+                                    <td style="padding: 10px; border-bottom: 1px solid #eee;">Liga</td>
+                                    <td style="padding: 10px; border-bottom: 1px solid #eee;">12/16</td>
+                                    <td style="padding: 10px; border-bottom: 1px solid #eee;"><span style="background: #d4edda; color: #155724; padding: 2px 6px; border-radius: 4px; font-size: 12px; font-weight: 600;">En curso</span></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 10px; border-bottom: 1px solid #eee;">Copa Match4All</td>
+                                    <td style="padding: 10px; border-bottom: 1px solid #eee;">Copa</td>
+                                    <td style="padding: 10px; border-bottom: 1px solid #eee;">8/16</td>
+                                    <td style="padding: 10px; border-bottom: 1px solid #eee;"><span style="background: #cfe2ff; color: #084298; padding: 2px 6px; border-radius: 4px; font-size: 12px; font-weight: 600;">Inscripción</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
-                </div>
-            </section>
-
+                </section>
+            </div>
         </div>
     </main>
 
     <th:block th:replace="~{fragments/footer.html :: footer}" />
+
+    <script>
+        // Datos demo
+        const competitions = [
+            { id: 1, name: 'Liga Match4All - Primera', type: 'Liga', teams: '12/16', status: 'En curso', suspended: false },
+            { id: 2, name: 'Copa Match4All', type: 'Copa', teams: '8/16', status: 'Inscripción', suspended: false },
+            { id: 3, name: 'Liga de Verano', type: 'Liga', teams: '10/20', status: 'En curso', suspended: true }
+        ];
+
+        const teams = [
+            { id: 1, name: 'Demo Team', suspended: false },
+            { id: 2, name: 'Vallecas FC', suspended: false },
+            { id: 3, name: 'CD Verano', suspended: true }
+        ];
+
+        const players = [
+            { id: 1, name: 'Juan García', suspended: false },
+            { id: 2, name: 'María López', suspended: false },
+            { id: 3, name: 'Carlos Rodríguez', suspended: true },
+            { id: 4, name: 'Ana Martínez', suspended: false },
+            { id: 5, name: 'Pedro Sánchez', suspended: false }
+        ];
+
+        // Event listeners
+        document.getElementById('btn-create-comp').addEventListener('click', () => {
+            document.getElementById('modal-create-comp').style.display = 'flex';
+        });
+
+        document.getElementById('btn-close-modal').addEventListener('click', () => {
+            document.getElementById('modal-create-comp').style.display = 'none';
+        });
+
+        document.getElementById('btn-matchmaking').addEventListener('click', () => {
+            document.getElementById('modal-matchmaking').style.display = 'flex';
+        });
+
+        // Cerrar modal al hacer clic fuera
+        document.getElementById('modal-create-comp').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('modal-create-comp')) {
+                document.getElementById('modal-create-comp').style.display = 'none';
+            }
+        });
+
+        document.getElementById('modal-matchmaking').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('modal-matchmaking')) {
+                document.getElementById('modal-matchmaking').style.display = 'none';
+            }
+        });
+
+        // Envío de form crear competición
+        document.getElementById('form-create-comp').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = e.target['comp-name'].value;
+            const type = e.target['comp-type'].value;
+            const maxTeams = e.target['comp-maxteams'].value;
+            alert(`Competición "${name}" creada (${type}, máx ${maxTeams} equipos)`);
+            document.getElementById('modal-create-comp').style.display = 'none';
+            e.target.reset();
+        });
+
+        // Matchmaking execution
+        document.getElementById('btn-exec-matchmaking').addEventListener('click', () => {
+            const selected = document.getElementById('matchmaking-select').value;
+            const compName = document.getElementById('matchmaking-select').options[document.getElementById('matchmaking-select').selectedIndex].text;
+            if (!selected) {
+                alert('Selecciona una competición');
+                return;
+            }
+            alert(`Matchmaking ejecutado para: ${compName}\nSe han generado los enfrentamientos automáticamente.`);
+            document.getElementById('modal-matchmaking').style.display = 'none';
+        });
+
+        function getSearchItems() {
+            return [
+                ...competitions.map(item => ({
+                    key: `competition-${item.id}`,
+                    id: item.id,
+                    type: 'Liga',
+                    name: item.name,
+                    suspended: item.suspended,
+                    meta: `${item.type} · ${item.teams}`,
+                    url: '/vistacompeticiones'
+                })),
+                ...teams.map(item => ({
+                    key: `team-${item.id}`,
+                    id: item.id,
+                    type: 'Equipo',
+                    name: item.name,
+                    suspended: item.suspended,
+                    meta: 'Equipo',
+                    url: '/vistagestionequipo'
+                })),
+                ...players.map(item => ({
+                    key: `player-${item.id}`,
+                    id: item.id,
+                    type: 'Jugador',
+                    name: item.name,
+                    suspended: item.suspended,
+                    meta: 'Jugador',
+                    url: '/user'
+                }))
+            ];
+        }
+
+        function renderSearchResults() {
+            const query = document.getElementById('global-search').value.trim().toLowerCase();
+            const rows = getSearchItems().filter(item => item.name.toLowerCase().includes(query));
+            const dropdown = document.getElementById('search-dropdown');
+
+            if (rows.length === 0) {
+                dropdown.innerHTML = '<div style="padding: 12px; color: #666;">No hay resultados.</div>';
+                return;
+            }
+
+            dropdown.innerHTML = rows.map(item => {
+                const actionLabel = item.suspended ? 'Rehabilitar' : 'Suspender';
+                const actionColor = item.suspended ? '#198754' : '#dc3545';
+                const statusLabel = item.suspended ? 'Suspendido' : 'Activo';
+                return `
+                    <div data-action="open-item" data-key="${item.key}" style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-bottom: 1px solid #f1f1f1; cursor: pointer;">
+                        <div style="width: 90px; color: #666; font-size: 13px;">${item.type}</div>
+                        <div style="flex: 1; min-width: 0;">
+                            <div style="font-weight: 600;">${item.name}</div>
+                            <small style="color: #666;">${item.meta}</small>
+                        </div>
+                        <div style="font-size: 12px; color: #666; width: 90px; text-align: right;">${statusLabel}</div>
+                        <div style="position: relative;">
+                            <button type="button" data-action="toggle-menu" data-key="${item.key}" style="width: 30px; height: 30px; border: 1px solid #ccc; background: #f8f9fa; border-radius: 6px; cursor: pointer;">⋮</button>
+                            <div id="menu-${item.key}" style="display: none; position: absolute; right: 0; top: calc(100% + 2px); background: #fff; border: 1px solid #ddd; border-radius: 6px; min-width: 120px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); z-index: 30;">
+                                <button type="button" data-action="toggle-suspension" data-key="${item.key}" style="display: block; width: 100%; border: 0; background: #fff; text-align: left; padding: 8px 10px; cursor: pointer; color: ${actionColor};">${actionLabel}</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function updateSuspensionState(itemKey, value) {
+            const [entityType, entityIdRaw] = itemKey.split('-');
+            const entityId = Number(entityIdRaw);
+            if (entityType === 'competition') {
+                const entity = competitions.find(c => c.id === entityId);
+                if (entity) entity.suspended = value;
+            }
+            if (entityType === 'team') {
+                const entity = teams.find(c => c.id === entityId);
+                if (entity) entity.suspended = value;
+            }
+            if (entityType === 'player') {
+                const entity = players.find(c => c.id === entityId);
+                if (entity) entity.suspended = value;
+            }
+        }
+
+        document.getElementById('global-search').addEventListener('focus', () => {
+            renderSearchResults();
+            document.getElementById('search-dropdown').style.display = 'block';
+        });
+
+        document.getElementById('global-search').addEventListener('input', () => {
+            renderSearchResults();
+            document.getElementById('search-dropdown').style.display = 'block';
+        });
+
+        document.getElementById('search-dropdown').addEventListener('click', (e) => {
+            const openTarget = e.target.closest('[data-action="open-item"]');
+            if (openTarget && !e.target.closest('button[data-action]')) {
+                const item = getSearchItems().find(x => x.key === openTarget.dataset.key);
+                if (item) {
+                    window.location.href = item.url;
+                }
+                return;
+            }
+
+            const button = e.target.closest('button[data-action]');
+            if (!button) {
+                return;
+            }
+
+            if (button.dataset.action === 'toggle-menu') {
+                const menu = document.getElementById(`menu-${button.dataset.key}`);
+                const currentlyVisible = menu.style.display === 'block';
+                document.querySelectorAll('[id^="menu-"]').forEach(m => m.style.display = 'none');
+                menu.style.display = currentlyVisible ? 'none' : 'block';
+                return;
+            }
+
+            if (button.dataset.action === 'toggle-suspension') {
+                const itemKey = button.dataset.key;
+                const item = getSearchItems().find(x => x.key === itemKey);
+                if (!item) {
+                    return;
+                }
+                const nextSuspended = !item.suspended;
+                updateSuspensionState(itemKey, nextSuspended);
+                document.querySelectorAll('[id^="menu-"]').forEach(m => m.style.display = 'none');
+                renderSearchResults();
+                document.getElementById('search-dropdown').style.display = 'block';
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            const searchInput = document.getElementById('global-search');
+            const searchDropdown = document.getElementById('search-dropdown');
+            if (!searchInput.contains(e.target) && !searchDropdown.contains(e.target)) {
+                searchDropdown.style.display = 'none';
+            }
+
+            if (!e.target.closest('[data-action="toggle-menu"]') && !e.target.closest('[id^="menu-"]')) {
+                document.querySelectorAll('[id^="menu-"]').forEach(m => m.style.display = 'none');
+            }
+        });
+
+        renderSearchResults();
+    </script>
 </body>
 
 </html>
