@@ -11,70 +11,144 @@
 
     <main class="flex-shrink-0">
         <div class="container mb-5">
-            <div class="text-center mt-5">
-                <h1 class="display-4"><strong>Vista 3: Central de Competiciones</strong></h1>
-                <p class="lead text-primary fw-bold">El Periódico Deportivo</p>
-                <p class="text-muted">La vista con mayor tráfico de la plataforma, donde se monitoriza el estado de las ligas y el rendimiento competitivo.</p>
+            <div class="row align-items-end mb-4">
+                <div class="col-md-7">
+                    <h1 class="display-5 fw-bold">Clasificación de Torneos</h1>
+                </div>
+                <div class="col-md-5 text-end">
+                    <h5 class="fw-normal mb-2">Buscar Competición...</h5>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0"></span>
+                        <input type="text" class="form-control border-start-0" placeholder="search">
+                        <button class="btn btn-primary px-4" type="button" style="background-color: #0d6efd;">Busura</button>
+                    </div>
+                </div>
             </div>
 
             <hr class="my-4">
 
-            <section class="mt-4">
-                <h2>Tabla de Clasificación</h2>
-                <div class="p-4 border rounded shadow-sm bg-white">
-                    <p style="font-size: 24px;">
-                        Presentación de datos estadísticos. Incluye las métricas clásicas de competición: <strong>PTS</strong> (Puntos), <strong>PJ</strong> (Partidos Jugados), <strong>PG</strong> (Partidos Ganados), <strong>PE</strong> (Partidos Empatados)
-                        y <strong>PP</strong> (Partidos Perdidos).
-                    </p>
+            <section class="card shadow-sm mb-5">
+                <div class="card-header bg-white border-bottom py-2">
+                    <span class="text-muted">Tabla de Clasificación</span>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-bordered mb-0 align-middle">
+                        <thead style="background-color: #fcf8e3;"> <tr class="small text-dark">
+                                <th style="width: 50px;">#</th>
+                                <th>Equipo</th>
+                                <th class="text-center">PJ</th>
+                                <th class="text-center">PG</th>
+                                <th class="text-center">PE</th>
+                                <th class="text-center">PP</th>
+                                <th class="text-center">GC</th>
+                                <th class="text-center">DIF</th>
+                                <th class="text-center">DIF</th>
+                                <th class="text-center">PTS</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="text-center">1</td>
+                                <td>Informatica A <span class="badge rounded-circle border text-dark"></span></td>
+                                <td class="text-center">10</td>
+                                <td class="text-center">8</td>
+                                <td class="text-center">1</td>
+                                <td class="text-center">2</td>
+                                <td class="text-center">10</td>
+                                <td class="text-center">28</td>
+                                <td class="text-center text-success">+16</td>
+                                <td class="text-center text-success fw-bold">+25</td>
+                            </tr>
+                            <tr>
+                                <td class="text-center">2</td>
+                                <td>Informatica A <span class="badge rounded-circle border text-dark"></span></td>
+                                <td class="text-center">10</td>
+                                <td class="text-center">7</td>
+                                <td class="text-center">11</td>
+                                <td class="text-center">12</td>
+                                <td class="text-center">16</td>
+                                <td class="text-center">23</td>
+                                <td class="text-muted small">teex</td>
+                                <td class="text-muted small">set!</td>
+                            </tr>
+                            <tr>
+                                <td class="text-center text-muted">3</td>
+                                <td class="text-muted">Fisicas A</td>
+                                <td class="text-center"></td>
+                                <td class="text-center">6</td>
+                                <td class="text-center">28</td>
+                                <td class="text-center">26</td>
+                                <td class="text-center"></td>
+                                <td class="text-center"></td>
+                                <td class="text-center"></td>
+                                <td class="text-center"></td>
+                            </tr>
+                            <tr><td class="text-center text-muted">3</td><td class="text-muted">Medicina A</td><td colspan="8"></td></tr>
+                            <tr><td class="text-center text-muted">6</td><td class="text-muted">Medicina A</td><td colspan="8"></td></tr>
+                        </tbody>
+                    </table>
                 </div>
             </section>
 
-            <section class="mt-5">
-                <h2>Calendario de Jornadas</h2>
-                <div class="card h-100 shadow-sm border-secondary">
-                    <div class="card-body" style="font-size: 24px; background-color: #f8f9fa;">
-                        <h5 class="card-title fw-bold">Selector Dinámico</h5>
-                        <p class="card-text">
-                            Interfaz que permite filtrar por <strong>jornada</strong> (Fecha 1, Fecha 2...) visualizando los resultados pasados y los emparejamientos futuros.
-                        </p>
+            <section class="card shadow-sm mb-5">
+                <div class="card-header bg-white py-2 border-bottom d-flex justify-content-between align-items-center">
+                    <div>
+                        <button class="btn btn-sm border">&lt;</button>
+                        <span class="mx-2 fw-normal">Calendario de partidos</span>
+                        <button class="btn btn-sm border">&gt;</button>
+                    </div>
+                    <div>
+                        <button class="btn btn-sm border">&lt;</button>
+                        <span class="mx-2 fw-normal">Febrero 2026</span>
+                        <button class="btn btn-sm border">&gt;</button>
                     </div>
                 </div>
+                <div class="card-body p-0">
+                    <table class="table table-bordered mb-0 text-center small">
+                        <thead>
+                            <tr class="bg-light">
+                                <th>S</th><th>M</th><th>T</th><th>W</th><th>T</th><th>F</th><th>S</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>1</td><td>2</td><td>3</td><td>4</td><td>2</td><td>5</td><td>6</td></tr>
+                            <tr><td>8</td><td>9</td><td>10</td><td>11</td><td>9</td><td>10</td><td>13</td></tr>
+                            <tr><td>15</td><td>16</td><td>17</td><td>18</td><td>16</td><td>17</td><td>18</td></tr>
+                            <tr><td>22</td><td>23</td><td>23</td><td>25</td><td>23</td><td class="bg-light fw-bold text-primary">23</td><td>21</td></tr>
+                            <tr><td>1</td><td>2</td><td>3</td><td>6</td><td>3</td><td>6</td><td>30</td></tr>
+                        </tbody>
+                    </table>
+                </div>
             </section>
 
-            <section class="mt-5">
-                <h2>Rankings e Individualidades</h2>
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="card h-100 shadow-sm border-info">
-                            <div class="card-body" style="background-color: #e3f2fd;">
-                                <h5 class="card-title fw-bold text-center">🏆 "Pichichis"</h5>
-                                <p style="font-size: 20px;">Ranking de los máximos goleadores de la competición.</p>
+            <div class="row g-4 mb-5">
+                <div class="col-md-6">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header bg-white border-bottom py-2">Máximos goleadores</div>
+                        <div class="card-body d-flex align-items-center">
+                            <div class="rounded-circle bg-light border" style="width: 80px; height: 80px;"></div>
+                            <div class="ms-4">
+                                <h5 class="mb-0">Álvaro González</h5>
+                                <p class="text-muted mb-2">Informatica A</p>
+                                <h6 class="fw-bold">15 Goles</h6>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <div class="card h-100 shadow-sm border-info">
-                            <div class="card-body" style="background-color: #e3f2fd;">
-                                <h5 class="card-title fw-bold text-center">🧤 Guante de Oro</h5>
-                                <p style="font-size: 20px;">Seguimiento de los mejores porteros basado en goles encajados.</p>
+                </div>
+                <div class="col-md-6">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header bg-white border-bottom py-2">Porteros Imbatidos</div>
+                        <div class="card-body d-flex align-items-center">
+                            <div class="rounded-circle bg-light border" style="width: 80px; height: 80px;"></div>
+                            <div class="ms-4">
+                                <h5 class="mb-0">Pablo Fernández <small class="text-muted" style="font-size: 10px;">(mb tuta text)</small></h5>
+                                <p class="text-muted mb-2">Fisicas A</p>
+                                <h6 class="fw-bold">8 Particos sin encajar</h6>
                             </div>
                         </div>
                     </div>
                 </div>
-            </section>
-
-            <section class="mt-5 mb-5">
-                <h2>Navegación e Interactividad</h2>
-                <div class="card border-primary">
-                    <div class="card-body" style="font-size: 22px; background-color: #e8f5e9;">
-                        <p>Cada elemento de la central actúa como un acceso directo:</p>
-                        <ul style="font-size: 20px;">
-                            <li><strong>Clic en Equipo:</strong> Redirige a la <em>Ficha de Equipo</em> (Versión pública de la Vista 2).</li>
-                            <li><strong>Clic en Partido:</strong> Redirige a la <em>Ficha del Partido</em> para ver el acta y detalles técnicos.</li>
-                        </ul>
-                    </div>
-                </div>
-            </section>
+            </div>
 
         </div>
     </main>

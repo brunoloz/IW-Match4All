@@ -60,7 +60,6 @@ public class SecurityConfig {
 			)
       .authorizeHttpRequests(authorize -> authorize
 				.requestMatchers("/css/**", "/js/**", "/img/**", "/", "/error").permitAll()
-				.requestMatchers("/vistaprincipal").permitAll() 
 				.requestMatchers("/vistaperfil").permitAll()
 				.requestMatchers("/vistagestionequipo").permitAll()
 				.requestMatchers("/vistacompeticiones").permitAll()

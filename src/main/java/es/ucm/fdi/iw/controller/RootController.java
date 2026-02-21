@@ -37,11 +37,6 @@ public class RootController {
         return "fragments/index";
     }
 
-    @GetMapping("/vistaprincipal")      //ruta
-    public String match4all(Model model) { //nombre da igual
-        return "vistaprincipal";            //nombre de vista
-    }
-
     @GetMapping("/vistaperfil")      //ruta
     public String vistaperfil(Model model) { //nombre da igual
         return "vistaperfil";            //nombre de vista
