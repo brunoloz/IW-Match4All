@@ -9,134 +9,136 @@
 <body>
     <header th:replace="~{fragments/nav.html :: nav}"></header>
 
-    <main style="padding: 20px 12px;">
-        <div style="max-width: 1100px; margin: 0 auto;">
-            <div style="display: flex; flex-wrap: wrap; align-items: flex-start; gap: 12px;">
-                <section style="flex: 1 1 62%; min-width: 620px; border: 1px solid #ddd; border-radius: 8px;">
-                    <div style="padding: 12px; border-bottom: 1px solid #eee;">
-                        <h2 style="margin: 0;">Plantilla</h2>
+    <main class="container py-4">
+        <div class="row g-3 align-items-start">
+            <section class="col-12 col-lg-8">
+                <div class="card shadow-sm">
+                    <div class="card-header">
+                        <h2 class="h5 mb-0">Plantilla</h2>
                     </div>
-                    <div>
-                        <div style="overflow-x: auto;">
-                            <table id="player-table" style="width: 100%; border-collapse: collapse;">
-                                <thead>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table id="player-table" class="table table-hover align-middle mb-0">
+                                <thead class="table-light">
                                     <tr>
-                                        <th style="text-align: left; border-bottom: 1px solid #eee; padding: 10px;">Jugador</th>
-                                        <th style="text-align: left; border-bottom: 1px solid #eee; padding: 10px;">Posición</th>
-                                        <th style="text-align: left; border-bottom: 1px solid #eee; padding: 10px;">Goles</th>
-                                        <th style="text-align: left; border-bottom: 1px solid #eee; padding: 10px;">Asistencias</th>
-                                        <th style="width: 56px; text-align: right; border-bottom: 1px solid #eee; padding: 10px;"></th>
+                                        <th>Jugador</th>
+                                        <th>Posición</th>
+                                        <th>Goles</th>
+                                        <th>Asistencias</th>
+                                        <th class="text-end" style="width: 56px;"></th>
                                     </tr>
                                 </thead>
                                 <tbody id="player-list"></tbody>
                             </table>
                         </div>
                     </div>
-                </section>
+                </div>
+            </section>
 
-                <section style="flex: 1 1 34%; min-width: 320px; display: flex; flex-direction: column; gap: 12px;">
-                    <div style="border: 1px solid #ddd; border-radius: 8px;">
-                        <div style="padding: 12px;">
-                            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
-                                <img th:src="@{/img/user.jpg}" src="/img/user.jpg" alt="Escudo del equipo" style="width: 72px; height: 72px; border-radius: 8px;">
-                                <div>
-                                    <h2 style="margin: 0;">Demo Team</h2>
-                                    <p style="margin: 0;">Temporada 2025/26</p>
-                                </div>
-                            </div>
-
-                            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;">
-                                <div style="border: 1px solid #eee; text-align: center; padding: 8px;">
-                                    <div style="font-weight: 700;">3</div>
-                                    <small>Ligas</small>
-                                </div>
-                                <div style="border: 1px solid #eee; text-align: center; padding: 8px;">
-                                    <div style="font-weight: 700;">19</div>
-                                    <small>Goles</small>
-                                </div>
-                                <div style="border: 1px solid #eee; text-align: center; padding: 8px;">
-                                    <div id="team-size-stat" style="font-weight: 700;">0</div>
-                                    <small>Jugadores</small>
-                                </div>
-                            </div>
-
-                            <div th:if="${u != null && u.hasRole('ADMIN')}" style="margin-top: 10px;">
-                                <button id="toggle-manage" type="button" style="background: #0d6efd; color: #fff; border: 1px solid #0d6efd; border-radius: 6px; padding: 6px 10px;">Gestionar equipo</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div style="border: 1px solid #ddd; border-radius: 8px;">
-                        <div style="padding: 12px; border-bottom: 1px solid #eee;">
-                            <h3 style="margin: 0;">Ligas en juego</h3>
-                        </div>
-                        <div style="padding: 0;">
-                            <ul style="list-style: none; margin: 0; padding: 0;">
-                                <li style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-bottom: 1px solid #eee;">
-                                    <img th:src="@{/img/logomatch4all.png}" src="/img/logomatch4all.png" alt="Liga" style="width: 32px; height: 32px; border-radius: 6px;">
-                                    <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 10px; width: 100%;">
-                                        <span style="font-weight: 600;">Liga Match4All - Primera</span>
-                                        <span style="font-weight: 700; white-space: nowrap;">3º · 18 pts</span>
-                                    </div>
-                                </li>
-                                <li style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-bottom: 1px solid #eee;">
-                                    <img th:src="@{/img/logomatch4all.png}" src="/img/logomatch4all.png" alt="Liga" style="width: 32px; height: 32px; border-radius: 6px;">
-                                    <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 10px; width: 100%;">
-                                        <span style="font-weight: 600;">Copa Match4All</span>
-                                        <span style="font-weight: 700; white-space: nowrap;">1º · 9 pts</span>
-                                    </div>
-                                </li>
-                                <li style="display: flex; align-items: center; gap: 10px; padding: 10px 12px;">
-                                    <img th:src="@{/img/logomatch4all.png}" src="/img/logomatch4all.png" alt="Liga" style="width: 32px; height: 32px; border-radius: 6px;">
-                                    <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 10px; width: 100%;">
-                                        <span style="font-weight: 600;">Liga de Verano</span>
-                                        <span style="font-weight: 700; white-space: nowrap;">5º · 11 pts</span>
-                                    </div>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <div id="admin-panel" th:if="${u != null && u.hasRole('ADMIN')}" style="border: 1px solid #ddd; border-radius: 8px;" hidden>
-                        <div style="padding: 12px; border-bottom: 1px solid #eee;">
-                            <h3 style="margin: 0;">Gestión de altas</h3>
-                        </div>
-                        <div style="padding: 12px;">
-                            <div style="margin-bottom: 12px;">
-                                <label for="existing-player-select" style="display: block; margin-bottom: 6px;">Añadir jugador existente</label>
-                                <div style="display: flex; gap: 8px;">
-                                    <select id="existing-player-select" style="flex: 1;"></select>
-                                    <button id="add-existing-player" type="button" style="background: #0d6efd; color: #fff; border: 1px solid #0d6efd; border-radius: 6px; padding: 6px 10px;">Añadir</button>
-                                </div>
-                            </div>
-
+            <section class="col-12 col-lg-4 d-flex flex-column gap-3">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <img th:src="@{/img/user.jpg}" src="/img/user.jpg" alt="Escudo del equipo" class="rounded" width="72" height="72">
                             <div>
-                                <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px;">
-                                    <h4 style="margin: 0;">Solicitudes de entrada</h4>
-                                    <span id="request-count" style="border: 1px solid #ddd; border-radius: 999px; padding: 2px 8px;">0</span>
-                                </div>
-                                <ul id="request-list" style="list-style: none; margin: 10px 0 0 0; padding: 0;"></ul>
+                                <h2 class="h5 mb-0">Demo Team</h2>
+                                <p class="mb-0 text-muted">Temporada 2025/26</p>
                             </div>
                         </div>
+
+                        <div class="row g-2 text-center">
+                            <div class="col-4">
+                                <div class="border rounded p-2">
+                                    <div class="fw-bold">3</div>
+                                    <small class="text-muted">Ligas</small>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="border rounded p-2">
+                                    <div class="fw-bold">19</div>
+                                    <small class="text-muted">Goles</small>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="border rounded p-2">
+                                    <div id="team-size-stat" class="fw-bold">0</div>
+                                    <small class="text-muted">Jugadores</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div th:if="${u != null && u.hasRole('ADMIN')}" class="mt-3">
+                            <span class="badge text-bg-primary">Modo administración simple</span>
+                        </div>
                     </div>
-                </section>
-            </div>
+                </div>
+
+                <div class="card shadow-sm">
+                    <div class="card-header">
+                        <h3 class="h6 mb-0">Ligas en juego</h3>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex align-items-center gap-2">
+                            <img th:src="@{/img/logomatch4all.png}" src="/img/logomatch4all.png" alt="Liga" class="rounded" width="32" height="32">
+                            <div class="d-flex align-items-baseline justify-content-between gap-2 w-100">
+                                <span class="fw-semibold">Liga Match4All - Primera</span>
+                                <span class="fw-bold text-nowrap">3º · 18 pts</span>
+                            </div>
+                        </li>
+                        <li class="list-group-item d-flex align-items-center gap-2">
+                            <img th:src="@{/img/logomatch4all.png}" src="/img/logomatch4all.png" alt="Liga" class="rounded" width="32" height="32">
+                            <div class="d-flex align-items-baseline justify-content-between gap-2 w-100">
+                                <span class="fw-semibold">Copa Match4All</span>
+                                <span class="fw-bold text-nowrap">1º · 9 pts</span>
+                            </div>
+                        </li>
+                        <li class="list-group-item d-flex align-items-center gap-2">
+                            <img th:src="@{/img/logomatch4all.png}" src="/img/logomatch4all.png" alt="Liga" class="rounded" width="32" height="32">
+                            <div class="d-flex align-items-baseline justify-content-between gap-2 w-100">
+                                <span class="fw-semibold">Liga de Verano</span>
+                                <span class="fw-bold text-nowrap">5º · 11 pts</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div id="admin-panel" th:if="${u != null && u.hasRole('ADMIN')}" class="card shadow-sm">
+                    <div class="card-header">
+                        <h3 class="h6 mb-0">Gestión rápida</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label">Acciones directas</label>
+                            <div class="d-flex flex-wrap gap-2">
+                                <button id="add-existing-player" type="button" class="btn btn-primary btn-sm">Añadir jugador predefinido</button>
+                                <button id="approve-request" type="button" class="btn btn-success btn-sm">Aceptar solicitud predefinida</button>
+                            </div>
+                        </div>
+
+                        <div class="d-flex align-items-center justify-content-between gap-2">
+                            <small class="text-muted">Pendientes de solicitud</small>
+                            <span id="request-count" class="badge text-bg-light border">0</span>
+                        </div>
+                        <div class="d-flex align-items-center justify-content-between gap-2 mt-2">
+                            <small class="text-muted">Jugadores disponibles</small>
+                            <span id="pool-count" class="badge text-bg-light border">0</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
         </div>
     </main>
 
     <script>
         (() => {
             const isAdmin = Boolean(config && config.admin);
-            const toggleManageBtn = document.getElementById('toggle-manage');
-            const adminPanel = document.getElementById('admin-panel');
             const playerList = document.getElementById('player-list');
             const teamSizeStat = document.getElementById('team-size-stat');
-            const requestList = document.getElementById('request-list');
             const requestCount = document.getElementById('request-count');
-            const existingPlayerSelect = document.getElementById('existing-player-select');
+            const poolCount = document.getElementById('pool-count');
             const addExistingPlayerBtn = document.getElementById('add-existing-player');
+            const approveRequestBtn = document.getElementById('approve-request');
 
-            const positionOptions = ['POR', 'LI', 'LD', 'DFC', 'MCD', 'MC', 'MCO', 'EI', 'ED', 'SD', 'DC'];
             const players = [
                 { id: 1, name: 'Pablo Rodríguez', position: 'MC', goals: 2, assists: 5 },
                 { id: 2, name: 'Bruno Lozano', position: 'DC', goals: 7, assists: 3 },
@@ -154,52 +156,24 @@
                 { id: 8, name: 'Irene Torres', position: 'LI', goals: 0, assists: 2 }
             ];
 
-            let managementMode = false;
-
-            const getPositionCell = (player) => {
-                if (!managementMode || !isAdmin) {
-                    return `<span>${player.position}</span>`;
-                }
-
-                const options = positionOptions.map((position) => {
-                    const selected = position === player.position ? 'selected' : '';
-                    return `<option value="${position}" ${selected}>${position}</option>`;
-                }).join('');
-
-                return `<select data-action="change-position" data-id="${player.id}">${options}</select>`;
-            };
-
-            const getActionCell = (playerId) => {
-                if (!managementMode || !isAdmin) {
-                    return '';
-                }
-
-                return `
-                    <div data-menu style="position: relative;">
-                        <button type="button" aria-label="Más acciones" data-action="toggle-menu" data-id="${playerId}" style="width: 28px; height: 28px; background: #f0f6ff; color: #0d6efd; border: 1px solid #b9d3ff; border-radius: 50%;">⋮</button>
-                        <div data-dropdown style="position: absolute; bottom: calc(100% + 4px); right: 0; border: 1px solid #ddd; background: #fff; min-width: 160px; z-index: 10;" hidden>
-                            <button data-action="remove" data-id="${playerId}" style="width: 100%; text-align: left; color: #c62828; border: 0; background: #fff; padding: 8px;">Eliminar del equipo</button>
-                        </div>
-                    </div>
-                `;
-            };
-
             const renderPlayers = () => {
                 playerList.innerHTML = '';
 
                 players.forEach((player) => {
                     const row = document.createElement('tr');
                     row.innerHTML = `
-                        <td style="border-bottom: 1px solid #eee; padding: 10px; vertical-align: middle;">
-                            <div style="display: flex; align-items: center; gap: 10px;">
-                                <img src="/img/user.jpg" alt="Jugador" style="width: 28px; height: 28px; border-radius: 50%;">
-                                <span style="font-weight: 600;">${player.name}</span>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <img src="/img/user.jpg" alt="Jugador" class="rounded-circle" width="28" height="28">
+                                <span class="fw-semibold">${player.name}</span>
                             </div>
                         </td>
-                        <td style="border-bottom: 1px solid #eee; padding: 10px; vertical-align: middle;">${getPositionCell(player)}</td>
-                        <td style="border-bottom: 1px solid #eee; padding: 10px; vertical-align: middle;">${player.goals}</td>
-                        <td style="border-bottom: 1px solid #eee; padding: 10px; vertical-align: middle;">${player.assists}</td>
-                        <td style="width: 56px; text-align: right; border-bottom: 1px solid #eee; padding: 10px; vertical-align: middle;">${getActionCell(player.id)}</td>
+                        <td>${player.position}</td>
+                        <td>${player.goals}</td>
+                        <td>${player.assists}</td>
+                        <td class="text-end" style="width: 56px;">
+                            ${isAdmin ? `<button data-action="remove" data-id="${player.id}" class="btn btn-sm btn-outline-danger">Quitar</button>` : ''}
+                        </td>
                     `;
                     playerList.appendChild(row);
                 });
@@ -210,71 +184,13 @@
                 }
             };
 
-            const renderRequests = () => {
-                if (!requestList || !requestCount) {
+            const renderCounters = () => {
+                if (!requestCount || !poolCount) {
                     return;
                 }
 
-                requestList.innerHTML = '';
                 requestCount.textContent = String(pendingRequests.length);
-
-                if (pendingRequests.length === 0) {
-                    const empty = document.createElement('li');
-                    empty.textContent = 'No hay solicitudes pendientes.';
-                    empty.style.padding = '10px 12px';
-                    requestList.appendChild(empty);
-                    return;
-                }
-
-                pendingRequests.forEach((request) => {
-                    const item = document.createElement('li');
-                    item.style.borderBottom = '1px solid #eee';
-                    item.style.padding = '10px 12px';
-                    item.innerHTML = `
-                        <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;">
-                            <div>
-                                <div style="font-weight: 600;">${request.name}</div>
-                                <small>${request.note}</small>
-                            </div>
-                            <div style="display: flex; gap: 8px;">
-                                <button data-action="approve" data-id="${request.id}" style="background: #198754; color: #fff; border: 1px solid #198754; border-radius: 6px; padding: 4px 8px;">Aceptar</button>
-                                <button data-action="reject" data-id="${request.id}" style="background: #dc3545; color: #fff; border: 1px solid #dc3545; border-radius: 6px; padding: 4px 8px;">Rechazar</button>
-                            </div>
-                        </div>
-                    `;
-                    requestList.appendChild(item);
-                });
-            };
-
-            const renderExistingPlayerSelect = () => {
-                if (!existingPlayerSelect) {
-                    return;
-                }
-
-                existingPlayerSelect.innerHTML = '';
-                if (existingPlayersPool.length === 0) {
-                    const option = document.createElement('option');
-                    option.value = '';
-                    option.textContent = 'No hay más jugadores disponibles';
-                    existingPlayerSelect.appendChild(option);
-                    existingPlayerSelect.disabled = true;
-                    if (addExistingPlayerBtn) {
-                        addExistingPlayerBtn.disabled = true;
-                    }
-                    return;
-                }
-
-                existingPlayerSelect.disabled = false;
-                if (addExistingPlayerBtn) {
-                    addExistingPlayerBtn.disabled = false;
-                }
-
-                existingPlayersPool.forEach((player) => {
-                    const option = document.createElement('option');
-                    option.value = String(player.id);
-                    option.textContent = player.name;
-                    existingPlayerSelect.appendChild(option);
-                });
+                poolCount.textContent = String(existingPlayersPool.length);
             };
 
             playerList.addEventListener('click', (event) => {
@@ -289,23 +205,6 @@
                     return;
                 }
 
-                if (action === 'toggle-menu') {
-                    const currentMenu = target.closest('[data-menu]');
-                    if (!currentMenu) {
-                        return;
-                    }
-                    playerList.querySelectorAll('[data-dropdown]').forEach((dropdown) => {
-                        if (!currentMenu.contains(dropdown)) {
-                            dropdown.hidden = true;
-                        }
-                    });
-                    const dropdown = currentMenu.querySelector('[data-dropdown]');
-                    if (dropdown) {
-                        dropdown.hidden = !dropdown.hidden;
-                    }
-                    return;
-                }
-
                 if (action === 'remove') {
                     const index = players.findIndex((player) => player.id === id);
                     if (index >= 0) {
@@ -315,85 +214,14 @@
                 }
             });
 
-            playerList.addEventListener('change', (event) => {
-                const target = event.target;
-                if (!(target instanceof HTMLSelectElement)) {
-                    return;
-                }
-
-                const action = target.getAttribute('data-action');
-                const id = Number(target.getAttribute('data-id'));
-                if (action !== 'change-position' || Number.isNaN(id) || !isAdmin || !managementMode) {
-                    return;
-                }
-
-                const player = players.find((item) => item.id === id);
-                if (player) {
-                    player.position = target.value;
-                }
-            });
-
-            document.addEventListener('click', (event) => {
-                const target = event.target;
-                if (!(target instanceof HTMLElement)) {
-                    return;
-                }
-
-                if (!target.closest('[data-menu]')) {
-                    playerList.querySelectorAll('[data-dropdown]').forEach((dropdown) => {
-                        dropdown.hidden = true;
-                    });
-                }
-            });
-
-            if (requestList) {
-                requestList.addEventListener('click', (event) => {
-                    const target = event.target;
-                    if (!(target instanceof HTMLElement)) {
-                        return;
-                    }
-
-                    const action = target.getAttribute('data-action');
-                    const id = Number(target.getAttribute('data-id'));
-                    if (!action || Number.isNaN(id) || !isAdmin) {
-                        return;
-                    }
-
-                    const index = pendingRequests.findIndex((request) => request.id === id);
-                    if (index < 0) {
-                        return;
-                    }
-
-                    if (action === 'approve') {
-                        const approvedRequest = pendingRequests[index];
-                        players.push({
-                            id: Date.now(),
-                            name: approvedRequest.name,
-                            position: 'MC',
-                            goals: 0,
-                            assists: 0
-                        });
-                    }
-
-                    pendingRequests.splice(index, 1);
-                    renderPlayers();
-                    renderRequests();
-                });
-            }
-
-            if (addExistingPlayerBtn && existingPlayerSelect) {
+            if (addExistingPlayerBtn) {
                 addExistingPlayerBtn.addEventListener('click', () => {
                     if (!isAdmin || existingPlayersPool.length === 0) {
+                        alert('No hay jugadores predefinidos disponibles.');
                         return;
                     }
 
-                    const selectedId = Number(existingPlayerSelect.value);
-                    const selectedIndex = existingPlayersPool.findIndex((player) => player.id === selectedId);
-                    if (selectedIndex < 0) {
-                        return;
-                    }
-
-                    const selectedPlayer = existingPlayersPool[selectedIndex];
+                    const selectedPlayer = existingPlayersPool.shift();
                     players.push({
                         id: Date.now(),
                         name: selectedPlayer.name,
@@ -402,26 +230,34 @@
                         assists: selectedPlayer.assists
                     });
 
-                    existingPlayersPool.splice(selectedIndex, 1);
                     renderPlayers();
-                    renderExistingPlayerSelect();
+                    renderCounters();
                 });
             }
 
-            if (toggleManageBtn) {
-                toggleManageBtn.addEventListener('click', () => {
-                    managementMode = !managementMode;
-                    toggleManageBtn.textContent = managementMode ? 'Salir de gestión' : 'Gestionar equipo';
-                    if (adminPanel) {
-                        adminPanel.hidden = !managementMode;
+            if (approveRequestBtn) {
+                approveRequestBtn.addEventListener('click', () => {
+                    if (!isAdmin || pendingRequests.length === 0) {
+                        alert('No hay solicitudes pendientes.');
+                        return;
                     }
+
+                    const approvedRequest = pendingRequests.shift();
+                    players.push({
+                        id: Date.now(),
+                        name: approvedRequest.name,
+                        position: 'MC',
+                        goals: 0,
+                        assists: 0
+                    });
+
                     renderPlayers();
+                    renderCounters();
                 });
             }
 
             renderPlayers();
-            renderRequests();
-            renderExistingPlayerSelect();
+            renderCounters();
         })();
     </script>
 
