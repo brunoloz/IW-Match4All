@@ -1,79 +1,111 @@
 <!DOCTYPE html>
-<html class="h-100" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <th:block th:replace="~{fragments/head :: header}" />
     <title>IW: Match4All - Perfil Personal</title>
 </head>
 
-<body class="d-flex flex-column h-100">
+<body class="bg-light">
     <header th:replace="~{fragments/nav.html :: nav}"></header>
 
-    <main class="flex-shrink-0">
-        <div class="container mb-5">
-            <div class="text-center mt-5">
-                <h1 class="display-4"><strong>Vista 1: Perfil Personal</strong></h1>
-                <p class="lead text-primary fw-bold">El Centro de Operaciones</p>
-                <p class="text-muted">Punto de control centralizado con visualización adaptativa según el rol del usuario.</p>
-            </div>
-
-            <hr class="my-4">
-
-            <section class="mt-4">
-                <h2>Widget "Mi Próximo Partido"</h2>
-                <div class="p-4 border rounded shadow-sm" style="background-color: #e8f5e9;">
-                    <p style="font-size: 24px;">
-                        Se muestra una <strong>cuenta atrás</strong> para el siguiente encuentro, la <strong>ubicación</strong> y el escudo/nombre del <strong>rival</strong>. 
-                    </p>
+    <main class="container py-4">
+        <div class="row g-4">
+            
+            <aside class="col-12 col-md-4 col-lg-3 d-flex flex-column gap-3">
+                
+                <div class="card shadow-sm">
+                    <div class="card-body text-center">
+                        <img th:src="@{/img/user.jpg}" src="/img/user.jpg" alt="Imagen de usuario" 
+                             class="img-thumbnail rounded" style="width: 160px; height: 160px; object-fit: cover;">
+                    </div>
                 </div>
-            </section>
 
-            <section class="mt-5">
-                <h2>Informacion destacada</h2>
-            </section>
-            <section class="mt-5">
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="card h-100 shadow-sm border-warning">
-                            <div class="card-body" style="background-color: #fff3cd;">
-                                <h5 class="card-title fw-bold">🔔 Notificaciones</h5>
-                                <ul style="font-size: 20px;">
-                                    <li>Actualizaciones de actas por parte del árbitro.</li>
-                                    <li>Invitaciones pendientes para unirse a equipos.</li>
-                                    <li>Alertas de cambios de horario o campo.</li>
-                                </ul>
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title text-primary mb-3">Biografía.</h5>
+                        <ul class="list-unstyled text-secondary mb-0">
+                            <li class="mb-2">- Nombre: <span class="fw-bold text-dark">Bruno Lozano</span></li>
+                            <li class="mb-2">- Edad: <span class="fw-bold text-dark">21 años</span></li>
+                            <li>- Hobbies: <span class="fw-bold text-dark">Fútbol</span></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div>
+                    <select class="form-select shadow-sm" aria-label="Seleccionar opción">
+                        <option selected value="">Seleccionar opción...</option>
+                        <option value="1">Gestión de equipo</option>
+                        <option value="2">Central de competiciones</option>
+                        <option value="3">Creación de equipo</option>
+                    </select>
+                </div>
+            </aside>
+
+            <section class="col-12 col-md-8 col-lg-9 d-flex flex-column gap-4">
+
+                <div class="card shadow-sm">
+                    <div class="card-body p-4">
+                        <h5 class="card-title border-bottom pb-2 mb-4 d-inline-block">Próximo Partido</h5>
+                        
+                        <div class="d-flex flex-wrap align-items-center justify-content-between justify-content-md-around text-center gap-3">
+                            <div>
+                                <div class="display-4 fw-bold font-monospace text-dark">4D 05H 26M</div>
+                            </div>
+
+                            <div class="d-flex flex-column align-items-center">
+                                <img th:src="@{/img/logomatch4all.png}" src="/img/logomatch4all.png" alt="Escudo rival" 
+                                     class="img-thumbnail rounded-circle border p-1" style="width: 80px; height: 80px; object-fit: contain;">
+                                <span class="badge border text-dark mt-2 bg-light">Escudo rival</span>
+                            </div>
+
+                            <div class="text-md-end text-center fs-5">
+                                <div class="mb-2">
+                                    <span class="d-block fs-6 text-muted">Competición</span>
+                                    <span class="fw-bold">Liga Primera</span>
+                                </div>
+                                <div>
+                                    <span class="d-block fs-6 text-muted">Ubicación</span>
+                                    <span class="fw-bold">Campo Central</span>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <div class="card h-100 shadow-sm border-info">
-                            <div class="card-body" style="background-color: #e3f2fd;">
-                                <h5 class="card-title fw-bold">📊 Resumen de Estadísticas</h5>
-                                <p style="font-size: 20px;">
-                                    Muestra indicadores clave de rendimiento (KPIs) personalizados: 
-                                    <strong>goles, asistencias, tarjetas</strong> o, en el caso de árbitros, <strong>partidos dirigidos</strong>.
-                                </p>
+                </div>
+
+                <div class="card shadow-sm">
+                    <div class="card-body p-4">
+                        <div class="row text-center align-items-center">
+                            
+                            <div class="col-12 col-sm-4 mb-4 mb-sm-0">
+                                <h6 class="text-muted fw-bold mb-2">Partidos disputados</h6>
+                                <div class="display-5 fw-bold text-dark">10</div>
                             </div>
+
+                            <div class="col-12 col-sm-4 mb-4 mb-sm-0">
+                                <h6 class="text-muted fw-bold mb-2">Goles</h6>
+                                <div class="display-5 fw-bold text-dark">05</div>
+                            </div>
+
+                            <div class="col-12 col-sm-4">
+                                <h6 class="text-muted fw-bold mb-3">Tarjetas</h6>
+                                <div class="d-flex justify-content-center align-items-center gap-4">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="bg-warning rounded" style="width: 24px; height: 34px; border: 2px solid #e0c200;"></div>
+                                        <span class="fs-2 fw-bold text-dark">3</span>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="bg-danger rounded" style="width: 24px; height: 34px; border: 2px solid #bd2130;"></div>
+                                        <span class="fs-2 fw-bold text-dark">0</span>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 </div>
-            </section>
 
-            <section class="mt-5 mb-5">
-                <h2>Navegación y Accesos Directos</h2>
-                <div class="p-4 border rounded shadow-sm" style="background-color: #e8f5e9;">
-                    <p style="font-size: 24px;">
-                        Desde el perfil del usuario se puede acceder a las siguientes secciones: 
-                    </p>
-                    <ul style="font-size: 20px;">
-                        <li>Gestión de equipo: Aquí se puede acceder a la información del equipo al que perteneces, 
-                            sino perteneces a ningún equipo se mostrara un mensaje</li>
-                        <li>Central de competiciones: Aquí se puede acceder a la información de todas las competiciones.</li>
-                        <li>Creación de Equipo: Si el usuario no forma parte del cuerpo arbitral ni de ningún equipo, entonces puede crear un equipo nuevo.</li>
-                    </ul>
-                </div>
             </section>
-
         </div>
     </main>
 
