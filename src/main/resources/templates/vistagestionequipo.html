@@ -68,7 +68,7 @@
                         </div>
 
                         <div th:if="${u != null && u.hasRole('ADMIN')}" class="mt-3">
-                            <span class="badge text-bg-primary">Modo administración simple</span>
+                            <span class="badge text-bg-primary">Modo administración</span>
                         </div>
                     </div>
                 </div>
@@ -108,20 +108,10 @@
                     </div>
                     <div class="card-body">
                         <div class="mb-3">
-                            <label class="form-label">Acciones directas</label>
                             <div class="d-flex flex-wrap gap-2">
-                                <button id="add-existing-player" type="button" class="btn btn-primary btn-sm">Añadir jugador predefinido</button>
-                                <button id="approve-request" type="button" class="btn btn-success btn-sm">Aceptar solicitud predefinida</button>
+                                <button id="add-existing-player" type="button" class="btn btn-primary btn-sm">Añadir jugador</button>
+                                <button id="approve-request" type="button" class="btn btn-success btn-sm">Aceptar solicitud</button>
                             </div>
-                        </div>
-
-                        <div class="d-flex align-items-center justify-content-between gap-2">
-                            <small class="text-muted">Pendientes de solicitud</small>
-                            <span id="request-count" class="badge text-bg-light border">0</span>
-                        </div>
-                        <div class="d-flex align-items-center justify-content-between gap-2 mt-2">
-                            <small class="text-muted">Jugadores disponibles</small>
-                            <span id="pool-count" class="badge text-bg-light border">0</span>
                         </div>
                     </div>
                 </div>
@@ -134,8 +124,6 @@
             const isAdmin = Boolean(config && config.admin);
             const playerList = document.getElementById('player-list');
             const teamSizeStat = document.getElementById('team-size-stat');
-            const requestCount = document.getElementById('request-count');
-            const poolCount = document.getElementById('pool-count');
             const addExistingPlayerBtn = document.getElementById('add-existing-player');
             const approveRequestBtn = document.getElementById('approve-request');
 
@@ -143,17 +131,6 @@
                 { id: 1, name: 'Pablo Rodríguez', position: 'MC', goals: 2, assists: 5 },
                 { id: 2, name: 'Bruno Lozano', position: 'DC', goals: 7, assists: 3 },
                 { id: 3, name: 'Siro Fernández', position: 'DFC', goals: 1, assists: 2 }
-            ];
-
-            const pendingRequests = [
-                { id: 4, name: 'Mario Díaz', note: 'Delantero · solicitud pendiente' },
-                { id: 5, name: 'Lucía Romero', note: 'Portera · solicitud pendiente' }
-            ];
-
-            const existingPlayersPool = [
-                { id: 6, name: 'Álvaro Ruiz', position: 'ED', goals: 3, assists: 1 },
-                { id: 7, name: 'Marta Vega', position: 'MC', goals: 2, assists: 4 },
-                { id: 8, name: 'Irene Torres', position: 'LI', goals: 0, assists: 2 }
             ];
 
             const renderPlayers = () => {
@@ -184,15 +161,6 @@
                 }
             };
 
-            const renderCounters = () => {
-                if (!requestCount || !poolCount) {
-                    return;
-                }
-
-                requestCount.textContent = String(pendingRequests.length);
-                poolCount.textContent = String(existingPlayersPool.length);
-            };
-
             playerList.addEventListener('click', (event) => {
                 const target = event.target;
                 if (!(target instanceof HTMLElement)) {
@@ -216,48 +184,33 @@
 
             if (addExistingPlayerBtn) {
                 addExistingPlayerBtn.addEventListener('click', () => {
-                    if (!isAdmin || existingPlayersPool.length === 0) {
-                        alert('No hay jugadores predefinidos disponibles.');
-                        return;
-                    }
-
-                    const selectedPlayer = existingPlayersPool.shift();
                     players.push({
                         id: Date.now(),
-                        name: selectedPlayer.name,
-                        position: selectedPlayer.position,
-                        goals: selectedPlayer.goals,
-                        assists: selectedPlayer.assists
-                    });
-
-                    renderPlayers();
-                    renderCounters();
-                });
-            }
-
-            if (approveRequestBtn) {
-                approveRequestBtn.addEventListener('click', () => {
-                    if (!isAdmin || pendingRequests.length === 0) {
-                        alert('No hay solicitudes pendientes.');
-                        return;
-                    }
-
-                    const approvedRequest = pendingRequests.shift();
-                    players.push({
-                        id: Date.now(),
-                        name: approvedRequest.name,
-                        position: 'MC',
+                        name: "Marcelo Gómez",
+                        position: "MC",
                         goals: 0,
                         assists: 0
                     });
 
                     renderPlayers();
-                    renderCounters();
+                });
+            }
+
+            if (approveRequestBtn) {
+                approveRequestBtn.addEventListener('click', () => {
+                    players.push({
+                        id: Date.now(),
+                        name: "Marcelo Diaz",
+                        position: "MC",
+                        goals: 0,
+                        assists: 0
+                    });
+
+                    renderPlayers();
                 });
             }
 
             renderPlayers();
-            renderCounters();
         })();
     </script>
 

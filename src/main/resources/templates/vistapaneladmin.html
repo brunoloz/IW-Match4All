@@ -18,7 +18,6 @@
                         <input id="global-search" type="text" class="form-control" placeholder="Buscar ligas, equipos o jugadores...">
                     </div>
                     <button id="btn-create-comp" type="button" class="btn btn-primary">Crear Competición</button>
-                    <button id="btn-matchmaking" type="button" class="btn btn-success">Iniciar Matchmaking</button>
                 </div>
             </div>
 
@@ -36,9 +35,52 @@
                                         <th>Tipo</th>
                                         <th>Equipos</th>
                                         <th>Estado</th>
+                                        <th>Acción</th>
                                     </tr>
                                 </thead>
                                 <tbody id="competitions-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="card shadow-sm mb-3">
+                    <div class="card-header">
+                        <h3 class="h5 mb-0">Jugadores</h3>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0 align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Nombre</th>
+                                        <th>Email</th>
+                                        <th>Estado</th>
+                                        <th>Acción</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="players-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="card shadow-sm mb-3">
+                    <div class="card-header">
+                        <h3 class="h5 mb-0">Equipos</h3>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0 align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Nombre</th>
+                                        <th>Capitán</th>
+                                        <th>Estado</th>
+                                        <th>Acción</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="teams-body"></tbody>
                             </table>
                         </div>
                     </div>
@@ -56,10 +98,29 @@
                 { id: 2, name: 'Copa Match4All', type: 'Copa', teams: '8/16', status: 'Inscripción' }
             ];
 
+            const players = [
+                { id: 1, name: 'Ana Ruiz', email: 'ana.ruiz@match4all.com', status: 'Activo' },
+                { id: 2, name: 'Mario López', email: 'mario.lopez@match4all.com', status: 'Activo' },
+                { id: 3, name: 'Carla Martín', email: 'carla.martin@match4all.com', status: 'Suspendido' }
+            ];
+
+            const teams = [
+                { id: 1, name: 'Tigres FC', captain: 'Ana Ruiz', status: 'Activo' },
+                { id: 2, name: 'Leones United', captain: 'Mario López', status: 'Activo' },
+                { id: 3, name: 'Halcones', captain: 'Carla Martín', status: 'Sancionado' }
+            ];
+
             const competitionsBody = document.getElementById('competitions-body');
+            const playersBody = document.getElementById('players-body');
+            const teamsBody = document.getElementById('teams-body');
             const searchInput = document.getElementById('global-search');
             const createCompetitionButton = document.getElementById('btn-create-comp');
-            const matchmakingButton = document.getElementById('btn-matchmaking');
+
+            const renderAll = () => {
+                renderCompetitions();
+                renderPlayers();
+                renderTeams();
+            };
 
             const renderCompetitions = () => {
                 const query = searchInput.value.trim().toLowerCase();
@@ -71,21 +132,95 @@
 
                 if (filtered.length === 0) {
                     const row = document.createElement('tr');
-                    row.innerHTML = '<td colspan="4" class="text-muted">No hay competiciones para mostrar.</td>';
+                    row.innerHTML = '<td colspan="5" class="text-muted">No hay competiciones para mostrar.</td>';
                     competitionsBody.appendChild(row);
                     return;
                 }
 
                 filtered.forEach((competition) => {
                     const statusBadge = competition.status === 'En curso' ? 'text-bg-success' : 'text-bg-primary';
+                    const action = competition.status === 'Inscripción'
+                        ? `<button class="btn btn-sm btn-success" data-action="matchmaking" data-id="${competition.id}">Iniciar Matchmaking</button>`
+                        : '<span class="text-muted">-</span>';
                     const row = document.createElement('tr');
                     row.innerHTML = `
                         <td>${competition.name}</td>
                         <td>${competition.type}</td>
                         <td>${competition.teams}</td>
                         <td><span class="badge ${statusBadge}">${competition.status}</span></td>
+                        <td>${action}</td>
                     `;
                     competitionsBody.appendChild(row);
+                });
+            };
+
+            const renderPlayers = () => {
+                const query = searchInput.value.trim().toLowerCase();
+                const filtered = players.filter((player) => {
+                    return player.name.toLowerCase().includes(query)
+                        || player.email.toLowerCase().includes(query)
+                        || player.status.toLowerCase().includes(query);
+                });
+
+                playersBody.innerHTML = '';
+
+                if (filtered.length === 0) {
+                    const row = document.createElement('tr');
+                    row.innerHTML = '<td colspan="4" class="text-muted">No hay jugadores para mostrar.</td>';
+                    playersBody.appendChild(row);
+                    return;
+                }
+
+                filtered.forEach((player) => {
+                    const statusBadge = player.status === 'Activo' ? 'text-bg-success' : 'text-bg-secondary';
+                    const actionLabel = player.status === 'Suspendido' ? 'Reactivar' : 'Suspender';
+                    const actionClass = player.status === 'Suspendido' ? 'btn-outline-success' : 'btn-outline-danger';
+
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${player.name}</td>
+                        <td>${player.email}</td>
+                        <td><span class="badge ${statusBadge}">${player.status}</span></td>
+                        <td>
+                            <button class="btn btn-sm ${actionClass}" data-action="suspend-player" data-id="${player.id}">${actionLabel}</button>
+                        </td>
+                    `;
+                    playersBody.appendChild(row);
+                });
+            };
+
+            const renderTeams = () => {
+                const query = searchInput.value.trim().toLowerCase();
+                const filtered = teams.filter((team) => {
+                    return team.name.toLowerCase().includes(query)
+                        || team.captain.toLowerCase().includes(query)
+                        || team.status.toLowerCase().includes(query);
+                });
+
+                teamsBody.innerHTML = '';
+
+                if (filtered.length === 0) {
+                    const row = document.createElement('tr');
+                    row.innerHTML = '<td colspan="4" class="text-muted">No hay equipos para mostrar.</td>';
+                    teamsBody.appendChild(row);
+                    return;
+                }
+
+                filtered.forEach((team) => {
+                    const statusBadge = team.status === 'Activo' ? 'text-bg-success' : 'text-bg-warning';
+                    const actionLabel = team.status === 'Sancionado' ? 'Quitar sanción' : 'Sancionar';
+                    const actionClass = team.status === 'Sancionado' ? 'btn-outline-success' : 'btn-outline-warning';
+
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${team.name}</td>
+                        <td>${team.captain}</td>
+                        <td><span class="badge ${statusBadge}">${team.status}</span></td>
+                        <td>
+                            <button class="btn btn-sm ${actionClass}" data-action="sanction-team" data-id="${team.id}">${actionLabel}</button>
+                        </td>
+                    `;
+                    teamsBody.appendChild(row);
                 });
             };
 
@@ -97,22 +232,59 @@
                     teams: '0/8',
                     status: 'Inscripción'
                 });
-                renderCompetitions();
+                renderAll();
             });
 
-            matchmakingButton.addEventListener('click', () => {
-                const competition = competitions.find((item) => item.status === 'Inscripción');
-                if (!competition) {
-                    alert('No hay competiciones en inscripción para emparejar.');
+            competitionsBody.addEventListener('click', (event) => {
+                const button = event.target.closest('button[data-action="matchmaking"]');
+                if (!button) {
+                    return;
+                }
+
+                const competitionId = Number(button.dataset.id);
+                const competition = competitions.find((item) => item.id === competitionId);
+                if (!competition || competition.status !== 'Inscripción') {
                     return;
                 }
 
                 competition.status = 'En curso';
-                renderCompetitions();
+                renderAll();
             });
 
-            searchInput.addEventListener('input', renderCompetitions);
-            renderCompetitions();
+            playersBody.addEventListener('click', (event) => {
+                const button = event.target.closest('button[data-action="suspend-player"]');
+                if (!button) {
+                    return;
+                }
+
+                const playerId = Number(button.dataset.id);
+                const player = players.find((item) => item.id === playerId);
+                if (!player) {
+                    return;
+                }
+
+                player.status = player.status === 'Suspendido' ? 'Activo' : 'Suspendido';
+                renderAll();
+            });
+
+            teamsBody.addEventListener('click', (event) => {
+                const button = event.target.closest('button[data-action="sanction-team"]');
+                if (!button) {
+                    return;
+                }
+
+                const teamId = Number(button.dataset.id);
+                const team = teams.find((item) => item.id === teamId);
+                if (!team) {
+                    return;
+                }
+
+                team.status = team.status === 'Sancionado' ? 'Activo' : 'Sancionado';
+                renderAll();
+            });
+
+            searchInput.addEventListener('input', renderAll);
+            renderAll();
         })();
     </script>
 </body>
