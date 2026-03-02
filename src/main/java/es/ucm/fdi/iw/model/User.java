@@ -31,14 +31,19 @@ import java.util.List;
 public class User implements Transferable<User.Transfer> {
 
   public enum Role {
-    USER, // normal users
+    USER, // jugador
     ADMIN, // admin users
+    ARBITRO
   }
 
   @Id
   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "gen")
   @SequenceGenerator(name = "gen", sequenceName = "gen")
   private long id;
+
+  @ManyToOne
+  @JoinColumn(name="id_equipo")
+  private Equipo equipo;
 
   @Column(nullable = false, unique = true)
   private String username;
@@ -48,7 +53,14 @@ public class User implements Transferable<User.Transfer> {
   private String firstName;
   private String lastName;
 
-  private String colorFavorito;
+  private String avatar;
+  private int goles;
+  private int asistencias;
+  private int tarjetasAmarillas;
+  private int tarjetasRojas;
+  private int partidosJugados;
+  private int porteriasImbatidas;
+  private boolean lesionado;
 
   private boolean enabled;
   private String roles; // split by ',' to separate roles
