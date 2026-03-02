@@ -53,13 +53,27 @@ public class User implements Transferable<User.Transfer> {
   private String firstName;
   private String lastName;
 
+  @Column(length = 512)
   private String avatar;
+
   private int goles;
+
+  @Column(name = "asist")
   private int asistencias;
+    
+  @Column(name = "t_ama")
   private int tarjetasAmarillas;
+
+  @Column(name = "t_roj")
   private int tarjetasRojas;
+
+  @Column(name = "p_jug")
   private int partidosJugados;
+
+  @Column(name = "porimb")
   private int porteriasImbatidas;
+
+  @Column(name = "lesion")
   private boolean lesionado;
 
   private boolean enabled;

@@ -16,6 +16,8 @@ import es.ucm.fdi.iw.model.User;
 
 @Entity
 @Data
+@NoArgsConstructor
+@Table(name = "Eventos")
 public class Evento {
     
     public enum Tipo {
@@ -26,8 +28,10 @@ public class Evento {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @SequenceGenerator(name = "gen", sequenceName = "gen")
     private long id;
 
+    @Column(name = "tipo", nullable = false)
     private Tipo tipo;
 
     @ManyToOne 
