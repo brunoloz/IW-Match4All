@@ -39,7 +39,8 @@ public class Partido {
     @Column(nullable = false)
     private LocalDate fecha;
 
-    @Column(name = "id_competicion", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "id_competicion", nullable = false)
     private Competicion idCompeticion;
 
     @ManyToOne

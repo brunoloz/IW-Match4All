@@ -1,0 +1,11 @@
+id,nombre,tipo,capacidad
+1,Liga Hortaleza,LIGA,20
+2,Torneo Primavera,TORNEO,16
+3,Copa Alcalde,TORNEO,32
+4,Liga Sur,LIGA,18
+5,Liga Norte,LIGA,20
+6,Torneo Navidad,TORNEO,8
+7,Copa Retiro,TORNEO,16
+8,Liga Veteranos,LIGA,12
+9,Torneo Verano,TORNEO,24
+10,Liga Universitaria,LIGA,20
