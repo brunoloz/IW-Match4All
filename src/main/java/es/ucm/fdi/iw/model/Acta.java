@@ -20,11 +20,11 @@ public class Acta {
 
     @OneToOne
     @JoinColumn(name = "id_partido")
-    private long id_partido;
+    private Partido id_partido;
+    
     private long goles_local;
     private long goles_visitante;
 
     @OneToMany
-    @JoinColumn(name = "id_evento")
-    private long enventos;
+    private List<Evento> eventos = new ArrayList<>();
 }

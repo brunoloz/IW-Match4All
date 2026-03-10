@@ -24,15 +24,24 @@ public class Competicion {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    private string nombre;
+    private String nombre;
+
+    @Enumerated(EnumType.STRING)
     private Tipo tipo;
+    
     private int capacidad;
 
+// Para ManyToMany he usado @JoinTable para definir la tabla intermedia
     @ManyToMany
-    @JoinColumn(name = "id_equipo")
-    private int equipos;
+    @JoinTable(
+        name = "competicion_equipos", // Nombre de la tabla intermedia que se creará
+        joinColumns = @JoinColumn(name = "competicion_id"),
+        inverseJoinColumns = @JoinColumn(name = "equipo_id")
+    )
+    private List<Equipo> equipos = new ArrayList<>();
 
-    @OneToMany
-    @JoinColumn(name = "id_partido")
-    private int partidos;
+    // Como en Partido.java ya definimos la relación con @ManyToOne hacia 'idCompeticion',
+    // aquí solo usamos mappedBy para decirle a JPA que es una relación bidireccional.
+    @OneToMany(mappedBy = "idCompeticion")
+    private List<Partido> partidos = new ArrayList<>();
 }

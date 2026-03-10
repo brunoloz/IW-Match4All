@@ -10,6 +10,11 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import java.util.List;
+import es.ucm.fdi.iw.model.Competicion;
+
 /**
  *  Non-authenticated requests only.
  */
@@ -17,6 +22,9 @@ import jakarta.servlet.http.HttpSession;
 public class RootController {
 
     private static final Logger log = LogManager.getLogger(RootController.class);
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @ModelAttribute
     public void populateModel(HttpSession session, Model model) {        
@@ -50,6 +58,13 @@ public class RootController {
     @GetMapping("/vistacompeticiones")      //ruta
     public String vistacompeticiones(Model model) { //nombre da igual
         return "vistacompeticiones";            //nombre de vista
+    }
+
+        @GetMapping("/vistalistacompeticiones")      //ruta
+    public String vistalistacompeticiones(Model model) { //nombre da igual
+        List<Competicion> listaCompeticiones = entityManager.createQuery("SELECT c FROM Competicion c", Competicion.class).getResultList();
+        model.addAttribute("competiciones", listaCompeticiones);
+        return "vistalistacompeticiones";            //nombre de vista
     }
 
     @GetMapping("/vistaactapartido")      //ruta
