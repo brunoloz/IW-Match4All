@@ -52,6 +52,7 @@ public class User implements Transferable<User.Transfer> {
 
   private String firstName;
   private String lastName;
+  private int age;
 
   @Column(length = 512)
   private String avatar;

@@ -3,55 +3,226 @@
 
 <head>
     <th:block th:replace="~{fragments/head :: header}" />
-    <title>IW: Perfil</title>
+    <title>Perfil de Usuario</title>
+    <style>
+        /* Variables de color de tu escudo */
+        :root {
+            --brand-blue: #2a2a54;
+            --brand-red: #c52636;
+        }
+
+        body { background-color: #f8f9fa; }
+
+        /* Animación de elevación para las tarjetas */
+        .hover-lift { transition: transform 0.3s ease; }
+        .hover-lift:hover { transform: translateY(-4px); }
+
+        /* Botones fantasma para fondos oscuros */
+        .card-blue .btn-outline-light:hover { color: var(--brand-blue); }
+        .card-red .btn-outline-light:hover { color: var(--brand-red); }
+
+        /* Comportamiento del cursor al subir archivo */
+        .cursor-pointer { cursor: pointer; transition: opacity 0.3s; }
+        .cursor-pointer:hover { opacity: 0.8; }
+        
+        /* Botón primario personalizado para el bloque blanco */
+        .btn-brand-blue {
+            background-color: var(--brand-blue);
+            color: white;
+            transition: all 0.3s ease;
+        }
+        .btn-brand-blue:hover {
+            background-color: #1a1a3a;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(42, 42, 84, 0.3);
+        }
+    </style>
 </head>
 
-<body class="d-flex flex-column h-100">
+<body class="d-flex flex-column min-vh-100">
     <header th:replace="~{fragments/nav.html :: nav}"></header>
 
-    <main class="flex-shrink-0">
-        <div id="books" class="border border-2 border-primary rounded">
-            <label for="isbn">ISBN</label><input id="isbn" value="9780140328721" />
-            <button id="fetchBook">Buscar datos online</button>
-            <img class="preview" id="portada" alt="portada del libro" />
-            <form th:action="@{/user/__${user.id}__/pic}">
-                <button id="postPortada" class="perfilable">Usar como foto de perfil</button>
-            </form>
-        </div>
-        <div id="movies" class="border border-2 border-secondary rounded">
-            <label for="imdb">IMDB</label><input id="imdb" value="tt11286314" />
-            <button id="fetchMovie">Buscar datos online</button>
-            <img class="preview" id="poster" alt="poster de la pelicula" />
-            <form th:action="@{/user/__${user.id}__/pic}">
-                <button id="postPoster" class="perfilable">Usar como foto de perfil</button>
-            </form>
-        </div>
-        <div id="profile" class="border border-2 border-tertiary rounded">
-            <input type="file" id="f_avatar" accept="image/jpeg,image/png">
-            <img class="preview" id="avatar" alt="careto a subir" />
-            <form th:action="@{/user/__${user.id}__/pic}">
-                <button id="postAvatar">Usar como foto de perfil</button>
-            </form>
-        </div>
+    <main class="flex-grow-1 d-flex flex-column p-3 p-md-4">
+        <div class="container-fluid flex-grow-1 d-flex flex-column h-100">
+            <div class="row g-4 flex-grow-1 h-100">
+                
+                <div class="col-lg-4 mb-4 mb-lg-0">
+                    
+                    <div class="bg-white rounded-4 shadow p-4 d-flex flex-column align-items-center h-100" 
+                        style="border: 4px solid var(--brand-blue);">
+                        
+                        <div class="w-100 d-flex flex-column align-items-center mt-3">
+                            <img class="preview rounded-circle border border-4 mb-4 shadow-sm" 
+                                id="avatar" 
+                                alt="Avatar del usuario" 
+                                th:src="@{'/img/' + ${user.avatar}}" 
+                                onerror="this.onerror=null;this.src='/img/default-avatar.png';" 
+                                style="width: 240px; height: 240px; object-fit: cover; border-color: var(--brand-blue) !important;" />
+                            
+                            <form th:action="@{/user/__${user.id}__/pic}" method="POST" enctype="multipart/form-data" class="w-100 px-3">
+                                <label for="f_avatar" class="cursor-pointer d-block text-center text-muted mb-2 small fw-semibold">
+                                    <i class="bi bi-camera me-1"></i> Cambiar imagen
+                                </label>
+                                <input type="file" id="f_avatar" accept="image/jpeg,image/png" class="d-none">
+                                <button id="postAvatar" class="btn btn-brand-blue btn-sm w-100 py-2 fw-bold text-uppercase rounded-3">Actualizar Perfil</button>
+                            </form>
+                        </div>
 
-        <div class="container">
-            <h1 class="mt-5">Perfil de <span th:text="${user.username}">Paco</span></h1>
-            <!-- recepción de mensajes -->
-            <div class="py-5 row" id="mensajes">
+                        <hr class="w-100 opacity-25 my-4" style="border-color: var(--brand-blue);">
+
+                        <div class="w-100 text-start mb-auto px-2">
+                            <h5 class="fw-bold mb-3 text-uppercase" style="color: var(--brand-blue);">Biografía</h5>
+                            <ul class="list-unstyled fs-6 mb-0 text-dark">
+                                <li class="mb-3">
+                                    <i class="bi bi-person-fill me-2" style="color: var(--brand-red);"></i> 
+                                    <span class="text-muted fw-semibold">Nombre:</span> 
+                                    <strong th:text="|${user.firstName} ${user.lastName}|"></strong>
+                                </li>
+                                <li class="mb-3">
+                                    <i class="bi bi-calendar-event-fill me-2" style="color: var(--brand-red);"></i>
+                                    <span class="text-muted fw-semibold">Edad:</span> 
+                                    <strong th:text="${user.age} + ' años'"></strong>
+                                </li>
+                                <li>
+                                    <i class="bi bi-controller me-2" style="color: var(--brand-red);"></i>
+                                    <span class="text-muted fw-semibold">Rol:</span> 
+                                    <strong th:text="|${user.roles}"></strong>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="w-100 mt-4 pt-3">
+                            <select class="form-select form-select-lg shadow-none border-0 fw-semibold bg-light" style="color: var(--brand-blue);">
+                                <option selected>Otras opciones...</option>
+                                <option value="1">Ver estadísticas detalladas</option>
+                                <option value="2">Historial de equipos</option>
+                            </select>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div sec:authorize="hasRole('USER')"class="col-lg-8 d-flex flex-column gap-4 h-100">
+                    
+                    <div class="card-blue text-white rounded-4 shadow hover-lift p-5 flex-grow-1 d-flex flex-column justify-content-center" style="background-color: var(--brand-blue);">
+                        <h5 class="text-white-50 text-uppercase mb-5" style="letter-spacing: 2px;">Próximo Partido</h5>
+                        
+                        <div class="d-flex justify-content-around align-items-center flex-wrap gap-4">
+                            <div class="display-4 fw-bolder font-monospace text-center">
+                                <p class="small text-white-50 mb-1">Empieza en </p>
+                                4D 05H 26M
+                            </div>
+                            
+                            <div class="text-center">
+                                <div class="bg-white rounded-circle p-2 shadow d-inline-block mb-2">
+                                    <img src="/img/logomatch4all.png" alt="Escudo rival" class="rounded-circle" style="width: 180px; height: 180px; object-fit: contain;">
+                                </div>
+                                <p class="small text-white-50 mb-0 fw-bold text-uppercase">Rival</p>
+                            </div>
+                            
+                            <div class="text-center text-md-end">
+                                <p class="small text-white-50 mb-1 text-uppercase">Competición</p>
+                                <p class="fs-4 fw-bold mb-3">Liga Primera</p>
+                                <p class="small text-white-50 mb-1 text-uppercase">Ubicación</p>
+                                <p class="fs-5 fw-bold mb-0">Campo Central</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-red rounded-4 shadow hover-lift p-5 flex-grow-1 d-flex flex-column justify-content-center" style="background-color:#fff; border:4px solid var(--brand-blue);">
+                        <h5 class="text-uppercase mb-5" style="letter-spacing: 2px; color: var(--brand-blue);">Estadísticas</h5>
+                        <div class="row text-center align-items-center h-100">
+                            <div class="col-3">
+                                <p class="mb-2 fw-bold text-uppercase fs-4" style="color: var(--brand-blue);">Partidos Jugados</p>
+                                <p class="display-5 fw-bold mb-0" th:text="${user.partidosJugados}"></p>
+                            </div>
+                            <div class="col-3 border-start border-light border-opacity-25">
+                                <p class="mb-2 fw-bold text-uppercase fs-4" style="color: var(--brand-blue);">Goles</p>
+                                <p class="display-5 fw-bold mb-0" th:text="${user.goles}"></p>
+                            </div>
+                            <div class="col-3 border-start border-light border-opacity-25">
+                                <p class="mb-2 fw-bold text-uppercase fs-4" style="color: var(--brand-blue);">Asistencias</p>
+                                <p class="display-5 fw-bold mb-0" th:text="${user.asistencias}"></p>
+                            </div>
+                            <div class="col-3 border-start border-light border-opacity-25">
+                                <p class="mb-2 fw-bold text-uppercase fs-4" style="color: var(--brand-blue);">Tarjetas</p>
+                                <div class="d-flex justify-content-center align-items-center">
+                                    <span class="bg-warning rounded-1 border border-white" style="display: inline-block; width: 16px; height: 24px; margin-right: 6px;"></span> 
+                                    <span class="fs-3 fw-bold me-4" th:text="${user.tarjetasAmarillas}"></span>
+                                    
+                                    <span class="rounded-1 border border-white" style="background-color: var(--brand-red); display: inline-block; width: 16px; height: 24px; margin-right: 6px;"></span> 
+                                    <span class="fs-3 fw-bold" th:text="${user.tarjetasRojas}"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div sec:authorize="hasRole('ARBITRO')"class="col-lg-8 d-flex flex-column gap-4 h-100">
+                    
+                    <div class="card-blue text-white rounded-4 shadow hover-lift p-5 flex-grow-1 d-flex flex-column justify-content-center" style="background-color: var(--brand-blue);">
+                        <h5 class="text-white-50 text-uppercase mb-5" style="letter-spacing: 2px;">Próximo Partido</h5>
+                        
+                        <div class="d-flex justify-content-around align-items-center flex-wrap gap-4">
+                            <div class="display-4 fw-bolder font-monospace text-center">
+                                <p class="small text-white-50 mb-1">Empieza en </p>
+                                4D 05H 26M
+                            </div>
+                            
+                            <div class="d-flex justify-content-center align-items-center gap-4">
+                                <div class="text-center">
+                                    <div class="bg-white rounded-circle p-2 shadow d-inline-block mb-2">
+                                        <img src="/img/logomatch4all.png" alt="Escudo local" class="rounded-circle" style="width: 180px; height: 180px; object-fit: contain;">
+                                    </div>
+                                    <p class="small text-white-50 mb-0 fw-bold text-uppercase">Local</p>
+                                </div>
+                                
+                                <div class="text-center">
+                                    <p class="small text-white-50 mb-0 fw-bold">VS</p>
+                                </div>
+                                
+                                <div class="text-center">
+                                    <div class="bg-white rounded-circle p-2 shadow d-inline-block mb-2">
+                                        <img src="/img/logomatch4all.png" alt="Escudo visitante" class="rounded-circle" style="width: 180px; height: 180px; object-fit: contain;">
+                                    </div>
+                                    <p class="small text-white-50 mb-0 fw-bold text-uppercase">Visitante</p>
+                                </div>
+                            </div>
+                            
+                            <div class="text-center text-md-end">
+                                <p class="small text-white-50 mb-1 text-uppercase">Competición</p>
+                                <p class="fs-4 fw-bold mb-3">Liga Primera</p>
+                                <p class="small text-white-50 mb-1 text-uppercase">Ubicación</p>
+                                <p class="fs-5 fw-bold mb-0">Campo Central</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-red rounded-4 shadow hover-lift p-5 flex-grow-1 d-flex flex-column justify-content-center" style="background-color:#fff; border:4px solid var(--brand-blue);">
+                        <h5 class="text-uppercase mb-5" style="letter-spacing: 2px; color: var(--brand-blue);">Estadísticas</h5>
+                        <div class="row text-center align-items-center h-100">
+                                <p class="mb-2 fw-bold text-uppercase fs-4" style="color: var(--brand-blue);">Partidos Dirigidos</p>
+                                <p class="display-5 fw-bold mb-0" th:text="${user.partidosJugados}"></p>
+                        </div>
+                    </div>
+
+                </div>
+
             </div>
-            <!-- envío de mensajes -->
-            <div class="py-5 row ">
-                <form th:action="@{/user/__${user.id}__/msg}" method="POST">
-                    <input type="text" id="message" placeholder="escribe a este usuario" />
-                    <button id="sendmsg" class="btn btn-secondary" type="submit">Enviar</button>
-                </form>
+            
+            <div class="text-center mt-4">
+                <small class="text-muted">
+                    Aplicación de plantilla de IW 2025-26. Accede a la última versión (y propón mejoras, es <a href="#" style="color: var(--brand-blue); text-decoration: none; font-weight: bold;">código abierto</a>) en el repositorio.
+                </small>
             </div>
         </div>
     </main>
 
     <th:block th:replace="~{fragments/footer.html :: footer}" />
-
     <script th:src="@{/js/ajax-demo.js}"></script>
+    
 </body>
 
 </html>
