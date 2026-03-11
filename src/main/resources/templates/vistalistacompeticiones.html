@@ -14,77 +14,86 @@
             
             <div class="row align-items-center mb-4">
                 <div class="col-md-8">
-                    <h1 class="display-5 fw-bold">Competiciones Activas</h1>
+                    <h1 class="display-5 fw-bold" style="color: var(--brand-blue);">Competiciones Activas</h1>
                     <p class="text-muted">Explora los torneos y ligas disponibles actualmente.</p>
                 </div>
                 <div class="col-md-4 text-md-end">
-                    <span class="badge bg-info text-dark" th:text="${competiciones.size() + ' competiciones encontradas'}">0 competiciones</span>
+                    <span class="badge badge-custom" style="background-color: var(--brand-blue); color: white;" th:text="${competiciones.size() + ' competiciones encontradas'}">0 competiciones</span>
                 </div>
             </div>
 
             <hr class="my-4">
 
-            <div class="card shadow-sm">
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0">
-                            <thead class="table-light">
-                                <tr>
-                                    <th class="ps-4">Nombre de la Competición</th>
-                                    <th>Modalidad</th>
-                                    <th class="text-center">Capacidad Máx.</th>
-                                    <th class="text-center">Estado</th>
-                                    <th class="text-end pe-4">Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr th:each="c : ${competiciones}">
-                                    <td class="ps-4">
-                                        <div class="d-flex align-items-center">
-                                            <div class="rounded-3 bg-primary text-white d-flex align-items-center justify-content-center me-3" 
-                                                 style="width: 40px; height: 40px; font-weight: bold;" 
-                                                 th:text="${#strings.substring(c.nombre,0,1)}">
-                                                C
-                                            </div>
-                                            <div>
-                                                <span class="fw-bold d-block" th:text="${c.nombre}">Nombre</span>
-                                                <small class="text-muted" th:text="'ID: #' + ${c.id}">ID</small>
-                                            </div>
+            <!-- Competiciones en tarjetas -->
+            <div class="row">
+                <div class="col-12">
+                    <th:block th:if="${!competiciones.isEmpty()}">
+                        <div th:each="c : ${competiciones}" class="competicion-card hover-lift">
+                            <!-- Imagen/Icono -->
+                            <div class="competicion-image">
+                                <i class="bi bi-trophy-fill"></i>
+                            </div>
+
+                            <!-- Contenido -->
+                            <div class="competicion-content">
+                                <!-- Encabezado -->
+                                <div class="competicion-header">
+                                    <h2 class="competicion-title" th:text="${c.nombre}">Nombre de Competición</h2>
+                                </div>
+
+                                <!-- Información -->
+                                <div class="competicion-info">
+                                    <!-- Tipo/Modalidad -->
+                                    <div class="info-item">
+                                        <i class="bi bi-bookmark-fill"></i>
+                                        <div class="info-item-content">
+                                            <span class="info-label">Modalidad</span>
+                                            <span class="info-value" th:text="${c.tipo}"></span>
                                         </div>
-                                    </td>
-                                    <td>
-                                        <span th:classappend="${c.tipo.name() == 'LIGA' ? 'badge bg-success-subtle text-success border border-success' : 'badge bg-warning-subtle text-success border border-warning'}"
-                                              class="badge" 
-                                              th:text="${c.tipo}">
-                                            TIPO
-                                        </span>
-                                    </td>
-                                    <td class="text-center">
-                                        <span class="text-secondary" th:text="${c.capacidad + ' Equipos'}">0</span>
-                                    </td>
-                                    <td class="text-center">
-                                        <span class="badge rounded-pill bg-light text-dark border">Inscripción Abierta</span>
-                                    </td>
-                                    <td class="text-end pe-4">
-                                        <a th:href="@{/competicion/{id}(id=${c.id})}" class="btn btn-sm btn-outline-primary rounded-pill px-3">
-                                            Ver detalles
-                                        </a>
-                                    </td>
-                                </tr>
-                                <tr th:if="${competiciones.isEmpty()}">
-                                    <td colspan="5" class="text-center py-5 text-muted">
-                                        No hay competiciones registradas en el sistema.
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                                    </div>
+
+                                    <!-- Capacidad -->
+                                    <div class="info-item">
+                                        <i class="bi bi-people-fill"></i>
+                                        <div class="info-item-content">
+                                            <span class="info-label">Capacidad Máxima</span>
+                                            <span class="info-value" th:text="${c.capacidad + ' equipos'}">0 equipos</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Estado -->
+                                    <div class="info-item">
+                                        <div class="info-item-content">
+                                            <span class="info-label">Estado</span>
+                                            <span class="info-value">Inscripción Abierta</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Botones de acción -->
+                                <div class="competicion-footer">
+                                    <a th:href="@{/competicion/{id}(id=${c.id})}" class="btn-brand-blue">
+                                        <i class="bi bi-arrow-right me-2"></i>Ver Detalles
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </th:block>
+
+                    <!-- Estado vacío -->
+                    <th:block th:if="${competiciones.isEmpty()}">
+                        <div class="empty-state">
+                            <i class="bi bi-inbox"></i>
+                            <h4>No hay competiciones disponibles</h4>
+                            <p class="text-muted mb-0">No hay competiciones registradas en el sistema en este momento.</p>
+                        </div>
+                    </th:block>
                 </div>
             </div>
 
-            <div class="mt-5 p-4 bg-light rounded-3 border">
-                <h5 class="fw-bold"><i class="bi bi-info-circle me-2"></i>¿Quieres crear una competición?</h5>
-                <p class="mb-0 text-muted">Si eres administrador, puedes gestionar nuevas ligas desde el <a href="/vistapaneladmin">panel de control</a>.</p>
+            <div class="mt-5 p-4 bg-light rounded-3 border" style="border-color: var(--brand-blue) !important; border-width: 2px;">
+                <h5 class="fw-bold" style="color: var(--brand-blue);"><i class="bi bi-lightbulb me-2"></i>¿Quieres crear una competición?</h5>
+                <p class="mb-0 text-muted">Si eres administrador, puedes gestionar nuevas ligas desde el <a href="/vistapaneladmin" style="color: var(--brand-red); text-decoration: none; font-weight: 600;">panel de control</a>.</p>
             </div>
 
         </div>

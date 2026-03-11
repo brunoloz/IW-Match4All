@@ -1,76 +1,76 @@
-id,username,password,first_name,last_name,age,avatar,goles,asistencias,tarjetas_amarillas,tarjetas_rojas,partidos_jugados,porterias_imbatidas,lesionado,enabled,roles,id_equipo
-1,jugador,{noop}jugador,Bruno,Lozano,21,user.jpg,5,2,1,0,10,0,false,true,USER,1
-2,arbitro,{noop}1234,Mateu,Lahoz,45,user.jpg,0,0,0,0,0,0,false,true,ARBITRO,
-3,jlopez,{noop}1234,Juan,Lopez,28,avatar3.png,0,0,3,1,10,0,true,true,USER,3
-4,asanchez,{noop}1234,Alejandro,Sanchez,22,avatar4.png,12,3,0,0,10,0,false,true,USER,4
-5,dperez,{noop}1234,David,Perez,30,avatar5.png,1,1,1,0,8,0,false,true,USER,5
-6,mgomez,{noop}1234,Miguel,Gomez,26,avatar1.png,3,4,2,0,10,0,false,true,USER,6
-7,jmartin,{noop}1234,Jorge,Martin,31,avatar2.png,0,0,0,0,10,5,false,true,USER,7
-8,pruiz,{noop}1234,Pablo,Ruiz,19,avatar3.png,4,1,1,0,9,0,false,true,USER,8
-9,alfernandez,{noop}1234,Alberto,Fernandez,27,avatar4.png,6,2,0,0,10,0,false,true,USER,9
-10,djimenez,{noop}1234,Daniel,Jimenez,25,avatar5.png,0,8,2,0,10,0,true,true,USER,10
-11,rmorales,{noop}1234,Raul,Morales,23,avatar1.png,2,1,0,0,5,0,false,true,USER,11
-12,hdiaz,{noop}1234,Hugo,Diaz,29,avatar2.png,7,2,1,0,10,0,false,true,USER,12
-13,amoreno,{noop}1234,Alvaro,Moreno,32,avatar3.png,0,0,0,0,10,3,false,true,USER,13
-14,imunoz,{noop}1234,Ivan,Munoz,20,avatar4.png,3,3,2,1,8,0,false,true,USER,14
-15,jalvarez,{noop}1234,Javier,Alvarez,24,avatar5.png,1,0,0,0,6,0,false,true,USER,15
-16,rromero,{noop}1234,Ruben,Romero,28,avatar1.png,4,4,1,0,10,0,false,true,USER,16
-17,aalonso,{noop}1234,Adrian,Alonso,26,avatar2.png,0,1,3,0,9,0,false,true,USER,17
-18,vgutierrez,{noop}1234,Victor,Gutierrez,21,avatar3.png,8,1,0,0,10,0,false,true,USER,18
-19,mnavarro,{noop}1234,Marcos,Navarro,30,avatar4.png,2,2,1,0,10,0,false,true,USER,19
-20,dtorres,{noop}1234,Diego,Torres,33,avatar5.png,0,0,0,0,10,4,false,true,USER,20
-21,jdominguez,{noop}1234,Jose,Dominguez,22,avatar1.png,5,1,2,0,10,0,false,true,USER,21
-22,avazquez,{noop}1234,Antonio,Vazquez,27,avatar2.png,1,3,1,0,9,0,false,true,USER,22
-23,mramos,{noop}1234,Manuel,Ramos,25,avatar3.png,9,2,0,0,10,0,false,true,USER,23
-24,fgil,{noop}1234,Francisco,Gil,31,avatar4.png,0,0,4,1,8,0,true,true,USER,24
-25,rramirez,{noop}1234,Roberto,Ramirez,29,avatar5.png,3,5,0,0,10,0,false,true,USER,25
-26,gblanco,{noop}1234,Gonzalo,Blanco,24,avatar1.png,2,0,1,0,7,0,false,true,USER,26
-27,mmolina,{noop}1234,Mario,Molina,34,avatar2.png,0,0,0,0,10,6,false,true,USER,27
-28,asuarez,{noop}1234,Andres,Suarez,20,avatar3.png,6,3,1,0,10,0,false,true,USER,28
-29,iortega,{noop}1234,Ignacio,Ortega,26,avatar4.png,1,1,2,0,9,0,false,true,USER,29
-30,cdelgado,{noop}1234,Cristian,Delgado,28,avatar5.png,4,2,0,0,10,0,false,true,USER,30
-31,jcastro,{noop}1234,Jesus,Castro,23,avatar1.png,0,2,1,0,8,0,false,true,USER,31
-32,sortiz,{noop}1234,Samuel,Ortiz,30,avatar2.png,7,1,0,0,10,0,false,true,USER,32
-33,arubio,{noop}1234,Angel,Rubio,21,avatar3.png,2,4,2,0,10,0,false,true,USER,33
-34,pmarin,{noop}1234,Pedro,Marin,32,avatar4.png,0,0,0,0,10,2,false,true,USER,34
-35,higlesias,{noop}1234,Hector,Iglesias,25,avatar5.png,5,2,1,0,9,0,false,true,USER,35
-36,rnunez,{noop}1234,Ricardo,Nunez,27,avatar1.png,1,1,3,1,7,0,true,true,USER,36
-37,amedina,{noop}1234,Alejandro,Medina,22,avatar2.png,8,0,0,0,10,0,false,true,USER,37
-38,jgarrido,{noop}1234,Julio,Garrido,29,avatar3.png,0,3,1,0,10,0,false,true,USER,38
-39,fcortes,{noop}1234,Fernando,Cortes,24,avatar4.png,3,2,2,0,9,0,false,true,USER,39
-40,elozano,{noop}1234,Enrique,Lozano,31,avatar5.png,2,0,0,0,6,0,false,true,USER,40
-41,gcano,{noop}1234,Guillermo,Cano,35,avatar1.png,0,0,0,0,10,4,false,true,USER,41
-42,jsantos,{noop}1234,Jaime,Santos,26,avatar2.png,4,3,1,0,10,0,false,true,USER,42
-43,ocruz,{noop}1234,Oscar,Cruz,28,avatar3.png,1,1,2,0,8,0,false,true,USER,43
-44,tflores,{noop}1234,Tomas,Flores,23,avatar4.png,6,1,0,0,10,0,false,true,USER,44
-45,aprieto,{noop}1234,Arturo,Prieto,20,avatar5.png,0,5,1,0,10,0,false,true,USER,45
-46,mherrera,{noop}1234,Martin,Herrera,29,avatar1.png,3,1,1,0,9,0,false,true,USER,46
-47,iarias,{noop}1234,Ismael,Arias,24,avatar2.png,0,0,4,1,7,0,true,true,USER,47
-48,cpastor,{noop}1234,Carlos,Pastor,30,avatar3.png,7,2,0,0,10,0,false,true,USER,48
-49,jsoto,{noop}1234,Joaquin,Soto,27,avatar4.png,1,0,1,0,8,0,false,true,USER,49
-50,rrey,{noop}1234,Rafael,Rey,32,avatar5.png,0,0,0,0,10,3,false,true,USER,50
-51,agallego,{noop}1234,Alfonso,Gallego,21,avatar1.png,4,2,2,0,10,0,false,true,USER,51
-52,dcabrera,{noop}1234,Dario,Cabrera,25,avatar2.png,2,4,0,0,9,0,false,true,USER,52
-53,lmendez,{noop}1234,Lucas,Mendez,28,avatar3.png,8,1,1,0,10,0,false,true,USER,53
-54,gcalvo,{noop}1234,Gabriel,Calvo,31,avatar4.png,0,1,3,0,8,0,false,true,USER,54
-55,npena,{noop}1234,Nicolas,Pena,19,avatar5.png,3,1,0,0,6,0,false,true,USER,55
-56,mvidal,{noop}1234,Marcos,Vidal,24,avatar1.png,1,2,1,0,10,0,false,true,USER,56
-57,irojas,{noop}1234,Ivan,Rojas,33,avatar2.png,0,0,0,0,10,5,false,true,USER,57
-58,ecruz,{noop}1234,Emilio,Cruz,27,avatar3.png,5,3,1,0,10,0,false,true,USER,58
-59,vvega,{noop}1234,Vicente,Vega,22,avatar4.png,2,0,2,1,7,0,true,true,USER,59
-60,asantana,{noop}1234,Agustin,Santana,26,avatar5.png,6,1,0,0,9,0,false,true,USER,60
-61,rferrer,{noop}1234,Raul,Ferrer,30,avatar1.png,1,4,1,0,10,0,false,true,USER,61
-62,jpascual,{noop}1234,Jose,Pascual,23,avatar2.png,0,0,3,0,8,0,false,true,USER,62
-63,bgil,{noop}1234,Borja,Gil,29,avatar3.png,4,2,0,0,10,0,false,true,USER,63
-64,aserrano,{noop}1234,Alberto,Serrano,25,avatar4.png,0,0,0,0,10,2,false,true,USER,64
-65,mmarquez,{noop}1234,Miguel,Marquez,28,avatar5.png,7,1,1,0,10,0,false,true,USER,65
-66,ppalacios,{noop}1234,Pablo,Palacios,21,avatar1.png,2,3,0,0,9,0,false,true,USER,66
-67,dfuentes,{noop}1234,David,Fuentes,24,avatar2.png,3,1,2,0,10,0,false,true,USER,67
-68,igimenez,{noop}1234,Isaac,Gimenez,31,avatar3.png,0,1,1,0,6,0,false,true,USER,68
-69,fnavas,{noop}1234,Francisco,Navas,26,avatar4.png,5,2,0,0,10,0,false,true,USER,69
-70,cmoya,{noop}1234,Carlos,Moya,32,avatar5.png,1,0,4,1,8,0,true,true,USER,70
-71,ref1,{noop}1234,Mateu,Lahoz,45,ref.png,0,0,0,0,0,0,false,true,ARBITRO,
-72,ref2,{noop}1234,Pierluigi,Collina,52,ref.png,0,0,0,0,0,0,false,true,ARBITRO,
-73,ref3,{noop}1234,Hernandez,Hernandez,41,ref.png,0,0,0,0,0,0,false,true,ARBITRO,
-74,admin1,{noop}1234,Admin,Principal,38,admin.png,0,0,0,0,0,0,false,true,ADMIN,
-75,admin2,{noop}1234,Admin,Secundario,42,admin.png,0,0,0,0,0,0,false,true,ADMIN,
+id,username,password,first_name,last_name,age,avatar,descripcion,posicion,goles,asistencias,tarjetas_amarillas,tarjetas_rojas,partidos_jugados,porterias_imbatidas,lesionado,enabled,roles,id_equipo
+1,jugador,{noop}jugador,Bruno,Lozano,21,user.jpg,Delantero con gran olfato goleador,Delantero,5,2,1,0,10,0,false,true,USER,1
+2,arbitro,{noop}1234,Mateu,Lahoz,45,user.jpg,Juez implacable con el reglamento,Árbitro,0,0,0,0,0,0,false,true,ARBITRO,
+3,jlopez,{noop}1234,Juan,Lopez,28,avatar3.png,Muro defensivo dificil de superar,Defensa,0,0,3,1,10,0,true,true,USER,3
+4,asanchez,{noop}1234,Alejandro,Sanchez,22,avatar4.png,Killer del area muy efectivo,Delantero,12,3,0,0,10,0,false,true,USER,4
+5,dperez,{noop}1234,David,Perez,30,avatar5.png,Mediocentro con gran vision juego,Centrocampista,1,1,1,0,8,0,false,true,USER,5
+6,mgomez,{noop}1234,Miguel,Gomez,26,avatar1.png,Asistente de lujo por banda,Centrocampista,3,4,2,0,10,0,false,true,USER,6
+7,jmartin,{noop}1234,Jorge,Martin,31,avatar2.png,Guardian de los tres palos,Portero,0,0,0,0,10,5,false,true,USER,7
+8,pruiz,{noop}1234,Pablo,Ruiz,19,avatar3.png,Joven promesa con mucha llegada,Delantero,4,1,1,0,9,0,false,true,USER,8
+9,alfernandez,{noop}1234,Alberto,Fernandez,27,avatar4.png,Especialista en remates de cabeza,Delantero,6,2,0,0,10,0,false,true,USER,9
+10,djimenez,{noop}1234,Daniel,Jimenez,25,avatar5.png,Lateral con mucha profundidad defensiva,Defensa,0,8,2,0,10,0,true,true,USER,10
+11,rmorales,{noop}1234,Raul,Morales,23,avatar1.png,Jugador polivalente en el campo,Centrocampista,2,1,0,0,5,0,false,true,USER,11
+12,hdiaz,{noop}1234,Hugo,Diaz,29,avatar2.png,Referente ofensivo de su equipo,Delantero,7,2,1,0,10,0,false,true,USER,12
+13,amoreno,{noop}1234,Alvaro,Moreno,32,avatar3.png,Portero veterano con reflejos increibles,Portero,0,0,0,0,10,3,false,true,USER,13
+14,imunoz,{noop}1234,Ivan,Munoz,20,avatar4.png,Extremo habilidoso y muy rapido,Delantero,3,3,2,1,8,0,false,true,USER,14
+15,jalvarez,{noop}1234,Javier,Alvarez,24,avatar5.png,Contencion pura en el medio,Centrocampista,1,0,0,0,6,0,false,true,USER,15
+16,rromero,{noop}1234,Ruben,Romero,28,avatar1.png,Cerebro creativo del equipo titular,Centrocampista,4,4,1,0,10,0,false,true,USER,16
+17,aalonso,{noop}1234,Adrian,Alonso,26,avatar2.png,Defensa central contundente siempre,Defensa,0,1,3,0,9,0,false,true,USER,17
+18,vgutierrez,{noop}1234,Victor,Gutierrez,21,avatar3.png,Goleador nato de pierna zurda,Delantero,8,1,0,0,10,0,false,true,USER,18
+19,mnavarro,{noop}1234,Marcos,Navarro,30,avatar4.png,Equilibrio y fuerza en mediocampo,Centrocampista,2,2,1,0,10,0,false,true,USER,19
+20,dtorres,{noop}1234,Diego,Torres,33,avatar5.png,Seguridad absoluta bajo los palos,Portero,0,0,0,0,10,4,false,true,USER,20
+21,jdominguez,{noop}1234,Jose,Dominguez,22,avatar1.png,Atacante explosivo en carrera corta,Delantero,5,1,2,0,10,0,false,true,USER,21
+22,avazquez,{noop}1234,Antonio,Vazquez,27,avatar2.png,Pasador preciso con gran tecnica,Centrocampista,1,3,1,0,9,0,false,true,USER,22
+23,mramos,{noop}1234,Manuel,Ramos,25,avatar3.png,Punta veloz que no perdona,Delantero,9,2,0,0,10,0,false,true,USER,23
+24,fgil,{noop}1234,Francisco,Gil,31,avatar4.png,Zaguero experimentado y muy fuerte,Defensa,0,0,4,1,8,0,true,true,USER,24
+25,rramirez,{noop}1234,Roberto,Ramirez,29,avatar5.png,Director de juego con clase,Centrocampista,3,5,0,0,10,0,false,true,USER,25
+26,gblanco,{noop}1234,Gonzalo,Blanco,24,avatar1.png,Llegador desde la segunda linea,Centrocampista,2,0,1,0,7,0,false,true,USER,26
+27,mmolina,{noop}1234,Mario,Molina,34,avatar2.png,Experiencia pura en la porteria,Portero,0,0,0,0,10,6,false,true,USER,27
+28,asuarez,{noop}1234,Andres,Suarez,20,avatar3.png,Talento joven con mucha dinamita,Delantero,6,3,1,0,10,0,false,true,USER,28
+29,iortega,{noop}1234,Ignacio,Ortega,26,avatar4.png,Pivote defensivo que corta todo,Centrocampista,1,1,2,0,9,0,false,true,USER,29
+30,cdelgado,{noop}1234,Cristian,Delgado,28,avatar5.png,Segunda punta de mucha movilidad,Delantero,4,2,0,0,10,0,false,true,USER,30
+31,jcastro,{noop}1234,Jesus,Castro,23,avatar1.png,Defensa rapido al corte limpio,Defensa,0,2,1,0,8,0,false,true,USER,31
+32,sortiz,{noop}1234,Samuel,Ortiz,30,avatar2.png,Ariete potente en el area,Delantero,7,1,0,0,10,0,false,true,USER,32
+33,arubio,{noop}1234,Angel,Rubio,21,avatar3.png,Jugador tecnico de mucho regate,Centrocampista,2,4,2,0,10,0,false,true,USER,33
+34,pmarin,{noop}1234,Pedro,Marin,32,avatar4.png,Muro infranqueable ante los tiros,Portero,0,0,0,0,10,2,false,true,USER,34
+35,higlesias,{noop}1234,Hector,Iglesias,25,avatar5.png,Delantero asociativo con mucho gol,Delantero,5,2,1,0,9,0,false,true,USER,35
+36,rnunez,{noop}1234,Ricardo,Nunez,27,avatar1.png,Carrelero con largo recorrido fisico,Defensa,1,1,3,1,7,0,true,true,USER,36
+37,amedina,{noop}1234,Alejandro,Medina,22,avatar2.png,Finalizador letal de cara a puerta,Delantero,8,0,0,0,10,0,false,true,USER,37
+38,jgarrido,{noop}1234,Julio,Garrido,29,avatar3.png,Lateral ofensivo de gran calidad,Defensa,0,3,1,0,10,0,false,true,USER,38
+39,fcortes,{noop}1234,Fernando,Cortes,24,avatar4.png,Interior con mucha llegada ofensiva,Centrocampista,3,2,2,0,9,0,false,true,USER,39
+40,elozano,{noop}1234,Enrique,Lozano,31,avatar5.png,Recuperador de balones muy intenso,Centrocampista,2,0,0,0,6,0,false,true,USER,40
+41,gcano,{noop}1234,Guillermo,Cano,35,avatar1.png,Cerrojo veterano bajo los palos,Portero,0,0,0,0,10,4,false,true,USER,41
+42,jsantos,{noop}1234,Jaime,Santos,26,avatar2.png,Media punta de pase exquisito,Centrocampista,4,3,1,0,10,0,false,true,USER,42
+43,ocruz,{noop}1234,Oscar,Cruz,28,avatar3.png,Contencion ferrea en zona medular,Centrocampista,1,1,2,0,8,0,false,true,USER,43
+44,tflores,{noop}1234,Tomas,Flores,23,avatar4.png,Referencia goleadora en cada partido,Delantero,6,1,0,0,10,0,false,true,USER,44
+45,aprieto,{noop}1234,Arturo,Prieto,20,avatar5.png,Defensa con alma de atacante,Defensa,0,5,1,0,10,0,false,true,USER,45
+46,mherrera,{noop}1234,Martin,Herrera,29,avatar1.png,Enganche con mucha inteligencia tactica,Centrocampista,3,1,1,0,9,0,false,true,USER,46
+47,iarias,{noop}1234,Ismael,Arias,24,avatar2.png,Central de gran envergadura fisica,Defensa,0,0,4,1,7,0,true,true,USER,47
+48,cpastor,{noop}1234,Carlos,Pastor,30,avatar3.png,Delantero total con gran pegada,Delantero,7,2,0,0,10,0,false,true,USER,48
+49,jsoto,{noop}1234,Joaquin,Soto,27,avatar4.png,Defensa de linea muy ordenada,Defensa,1,0,1,0,8,0,false,true,USER,49
+50,rrey,{noop}1234,Rafael,Rey,32,avatar5.png,Seguridad veterana en la porteria,Portero,0,0,0,0,10,3,false,true,USER,50
+51,agallego,{noop}1234,Alfonso,Gallego,21,avatar1.png,Delantero movil por todo el frente,Delantero,4,2,2,0,10,0,false,true,USER,51
+52,dcabrera,{noop}1234,Dario,Cabrera,25,avatar2.png,Volante de creacion muy rapido,Centrocampista,2,4,0,0,9,0,false,true,USER,52
+53,lmendez,{noop}1234,Lucas,Mendez,28,avatar3.png,Goleador de area pura eficacia,Delantero,8,1,1,0,10,0,false,true,USER,53
+54,gcalvo,{noop}1234,Gabriel,Calvo,31,avatar4.png,Defensor contundente por el aire,Defensa,0,1,3,0,8,0,false,true,USER,54
+55,npena,{noop}1234,Nicolas,Pena,19,avatar5.png,Joven con llegada y sacrificio,Centrocampista,3,1,0,0,6,0,false,true,USER,55
+56,mvidal,{noop}1234,Marcos,Vidal,24,avatar1.png,Cierre defensivo de mucha garra,Defensa,1,2,1,0,10,0,false,true,USER,56
+57,irojas,{noop}1234,Ivan,Rojas,33,avatar2.png,Portero sobrio sin errores graves,Portero,0,0,0,0,10,5,false,true,USER,57
+58,ecruz,{noop}1234,Emilio,Cruz,27,avatar3.png,Atacante versatil de buen pie,Delantero,5,3,1,0,10,0,false,true,USER,58
+59,vvega,{noop}1234,Vicente,Vega,22,avatar4.png,Defensa lateral de largo aliento,Defensa,2,0,2,1,7,0,true,true,USER,59
+60,asantana,{noop}1234,Agustin,Santana,26,avatar5.png,Finalizador veloz en contraataque puro,Delantero,6,1,0,0,9,0,false,true,USER,60
+61,rferrer,{noop}1234,Raul,Ferrer,30,avatar1.png,Centrocampista de gran despliegue fisico,Centrocampista,1,4,1,0,10,0,false,true,USER,61
+62,jpascual,{noop}1234,Jose,Pascual,23,avatar2.png,Defensa central muy disciplinado siempre,Defensa,0,0,3,0,8,0,false,true,USER,62
+63,bgil,{noop}1234,Borja,Gil,29,avatar3.png,Mediapunta con gol y vision,Centrocampista,4,2,0,0,10,0,false,true,USER,63
+64,aserrano,{noop}1234,Alberto,Serrano,25,avatar4.png,Guardián imbatible bajo el arco,Portero,0,0,0,0,10,2,false,true,USER,64
+65,mmarquez,{noop}1234,Miguel,Marquez,28,avatar5.png,Delantero centro de gran potencia,Delantero,7,1,1,0,10,0,false,true,USER,65
+66,ppalacios,{noop}1234,Pablo,Palacios,21,avatar1.png,Organizador de juego en corto,Centrocampista,2,3,0,0,9,0,false,true,USER,66
+67,dfuentes,{noop}1234,David,Fuentes,24,avatar2.png,Extremo habilidoso encarador constante,Delantero,3,1,2,0,10,0,false,true,USER,67
+68,igimenez,{noop}1234,Isaac,Gimenez,31,avatar3.png,Defensa serio de gran colocacion,Defensa,0,1,1,0,6,0,false,true,USER,68
+69,fnavas,{noop}1234,Francisco,Navas,26,avatar4.png,Goleador nato en racha positiva,Delantero,5,2,0,0,10,0,false,true,USER,69
+70,cmoya,{noop}1234,Carlos,Moya,32,avatar5.png,Zaguero expeditivo al cruce rapido,Defensa,1,0,4,1,8,0,true,true,USER,70
+71,ref1,{noop}1234,Mateu,Lahoz,45,ref.png,Arbitro internacional de maxima categoria,Árbitro,0,0,0,0,0,0,false,true,ARBITRO,
+72,ref2,{noop}1234,Pierluigi,Collina,52,ref.png,Leyenda del arbitraje mundial respetado,Árbitro,0,0,0,0,0,0,false,true,ARBITRO,
+73,ref3,{noop}1234,Hernandez,Hernandez,41,ref.png,Juez de campo muy estricto,Árbitro,0,0,0,0,0,0,false,true,ARBITRO,
+74,admin1,{noop}1234,Admin,Principal,38,admin.png,Administrador total de la plataforma,Soporte,0,0,0,0,0,0,false,true,ADMIN,
+75,admin2,{noop}1234,Admin,Secundario,42,admin.png,Gestion de usuarios y equipos,Soporte,0,0,0,0,0,0,false,true,ADMIN,

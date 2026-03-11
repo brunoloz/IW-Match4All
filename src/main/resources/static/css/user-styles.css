@@ -1,0 +1,53 @@
+/* Estilos personalizados para user.html */
+
+/* Variables de color de tu escudo */
+:root {
+    --brand-blue: #2a2a54;
+    --brand-red: #c52636;
+}
+
+body { 
+    background-color: #f8f9fa; 
+}
+
+/* Animación de elevación para las tarjetas */
+.hover-lift { 
+    transition: transform 0.3s ease; 
+}
+
+.hover-lift:hover { 
+    transform: translateY(-4px); 
+}
+
+/* Botones fantasma para fondos oscuros */
+.card-blue .btn-outline-light:hover { 
+    color: var(--brand-blue); 
+}
+
+.card-red .btn-outline-light:hover { 
+    color: var(--brand-red); 
+}
+
+/* Comportamiento del cursor al subir archivo */
+.cursor-pointer { 
+    cursor: pointer; 
+    transition: opacity 0.3s; 
+}
+
+.cursor-pointer:hover { 
+    opacity: 0.8; 
+}
+
+/* Botón primario personalizado para el bloque blanco */
+.btn-brand-blue {
+    background-color: var(--brand-blue);
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.btn-brand-blue:hover {
+    background-color: #1a1a3a;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(42, 42, 84, 0.3);
+}

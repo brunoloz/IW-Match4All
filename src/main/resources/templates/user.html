@@ -4,40 +4,6 @@
 <head>
     <th:block th:replace="~{fragments/head :: header}" />
     <title>Perfil de Usuario</title>
-    <style>
-        /* Variables de color de tu escudo */
-        :root {
-            --brand-blue: #2a2a54;
-            --brand-red: #c52636;
-        }
-
-        body { background-color: #f8f9fa; }
-
-        /* Animación de elevación para las tarjetas */
-        .hover-lift { transition: transform 0.3s ease; }
-        .hover-lift:hover { transform: translateY(-4px); }
-
-        /* Botones fantasma para fondos oscuros */
-        .card-blue .btn-outline-light:hover { color: var(--brand-blue); }
-        .card-red .btn-outline-light:hover { color: var(--brand-red); }
-
-        /* Comportamiento del cursor al subir archivo */
-        .cursor-pointer { cursor: pointer; transition: opacity 0.3s; }
-        .cursor-pointer:hover { opacity: 0.8; }
-        
-        /* Botón primario personalizado para el bloque blanco */
-        .btn-brand-blue {
-            background-color: var(--brand-blue);
-            color: white;
-            transition: all 0.3s ease;
-        }
-        .btn-brand-blue:hover {
-            background-color: #1a1a3a;
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(42, 42, 84, 0.3);
-        }
-    </style>
 </head>
 
 <body class="d-flex flex-column min-vh-100">
@@ -72,8 +38,9 @@
                         <hr class="w-100 opacity-25 my-4" style="border-color: var(--brand-blue);">
 
                         <div class="w-100 text-start mb-auto px-2">
-                            <h5 class="fw-bold mb-3 text-uppercase" style="color: var(--brand-blue);">Biografía</h5>
-                            <ul class="list-unstyled fs-6 mb-0 text-dark">
+                            <h5 class="fw-bold mb-3 text-center" style="color: var(--brand-blue);"><strong th:text="${user.descripcion}"></strong></h5>
+                            <br>
+                            <ul class="list-unstyled fs-5 mb-0 text-dark">
                                 <li class="mb-3">
                                     <i class="bi bi-person-fill me-2" style="color: var(--brand-red);"></i> 
                                     <span class="text-muted fw-semibold">Nombre:</span> 
@@ -87,7 +54,7 @@
                                 <li>
                                     <i class="bi bi-controller me-2" style="color: var(--brand-red);"></i>
                                     <span class="text-muted fw-semibold">Rol:</span> 
-                                    <strong th:text="|${user.roles}"></strong>
+                                    <strong th:text="|${user.posicion}"></strong>
                                 </li>
                             </ul>
                         </div>

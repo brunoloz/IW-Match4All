@@ -8,8 +8,8 @@ SELECT id, nombre, tipo, capacidad FROM CSVREAD('classpath:competicion.csv');
 INSERT INTO equipos (id, nom, escudo, id_capitan) 
 SELECT id, nom, escudo, id_capitan FROM CSVREAD('classpath:equipos.csv');
 
-INSERT INTO iwuser (id, username, password, first_name, last_name, age, avatar, goles, asist, t_ama, t_roj, p_jug, porimb, lesion, enabled, roles, id_equipo) 
-SELECT id, username, password, first_name, last_name, age, avatar, goles, asistencias, tarjetas_amarillas, tarjetas_rojas, partidos_jugados, porterias_imbatidas, lesionado, enabled, roles, id_equipo FROM CSVREAD('classpath:users.csv');
+INSERT INTO iwuser (id, username, password, first_name, last_name, age, avatar, descripcion, posicion, goles, asist, t_ama, t_roj, p_jug, porimb, lesion, enabled, roles, id_equipo) 
+SELECT id, username, password, first_name, last_name, age, avatar, descripcion, posicion, goles, asistencias, tarjetas_amarillas, tarjetas_rojas, partidos_jugados, porterias_imbatidas, lesionado, enabled, roles, id_equipo FROM CSVREAD('classpath:users.csv');
 
 INSERT INTO partidos (id, ubicacion, fecha, id_competicion, id_local, id_visitante, id_arbitro) 
 SELECT id, ubicacion, fecha, id_competicion, id_local, id_visitante, id_arbitro FROM CSVREAD('classpath:partidos.csv');
