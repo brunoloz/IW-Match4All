@@ -32,3 +32,8 @@ build/
 
 ### VS Code ###
 .vscode/
+deploy/
+iwdata.zip
+iwdb.mv.db
+log.txt
+

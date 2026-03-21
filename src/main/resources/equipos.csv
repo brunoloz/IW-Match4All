@@ -1,71 +1,11 @@
-id,nom,id_capitan,escudo
-1,Rayo Vallecas,1,escudo1.png
-2,Sporting Retiro,2,escudo2.png
-3,CD Getafe Sur,3,escudo3.png
-4,Atlético Leganés,4,escudo4.png
-5,UD Alcorcón,5,escudo5.png
-6,Fuenlabrada FC,6,escudo6.png
-7,Móstoles City,7,escudo7.png
-8,Carabanchel United,8,escudo8.png
-9,Real Moratalaz,9,escudo9.png
-10,Hortaleza CF,10,escudo10.png
-11,Chamberí Futsal,11,escudo1.png
-12,Tetúan Rovers,12,escudo2.png
-13,San Blas Athletic,13,escudo3.png
-14,Vicálvaro CD,14,escudo4.png
-15,Villaverde Boars,15,escudo5.png
-16,Aluche Sporting,16,escudo6.png
-17,Latina Wanderers,17,escudo7.png
-18,Arganzuela FC,18,escudo8.png
-19,Usera Devils,19,escudo9.png
-20,Barajas Flyers,20,escudo10.png
-21,Majadahonda Club,21,escudo1.png
-22,Pozuelo Blancos,22,escudo2.png
-23,Las Rozas CF,23,escudo3.png
-24,Alcobendas City,24,escudo4.png
-25,Sanse Kings,25,escudo5.png
-26,Boadilla United,26,escudo6.png
-27,Villalba Wolves,27,escudo7.png
-28,Torrejón CF,28,escudo8.png
-29,Alcalá Henares CD,29,escudo9.png
-30,Coslada Reds,30,escudo10.png
-31,San Fernando CD,31,escudo1.png
-32,Rivas Vaciamadrid FC,32,escudo2.png
-33,Arganda Blues,33,escudo3.png
-34,Pinto Jaguars,34,escudo4.png
-35,Valdemoro CF,35,escudo5.png
-36,Ciempozuelos FC,36,escudo6.png
-37,Aranjuez Royals,37,escudo7.png
-38,Navalcarnero CD,38,escudo8.png
-39,Brunete Futsal,39,escudo9.png
-40,Villanueva Cañada,40,escudo10.png
-41,Colmenar Viejo,41,escudo1.png
-42,Tres Cantos FC,42,escudo2.png
-43,Parla City,43,escudo3.png
-44,Galapagar CD,44,escudo4.png
-45,El Escorial FC,45,escudo5.png
-46,Guadarrama Wolves,46,escudo6.png
-47,Moralzarzal CF,47,escudo7.png
-48,Cercedilla Reds,48,escudo8.png
-49,Alpedrete Athletic,49,escudo9.png
-50,Torrelodones CD,50,escudo10.png
-51,Hoyo Manzanares,51,escudo1.png
-52,Soto Real FC,52,escudo2.png
-53,Miraflores CF,53,escudo3.png
-54,Buitrago Lozoya,54,escudo4.png
-55,Patones CD,55,escudo5.png
-56,Chinchón Royals,56,escudo6.png
-57,Titulcia FC,57,escudo7.png
-58,Villaconejos CD,58,escudo8.png
-59,Belmonte Tajo,59,escudo9.png
-60,Navacerrada Futsal,60,escudo10.png
-61,Becerril Sierra,61,escudo1.png
-62,Bocema CF,62,escudo2.png
-63,Collado Mediano,63,escudo3.png
-64,Ajalvir United,64,escudo4.png
-65,Daganzo CF,65,escudo5.png
-66,Meco City,66,escudo6.png
-67,Camarma Estercolar,67,escudo7.png
-68,Cobeña FC,68,escudo8.png
-69,Valdetorres Jarama,69,escudo9.png
-70,Talamanca Jarama,70,escudo10.png
+id,nom,descripcion,ubicacion,id_capitan,escudo
+1,Rayo Vallecas,"Equipo histórico del sur de Madrid","Madrid",1,escudo1.png
+2,Sporting Retiro,"Club deportivo del distrito de Retiro","Madrid",2,escudo2.png
+3,CD Getafe Sur,"Club del sur de Getafe","Getafe",3,escudo3.png
+4,Atlético Leganés,"Equipo de Leganés","Leganés",4,escudo4.png
+5,UD Alcorcón,"Unión Deportiva de Alcorcón","Alcorcón",5,escudo5.png
+6,Fuenlabrada FC,"Fuenlabrada Football Club","Fuenlabrada",6,escudo6.png
+7,Móstoles City,"Ciudad Deportiva de Móstoles","Móstoles",7,escudo7.png
+8,Carabanchel United,"United Carabanchel","Madrid",8,escudo8.png
+9,Real Moratalaz,"Real Club de Moratalaz","Madrid",9,escudo9.png
+

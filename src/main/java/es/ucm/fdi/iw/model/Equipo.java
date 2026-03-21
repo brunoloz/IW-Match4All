@@ -34,6 +34,12 @@ public class Equipo {
     @JoinColumn(name = "id_capitan")
     private User capitan;
 
+    @Column(length = 500)
+    private String descripcion;
+
+    @Column(length = 225)
+    private String ubicacion;
+
     @Column(length = 225)
     private String escudo;
 

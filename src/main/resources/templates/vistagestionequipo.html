@@ -28,7 +28,32 @@
                                         <th class="text-end" style="width: 56px;"></th>
                                     </tr>
                                 </thead>
-                                <tbody id="player-list"></tbody>
+                                <tbody id="player-list">
+                                    <tr th:each="jugador : ${equipo != null ? equipo.jugadores : {}}">
+                                        <td>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <img th:src="@{'/img/' + ${jugador.avatar}}" 
+                                                     alt="Jugador" 
+                                                     class="rounded-circle" 
+                                                     width="28" 
+                                                     height="28"
+                                                     onerror="this.src='/img/default-avatar.png';">
+                                                <span class="fw-semibold" th:text="${jugador.firstName} + ' ' + ${jugador.lastName}"></span>
+                                            </div>
+                                        </td>
+                                        <td th:text="${jugador.posicion}"></td>
+                                        <td th:text="${jugador.goles}"></td>
+                                        <td th:text="${jugador.asistencias}"></td>
+                                        <td class="text-end" style="width: 56px;">
+                                            <button th:if="${u != null && u.id == equipo.capitan.id}" 
+                                                    type="button" 
+                                                    class="btn btn-sm btn-outline-danger"
+                                                    onclick='alert("Funcionalidad en desarrollo")'>
+                                                Quitar
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
                             </table>
                         </div>
                     </div>
@@ -39,70 +64,68 @@
                 <div class="card shadow-sm">
                     <div class="card-body">
                         <div class="d-flex align-items-center gap-3 mb-3">
-                            <img th:src="@{/img/user.jpg}" src="/img/user.jpg" alt="Escudo del equipo" class="rounded" width="72" height="72">
+                            <img th:if="${equipo != null}" 
+                                 th:src="@{'/img/' + ${equipo.escudo}}"
+                                 src="/img/default-team.png" 
+                                 alt="Escudo del equipo" 
+                                 class="rounded" 
+                                 width="72" 
+                                 height="72"
+                                 onerror="this.src='/img/default-team.png';">
+                            <img th:if="${equipo == null}" 
+                                 src="/img/default-team.png" 
+                                 alt="Escudo del equipo" 
+                                 class="rounded" 
+                                 width="72" 
+                                 height="72">
                             <div>
-                                <h2 class="h5 mb-0">Demo Team</h2>
-                                <p class="mb-0 text-muted">Temporada 2025/26</p>
+                                <h2 class="h5 mb-0" th:text="${equipo != null ? equipo.nombre : 'Sin equipo'}"></h2>
+                                <p class="mb-0 text-muted" th:text="${equipo != null ? equipo.ubicacion : 'No disponible'}"></p>
                             </div>
+                            
                         </div>
 
                         <div class="row g-2 text-center">
                             <div class="col-4">
                                 <div class="border rounded p-2">
-                                    <div class="fw-bold">3</div>
-                                    <small class="text-muted">Ligas</small>
+                                    <div class="fw-bold" th:text="${equipo != null ? equipo.jugadores.size() : 0}">0</div>
+                                    <small class="text-muted">Jugadores</small>
                                 </div>
                             </div>
                             <div class="col-4">
                                 <div class="border rounded p-2">
-                                    <div class="fw-bold">19</div>
+                                    <div class="fw-bold">0</div>
                                     <small class="text-muted">Goles</small>
                                 </div>
                             </div>
                             <div class="col-4">
                                 <div class="border rounded p-2">
-                                    <div id="team-size-stat" class="fw-bold">0</div>
-                                    <small class="text-muted">Jugadores</small>
+                                    <div class="fw-bold">0</div>
+                                    <small class="text-muted">Victorias</small>
                                 </div>
                             </div>
                         </div>
 
-                        <div th:if="${u != null && u.hasRole('ADMIN')}" class="mt-3">
-                            <span class="badge text-bg-primary">Modo administración</span>
+                        <div th:if="${equipo != null && u != null && u.id == equipo.capitan.id}" class="mt-3">
+                            <span class="badge text-bg-primary">Eres el capitán</span>
                         </div>
                     </div>
                 </div>
 
                 <div class="card shadow-sm">
                     <div class="card-header">
-                        <h3 class="h6 mb-0">Ligas en juego</h3>
+                        <h3 class="h6 mb-0">Competiciones en juego</h3>
                     </div>
-                    <ul class="list-group list-group-flush">
+                    <ul class="list-group list-group-flush" th:if="${equipo != null && !equipo.jugadores.isEmpty()}">
                         <li class="list-group-item d-flex align-items-center gap-2">
-                            <img th:src="@{/img/logomatch4all.png}" src="/img/logomatch4all.png" alt="Liga" class="rounded" width="32" height="32">
                             <div class="d-flex align-items-baseline justify-content-between gap-2 w-100">
-                                <span class="fw-semibold">Liga Match4All - Primera</span>
-                                <span class="fw-bold text-nowrap">3º · 18 pts</span>
-                            </div>
-                        </li>
-                        <li class="list-group-item d-flex align-items-center gap-2">
-                            <img th:src="@{/img/logomatch4all.png}" src="/img/logomatch4all.png" alt="Liga" class="rounded" width="32" height="32">
-                            <div class="d-flex align-items-baseline justify-content-between gap-2 w-100">
-                                <span class="fw-semibold">Copa Match4All</span>
-                                <span class="fw-bold text-nowrap">1º · 9 pts</span>
-                            </div>
-                        </li>
-                        <li class="list-group-item d-flex align-items-center gap-2">
-                            <img th:src="@{/img/logomatch4all.png}" src="/img/logomatch4all.png" alt="Liga" class="rounded" width="32" height="32">
-                            <div class="d-flex align-items-baseline justify-content-between gap-2 w-100">
-                                <span class="fw-semibold">Liga de Verano</span>
-                                <span class="fw-bold text-nowrap">5º · 11 pts</span>
+                                <span class="fw-bold text-nowrap">Ninguna</span>
                             </div>
                         </li>
                     </ul>
                 </div>
 
-                <div id="admin-panel" th:if="${u != null && u.hasRole('ADMIN')}" class="card shadow-sm">
+                <div id="admin-panel" th:if="${equipo != null && u != null && u.id == equipo.capitan.id}" class="card shadow-sm">
                     <div class="card-header">
                         <h3 class="h6 mb-0">Gestión rápida</h3>
                     </div>
@@ -119,99 +142,23 @@
         </div>
     </main>
 
+
     <script>
-        (() => {
-            const isAdmin = Boolean(config && config.admin);
-            const playerList = document.getElementById('player-list');
-            const teamSizeStat = document.getElementById('team-size-stat');
-            const addExistingPlayerBtn = document.getElementById('add-existing-player');
-            const approveRequestBtn = document.getElementById('approve-request');
+        // Script simplificado - Los datos se cargan dinámicamente desde Thymeleaf
+        const addExistingPlayerBtn = document.getElementById('add-existing-player');
+        const approveRequestBtn = document.getElementById('approve-request');
 
-            const players = [
-                { id: 1, name: 'Pablo Rodríguez', position: 'MC', goals: 2, assists: 5 },
-                { id: 2, name: 'Bruno Lozano', position: 'DC', goals: 7, assists: 3 },
-                { id: 3, name: 'Siro Fernández', position: 'DFC', goals: 1, assists: 2 }
-            ];
-
-            const renderPlayers = () => {
-                playerList.innerHTML = '';
-
-                players.forEach((player) => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>
-                            <div class="d-flex align-items-center gap-2">
-                                <img src="/img/user.jpg" alt="Jugador" class="rounded-circle" width="28" height="28">
-                                <span class="fw-semibold">${player.name}</span>
-                            </div>
-                        </td>
-                        <td>${player.position}</td>
-                        <td>${player.goals}</td>
-                        <td>${player.assists}</td>
-                        <td class="text-end" style="width: 56px;">
-                            ${isAdmin ? `<button data-action="remove" data-id="${player.id}" class="btn btn-sm btn-outline-danger">Quitar</button>` : ''}
-                        </td>
-                    `;
-                    playerList.appendChild(row);
-                });
-
-                const size = String(players.length);
-                if (teamSizeStat) {
-                    teamSizeStat.textContent = size;
-                }
-            };
-
-            playerList.addEventListener('click', (event) => {
-                const target = event.target;
-                if (!(target instanceof HTMLElement)) {
-                    return;
-                }
-
-                const action = target.getAttribute('data-action');
-                const id = Number(target.getAttribute('data-id'));
-                if (!action || Number.isNaN(id) || !isAdmin) {
-                    return;
-                }
-
-                if (action === 'remove') {
-                    const index = players.findIndex((player) => player.id === id);
-                    if (index >= 0) {
-                        players.splice(index, 1);
-                        renderPlayers();
-                    }
-                }
+        if (addExistingPlayerBtn) {
+            addExistingPlayerBtn.addEventListener('click', () => {
+                alert('Funcionalidad en desarrollo: Añadir jugador');
             });
+        }
 
-            if (addExistingPlayerBtn) {
-                addExistingPlayerBtn.addEventListener('click', () => {
-                    players.push({
-                        id: Date.now(),
-                        name: "Marcelo Gómez",
-                        position: "MC",
-                        goals: 0,
-                        assists: 0
-                    });
-
-                    renderPlayers();
-                });
-            }
-
-            if (approveRequestBtn) {
-                approveRequestBtn.addEventListener('click', () => {
-                    players.push({
-                        id: Date.now(),
-                        name: "Marcelo Diaz",
-                        position: "MC",
-                        goals: 0,
-                        assists: 0
-                    });
-
-                    renderPlayers();
-                });
-            }
-
-            renderPlayers();
-        })();
+        if (approveRequestBtn) {
+            approveRequestBtn.addEventListener('click', () => {
+                alert('Funcionalidad en desarrollo: Aceptar solicitud');
+            });
+        }
     </script>
 
     <th:block th:replace="~{fragments/footer.html :: footer}" />

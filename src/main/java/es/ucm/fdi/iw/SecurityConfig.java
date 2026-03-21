@@ -70,6 +70,7 @@ public class SecurityConfig {
 				.requestMatchers("/api/**").permitAll()            // <-- public api access
 				.requestMatchers("/admin/**").hasRole("ADMIN")	   // <-- administration
 				.requestMatchers("/user/**").hasAnyRole("USER", "ARBITRO")	     // <-- logged-in users
+				.requestMatchers("/vistacrearequipo").hasRole("USER")
 				.anyRequest().authenticated()
             )
             .formLogin(formLogin -> formLogin
