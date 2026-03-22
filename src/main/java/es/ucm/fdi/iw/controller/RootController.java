@@ -1,31 +1,31 @@
 package es.ucm.fdi.iw.controller;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.hibernate.Hibernate;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.multipart.MultipartFile;
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
-
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.transaction.Transactional;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.UUID;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import es.ucm.fdi.iw.model.Competicion;
 import es.ucm.fdi.iw.model.Equipo;
 import es.ucm.fdi.iw.model.User;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+import jakarta.transaction.Transactional;
 
 /**
  *  Non-authenticated requests only.
@@ -65,26 +65,44 @@ public class RootController {
     @GetMapping("/vistagestionequipo")
     @Transactional
     public String vistagestionequipo(Model model, HttpSession session) {
-        
+
         User u = (User) session.getAttribute("u");
-        
+
         if (u != null && u.getEquipo() != null) {
 
             Equipo equipo = entityManager.find(Equipo.class, u.getEquipo().getId());
-            
+
             org.hibernate.Hibernate.initialize(equipo.getJugadores());
-            
+
             model.addAttribute("equipo", equipo);
         } else {
             model.addAttribute("equipo", null);
         }
-        
+
+        return "vistagestionequipo";
+    }
+
+    @GetMapping("/vistagestionequipo/{id}")
+    @Transactional
+    public String vistagestionequipoById(@PathVariable("id") long id, Model model) {
+        Equipo equipo = entityManager.find(Equipo.class, id);
+        if (equipo != null) {
+            org.hibernate.Hibernate.initialize(equipo.getJugadores());
+        }
+        model.addAttribute("equipo", equipo);
         return "vistagestionequipo";
     }
 
     @GetMapping("/vistacompeticiones")      //ruta
     public String vistacompeticiones(Model model) { //nombre da igual
         return "vistacompeticiones";            //nombre de vista
+    }
+
+    @GetMapping("/vistacompeticiones/{id}")
+    public String vistacompeticion(@PathVariable("id") long id, Model model) {
+        Competicion competicion = entityManager.find(Competicion.class, id);
+        model.addAttribute("competicionSeleccionada", competicion);
+        return "vistacompeticiones";
     }
 
         @GetMapping("/vistalistacompeticiones")      //ruta
@@ -101,7 +119,257 @@ public class RootController {
 
     @GetMapping("/vistapaneladmin")      //ruta
     public String vistapaneladmin(Model model) { //nombre da igual
+        List<Competicion> competiciones = entityManager
+            .createQuery("SELECT DISTINCT c FROM Competicion c LEFT JOIN FETCH c.equipos ORDER BY c.id DESC", Competicion.class)
+            .getResultList();
+
+        List<User> jugadores = entityManager
+            .createQuery("SELECT u FROM User u ORDER BY u.username ASC", User.class)
+            .getResultList();
+
+        List<Equipo> equipos = entityManager
+            .createQuery("SELECT DISTINCT e FROM Equipo e LEFT JOIN FETCH e.capitan ORDER BY e.nombre ASC", Equipo.class)
+            .getResultList();
+
+        model.addAttribute("competiciones", competiciones);
+        model.addAttribute("jugadores", jugadores);
+        model.addAttribute("equipos", equipos);
         return "vistapaneladmin";            //nombre de vista
+    }
+
+    @PostMapping("/admin/crear-competicion")
+    @Transactional
+    public String crearCompeticion(
+            @RequestParam("nombre") String nombre,
+            @RequestParam("tipo") String tipo,
+            @RequestParam("capacidad") int capacidad,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
+
+        User currentUser = (User) session.getAttribute("u");
+        if (currentUser == null) {
+            return "redirect:/login";
+        }
+
+        if (!currentUser.hasRole(User.Role.ADMIN)) {
+            redirectAttributes.addFlashAttribute("error", "No tienes permisos para crear competiciones.");
+            return "redirect:/vistapaneladmin";
+        }
+
+        if (nombre == null || nombre.trim().length() < 3) {
+            redirectAttributes.addFlashAttribute("error", "El nombre de la competición debe tener al menos 3 caracteres.");
+            return "redirect:/vistapaneladmin";
+        }
+
+        if (capacidad < 2 || capacidad > 128) {
+            redirectAttributes.addFlashAttribute("error", "La capacidad debe estar entre 2 y 128 equipos.");
+            return "redirect:/vistapaneladmin";
+        }
+
+        List<Competicion> existentes = entityManager
+            .createQuery("SELECT c FROM Competicion c WHERE LOWER(c.nombre) = LOWER(:nombre)", Competicion.class)
+            .setParameter("nombre", nombre.trim())
+            .getResultList();
+
+        if (!existentes.isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", "Ya existe una competición con ese nombre.");
+            return "redirect:/vistapaneladmin";
+        }
+
+        Competicion.Tipo tipoCompeticion;
+        try {
+            tipoCompeticion = Competicion.Tipo.valueOf(tipo.trim().toUpperCase());
+        } catch (IllegalArgumentException ex) {
+            redirectAttributes.addFlashAttribute("error", "Tipo de competición no válido.");
+            return "redirect:/vistapaneladmin";
+        }
+
+        Competicion competicion = new Competicion();
+        competicion.setNombre(nombre.trim());
+        competicion.setTipo(tipoCompeticion);
+        competicion.setCapacidad(capacidad);
+        entityManager.persist(competicion);
+
+        redirectAttributes.addFlashAttribute("success", "Competición creada correctamente.");
+        return "redirect:/vistapaneladmin";
+    }
+
+    @PostMapping("/admin/toggle-user/{id}")
+    @Transactional
+    public String toggleUserPanel(
+            @PathVariable("id") long id,
+            @RequestParam("reason") String reason,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
+
+        User currentUser = (User) session.getAttribute("u");
+        if (currentUser == null) {
+            return "redirect:/login";
+        }
+        if (!currentUser.hasRole(User.Role.ADMIN)) {
+            redirectAttributes.addFlashAttribute("error", "No tienes permisos para moderar usuarios.");
+            return "redirect:/vistapaneladmin";
+        }
+
+        User target = entityManager.find(User.class, id);
+        if (target == null) {
+            redirectAttributes.addFlashAttribute("error", "Usuario no encontrado.");
+            return "redirect:/vistapaneladmin";
+        }
+
+        if (target.getId() == currentUser.getId()) {
+            redirectAttributes.addFlashAttribute("error", "No puedes deshabilitar tu propio usuario.");
+            return "redirect:/vistapaneladmin";
+        }
+
+        if (reason == null || reason.trim().length() < 3) {
+            redirectAttributes.addFlashAttribute("error", "Debes indicar un motivo de al menos 3 caracteres.");
+            return "redirect:/vistapaneladmin";
+        }
+
+        target.setEnabled(!target.isEnabled());
+        log.info("Moderación de usuario {} por admin {}. Motivo: {}", target.getUsername(), currentUser.getUsername(), reason.trim());
+        redirectAttributes.addFlashAttribute("success", "Estado de usuario actualizado.");
+        return "redirect:/vistapaneladmin";
+    }
+
+    @PostMapping("/admin/eliminar-competicion/{id}")
+    @Transactional
+    public String eliminarCompeticion(
+            @PathVariable("id") long id,
+            @RequestParam("reason") String reason,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
+
+        User currentUser = (User) session.getAttribute("u");
+        if (currentUser == null) {
+            return "redirect:/login";
+        }
+        if (!currentUser.hasRole(User.Role.ADMIN)) {
+            redirectAttributes.addFlashAttribute("error", "No tienes permisos para eliminar competiciones.");
+            return "redirect:/vistapaneladmin";
+        }
+        if (reason == null || reason.trim().length() < 3) {
+            redirectAttributes.addFlashAttribute("error", "Debes indicar un motivo de al menos 3 caracteres.");
+            return "redirect:/vistapaneladmin";
+        }
+
+        Competicion competicion = entityManager.find(Competicion.class, id);
+        if (competicion == null) {
+            redirectAttributes.addFlashAttribute("error", "Competición no encontrada.");
+            return "redirect:/vistapaneladmin";
+        }
+
+        long partidosCount = entityManager
+            .createQuery("SELECT COUNT(p) FROM Partido p WHERE p.idCompeticion.id = :id", Long.class)
+            .setParameter("id", id)
+            .getSingleResult();
+
+        if (partidosCount > 0) {
+            redirectAttributes.addFlashAttribute("error", "No se puede eliminar la competición porque tiene partidos asociados.");
+            return "redirect:/vistapaneladmin";
+        }
+
+        competicion.getEquipos().clear();
+        entityManager.merge(competicion);
+        entityManager.remove(competicion);
+
+        log.info("Competición {} eliminada por admin {}. Motivo: {}", competicion.getNombre(), currentUser.getUsername(), reason.trim());
+        redirectAttributes.addFlashAttribute("success", "Competición eliminada correctamente.");
+        return "redirect:/vistapaneladmin";
+    }
+
+    @PostMapping("/admin/moderar-equipo/{id}")
+    @Transactional
+    public String moderarEquipo(
+            @PathVariable("id") long id,
+            @RequestParam("reason") String reason,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
+
+        User currentUser = (User) session.getAttribute("u");
+        if (currentUser == null) {
+            return "redirect:/login";
+        }
+        if (!currentUser.hasRole(User.Role.ADMIN)) {
+            redirectAttributes.addFlashAttribute("error", "No tienes permisos para moderar equipos.");
+            return "redirect:/vistapaneladmin";
+        }
+        if (reason == null || reason.trim().length() < 3) {
+            redirectAttributes.addFlashAttribute("error", "Debes indicar un motivo de al menos 3 caracteres.");
+            return "redirect:/vistapaneladmin";
+        }
+
+        Equipo equipo = entityManager.find(Equipo.class, id);
+        if (equipo == null) {
+            redirectAttributes.addFlashAttribute("error", "Equipo no encontrado.");
+            return "redirect:/vistapaneladmin";
+        }
+
+        log.info("Equipo {} moderado por admin {}. Motivo: {}", equipo.getNombre(), currentUser.getUsername(), reason.trim());
+        redirectAttributes.addFlashAttribute("success", "Equipo moderado correctamente.");
+        return "redirect:/vistapaneladmin";
+    }
+
+    @PostMapping("/admin/eliminar-equipo/{id}")
+    @Transactional
+    public String eliminarEquipo(
+            @PathVariable("id") long id,
+            @RequestParam("reason") String reason,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
+
+        User currentUser = (User) session.getAttribute("u");
+        if (currentUser == null) {
+            return "redirect:/login";
+        }
+        if (!currentUser.hasRole(User.Role.ADMIN)) {
+            redirectAttributes.addFlashAttribute("error", "No tienes permisos para eliminar equipos.");
+            return "redirect:/vistapaneladmin";
+        }
+        if (reason == null || reason.trim().length() < 3) {
+            redirectAttributes.addFlashAttribute("error", "Debes indicar un motivo de al menos 3 caracteres.");
+            return "redirect:/vistapaneladmin";
+        }
+
+        Equipo equipo = entityManager.find(Equipo.class, id);
+        if (equipo == null) {
+            redirectAttributes.addFlashAttribute("error", "Equipo no encontrado.");
+            return "redirect:/vistapaneladmin";
+        }
+
+        long partidosCount = entityManager
+            .createQuery("SELECT COUNT(p) FROM Partido p WHERE p.local.id = :id OR p.visitante.id = :id", Long.class)
+            .setParameter("id", id)
+            .getSingleResult();
+
+        if (partidosCount > 0) {
+            redirectAttributes.addFlashAttribute("error", "No se puede eliminar el equipo porque tiene partidos asociados.");
+            return "redirect:/vistapaneladmin";
+        }
+
+        List<User> usersInTeam = entityManager
+            .createQuery("SELECT u FROM User u WHERE u.equipo.id = :id", User.class)
+            .setParameter("id", id)
+            .getResultList();
+        for (User user : usersInTeam) {
+            user.setEquipo(null);
+        }
+
+        List<Competicion> competicionesConEquipo = entityManager
+            .createQuery("SELECT DISTINCT c FROM Competicion c JOIN c.equipos e WHERE e.id = :id", Competicion.class)
+            .setParameter("id", id)
+            .getResultList();
+        for (Competicion competicion : competicionesConEquipo) {
+            competicion.getEquipos().removeIf(e -> e.getId() == id);
+            entityManager.merge(competicion);
+        }
+
+        entityManager.remove(equipo);
+
+        log.info("Equipo {} eliminado por admin {}. Motivo: {}", equipo.getNombre(), currentUser.getUsername(), reason.trim());
+        redirectAttributes.addFlashAttribute("success", "Equipo eliminado correctamente.");
+        return "redirect:/vistapaneladmin";
     }
 
     @GetMapping("/vistacrearequipo")      //ruta

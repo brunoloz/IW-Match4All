@@ -1,35 +1,51 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html class="h-100" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <th:block th:replace="~{fragments/head :: header}" />
     <title>IW: Match4All - Panel Admin</title>
 </head>
 
-<body>
+<body class="d-flex flex-column h-100 bg-light">
     <header th:replace="~{fragments/nav.html :: nav}"></header>
 
-    <main class="container py-4">
-        <div class="mx-auto" style="max-width: 1100px;">
-            <div class="mb-4">
-                <h1 class="h3 mb-3">Panel de Administración</h1>
-                <div class="d-flex gap-2 flex-wrap position-relative">
-                    <div class="flex-grow-1 position-relative" style="min-width: 280px;">
-                        <input id="global-search" type="text" class="form-control" placeholder="Buscar ligas, equipos o jugadores...">
+    <main class="flex-shrink-0">
+        <div class="container mb-5">
+            <div class="row align-items-end mb-4">
+                <div class="col-md-7">
+                    <h1 class="display-5 fw-bold mb-2">Panel de Administración</h1>
+                    <p class="text-muted mb-0">Gestión centralizada de competiciones, jugadores y equipos.</p>
+                </div>
+                <div class="col-md-5">
+                    <div class="d-flex gap-2 flex-column flex-sm-row">
+                        <input id="global-search" type="text" class="form-control admin-search-input"
+                            placeholder="Buscar ligas, equipos o jugadores...">
+                        <button id="btn-create-comp" type="button" class="btn btn-brand-blue px-4 admin-search-button"
+                            data-bs-toggle="modal" data-bs-target="#createCompetitionModal">Crear Competición</button>
                     </div>
-                    <button id="btn-create-comp" type="button" class="btn btn-primary">Crear Competición</button>
                 </div>
             </div>
 
-            <div class="mt-4">
-                <section class="card shadow-sm mb-3">
-                    <div class="card-header">
-                        <h3 class="h5 mb-0">Competiciones Activas</h3>
+            <div th:if="${error}" class="alert alert-danger" role="alert">
+                <span th:text="${error}"></span>
+            </div>
+
+            <div th:if="${success}" class="alert alert-success" role="alert">
+                <span th:text="${success}"></span>
+            </div>
+
+            <hr class="my-4">
+
+            <div class="mt-4 d-grid gap-4">
+                <section class="card shadow-sm hover-lift">
+                    <div class="card-header admin-card-header">
+                        <h3 class="h5 admin-card-title">Competiciones Activas</h3>
+                        <span class="admin-card-subtitle">Estado y operaciones</span>
                     </div>
                     <div class="card-body p-0">
                         <div class="table-responsive">
-                            <table class="table table-hover mb-0 align-middle">
-                                <thead class="table-light">
+                            <table class="table table-bordered table-hover mb-0 align-middle">
+                                <thead class="admin-table-header">
                                     <tr>
                                         <th>Nombre</th>
                                         <th>Tipo</th>
@@ -38,41 +54,96 @@
                                         <th>Acción</th>
                                     </tr>
                                 </thead>
-                                <tbody id="competitions-body"></tbody>
+                                <tbody id="competitions-body">
+                                    <tr th:if="${#lists.isEmpty(competiciones)}">
+                                        <td colspan="5" class="text-muted">No hay competiciones para mostrar.</td>
+                                    </tr>
+                                    <tr th:each="competition : ${competiciones}" class="admin-search-row">
+                                        <td>
+                                            <a th:href="@{/vistacompeticiones/{id}(id=${competition.id})}" class="text-decoration-none fw-semibold" th:text="${competition.nombre}">Nombre</a>
+                                        </td>
+                                        <td th:text="${competition.tipo}">Tipo</td>
+                                        <td th:text="|${#lists.size(competition.equipos)}/${competition.capacidad}|">0/0</td>
+                                        <td>
+                                            <span th:if="${#lists.isEmpty(competition.partidos)}" class="badge text-bg-primary">Inscripción</span>
+                                            <span th:unless="${#lists.isEmpty(competition.partidos)}" class="badge text-bg-success">En curso</span>
+                                        </td>
+                                        <td>
+                                            <button type="button" class="btn btn-sm btn-outline-danger open-action-modal"
+                                                data-action-url=""
+                                                th:attr="data-action-url=@{/admin/eliminar-competicion/{id}(id=${competition.id})}"
+                                                data-action-title="Eliminar competición"
+                                                data-item-label="competición"
+                                                th:attrappend="data-item-name=${competition.nombre}">
+                                                Eliminar
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
                             </table>
                         </div>
                     </div>
                 </section>
 
-                <section class="card shadow-sm mb-3">
-                    <div class="card-header">
-                        <h3 class="h5 mb-0">Jugadores</h3>
+                <section class="card shadow-sm hover-lift">
+                    <div class="card-header admin-card-header">
+                        <h3 class="h5 admin-card-title">Jugadores</h3>
+                        <span class="admin-card-subtitle">Control de actividad</span>
                     </div>
                     <div class="card-body p-0">
                         <div class="table-responsive">
-                            <table class="table table-hover mb-0 align-middle">
-                                <thead class="table-light">
+                            <table class="table table-bordered table-hover mb-0 align-middle">
+                                <thead class="admin-table-header">
                                     <tr>
                                         <th>Nombre</th>
-                                        <th>Email</th>
+                                        <th>Usuario</th>
+                                        <th>Roles</th>
                                         <th>Estado</th>
                                         <th>Acción</th>
                                     </tr>
                                 </thead>
-                                <tbody id="players-body"></tbody>
+                                <tbody id="players-body">
+                                    <tr th:if="${#lists.isEmpty(jugadores)}">
+                                        <td colspan="5" class="text-muted">No hay usuarios para mostrar.</td>
+                                    </tr>
+                                    <tr th:each="player : ${jugadores}" class="admin-search-row">
+                                        <td>
+                                            <a th:href="@{/user/{id}(id=${player.id})}" class="text-decoration-none fw-semibold"
+                                                th:text="${#strings.isEmpty(player.firstName) and #strings.isEmpty(player.lastName) ? player.username : player.firstName + ' ' + player.lastName}">Jugador</a>
+                                        </td>
+                                        <td>
+                                            <a th:href="@{/user/{id}(id=${player.id})}" class="text-decoration-none" th:text="${player.username}">usuario</a>
+                                        </td>
+                                        <td th:text="${player.roles}">USER</td>
+                                        <td>
+                                            <span th:if="${player.enabled}" class="badge text-bg-success">Activo</span>
+                                            <span th:unless="${player.enabled}" class="badge text-bg-secondary">Deshabilitado</span>
+                                        </td>
+                                        <td>
+                                            <button th:if="${u != null and u.id != player.id}" type="button" class="btn btn-sm open-action-modal"
+                                                th:classappend="${player.enabled} ? ' btn-outline-danger' : ' btn-outline-success'"
+                                                th:attr="data-action-url=@{/admin/toggle-user/{id}(id=${player.id})},data-action-title=${player.enabled} ? 'Deshabilitar usuario' : 'Reactivar usuario',data-item-name=${player.username}"
+                                                data-item-label="usuario">
+                                                <span th:text="${player.enabled} ? 'Deshabilitar' : 'Reactivar'">Deshabilitar</span>
+                                            </button>
+                                            <span th:if="${u != null and u.id == player.id}" class="text-muted small">Sesión actual</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
                             </table>
                         </div>
                     </div>
                 </section>
 
-                <section class="card shadow-sm mb-3">
-                    <div class="card-header">
-                        <h3 class="h5 mb-0">Equipos</h3>
+                <section class="card shadow-sm hover-lift">
+                    <div class="card-header admin-card-header">
+                        <h3 class="h5 admin-card-title">Equipos</h3>
+                        <span class="admin-card-subtitle">Sanciones y seguimiento</span>
                     </div>
                     <div class="card-body p-0">
                         <div class="table-responsive">
-                            <table class="table table-hover mb-0 align-middle">
-                                <thead class="table-light">
+                            <table class="table table-bordered table-hover mb-0 align-middle">
+                                <thead class="admin-table-header">
                                     <tr>
                                         <th>Nombre</th>
                                         <th>Capitán</th>
@@ -80,7 +151,34 @@
                                         <th>Acción</th>
                                     </tr>
                                 </thead>
-                                <tbody id="teams-body"></tbody>
+                                <tbody id="teams-body">
+                                    <tr th:if="${#lists.isEmpty(equipos)}">
+                                        <td colspan="4" class="text-muted">No hay equipos para mostrar.</td>
+                                    </tr>
+                                    <tr th:each="team : ${equipos}" class="admin-search-row">
+                                        <td>
+                                            <a th:href="@{/vistagestionequipo/{id}(id=${team.id})}" class="text-decoration-none fw-semibold" th:text="${team.nombre}">Equipo</a>
+                                        </td>
+                                        <td>
+                                            <a th:if="${team.capitan != null}" th:href="@{/user/{id}(id=${team.capitan.id})}" class="text-decoration-none" th:text="${team.capitan.username}">capitan</a>
+                                            <span th:unless="${team.capitan != null}">-</span>
+                                        </td>
+                                        <td>
+                                            <span th:if="${team.capitan != null}" class="badge text-bg-success">Registrado</span>
+                                            <span th:unless="${team.capitan != null}" class="badge text-bg-warning">Sin capitán</span>
+                                        </td>
+                                        <td class="d-flex gap-2 flex-wrap">
+                                            <button type="button" class="btn btn-sm btn-outline-danger open-action-modal"
+                                                data-action-url=""
+                                                th:attr="data-action-url=@{/admin/eliminar-equipo/{id}(id=${team.id})}"
+                                                data-action-title="Eliminar equipo"
+                                                data-item-label="equipo"
+                                                th:attrappend="data-item-name=${team.nombre}">
+                                                Eliminar
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
                             </table>
                         </div>
                     </div>
@@ -89,202 +187,109 @@
         </div>
     </main>
 
+    <div class="modal fade" id="createCompetitionModal" tabindex="-1" aria-labelledby="createCompetitionModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createCompetitionModalLabel">Crear Competición</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form th:action="@{/admin/crear-competicion}" method="post">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="competition-name" class="form-label">Nombre</label>
+                            <input id="competition-name" name="nombre" type="text" class="form-control" minlength="3" maxlength="100" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="competition-type" class="form-label">Tipo</label>
+                            <select id="competition-type" name="tipo" class="form-select" required>
+                                <option value="LIGA">Liga</option>
+                                <option value="TORNEO">Torneo</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="competition-size" class="form-label">Tamaño (equipos)</label>
+                            <input id="competition-size" name="capacidad" type="number" min="2" max="128" class="form-control" required>
+                            <div class="form-text">Selecciona un valor entre 2 y 128.</div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-brand-blue">Crear Competición</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="actionReasonModal" tabindex="-1" aria-labelledby="actionReasonModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="actionReasonModalLabel">Acción de moderación</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="actionReasonForm" method="post">
+                    <div class="modal-body">
+                        <p class="mb-3" id="actionReasonDescription">Indica el motivo de la acción.</p>
+                        <div class="mb-0">
+                            <label for="action-reason" class="form-label">Motivo</label>
+                            <textarea id="action-reason" name="reason" class="form-control" rows="3" minlength="3" maxlength="300" required></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary" id="actionReasonSubmit">Confirmar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <th:block th:replace="~{fragments/footer.html :: footer}" />
 
     <script>
         (() => {
-            const competitions = [
-                { id: 1, name: 'Liga Match4All - Primera', type: 'Liga', teams: '12/16', status: 'En curso' },
-                { id: 2, name: 'Copa Match4All', type: 'Copa', teams: '8/16', status: 'Inscripción' }
-            ];
-
-            const players = [
-                { id: 1, name: 'Ana Ruiz', email: 'ana.ruiz@match4all.com', status: 'Activo' },
-                { id: 2, name: 'Mario López', email: 'mario.lopez@match4all.com', status: 'Activo' },
-                { id: 3, name: 'Carla Martín', email: 'carla.martin@match4all.com', status: 'Suspendido' }
-            ];
-
-            const teams = [
-                { id: 1, name: 'Tigres FC', captain: 'Ana Ruiz', status: 'Activo' },
-                { id: 2, name: 'Leones United', captain: 'Mario López', status: 'Activo' },
-                { id: 3, name: 'Halcones', captain: 'Carla Martín', status: 'Sancionado' }
-            ];
-
-            const competitionsBody = document.getElementById('competitions-body');
-            const playersBody = document.getElementById('players-body');
-            const teamsBody = document.getElementById('teams-body');
             const searchInput = document.getElementById('global-search');
-            const createCompetitionButton = document.getElementById('btn-create-comp');
+            const allRows = Array.from(document.querySelectorAll('.admin-search-row'));
+            const actionButtons = Array.from(document.querySelectorAll('.open-action-modal'));
 
-            const renderAll = () => {
-                renderCompetitions();
-                renderPlayers();
-                renderTeams();
-            };
+            const actionForm = document.getElementById('actionReasonForm');
+            const actionDescription = document.getElementById('actionReasonDescription');
+            const actionTitle = document.getElementById('actionReasonModalLabel');
+            const actionReason = document.getElementById('action-reason');
+            const actionSubmit = document.getElementById('actionReasonSubmit');
+            const actionModalElement = document.getElementById('actionReasonModal');
+            const actionModal = new bootstrap.Modal(actionModalElement);
 
-            const renderCompetitions = () => {
+            const applySearchFilter = () => {
                 const query = searchInput.value.trim().toLowerCase();
-                const filtered = competitions.filter((competition) => {
-                    return competition.name.toLowerCase().includes(query) || competition.type.toLowerCase().includes(query);
-                });
-
-                competitionsBody.innerHTML = '';
-
-                if (filtered.length === 0) {
-                    const row = document.createElement('tr');
-                    row.innerHTML = '<td colspan="5" class="text-muted">No hay competiciones para mostrar.</td>';
-                    competitionsBody.appendChild(row);
-                    return;
-                }
-
-                filtered.forEach((competition) => {
-                    const statusBadge = competition.status === 'En curso' ? 'text-bg-success' : 'text-bg-primary';
-                    const action = competition.status === 'Inscripción'
-                        ? `<button class="btn btn-sm btn-success" data-action="matchmaking" data-id="${competition.id}">Iniciar Matchmaking</button>`
-                        : '<span class="text-muted">-</span>';
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${competition.name}</td>
-                        <td>${competition.type}</td>
-                        <td>${competition.teams}</td>
-                        <td><span class="badge ${statusBadge}">${competition.status}</span></td>
-                        <td>${action}</td>
-                    `;
-                    competitionsBody.appendChild(row);
+                allRows.forEach((row) => {
+                    const matches = row.textContent.toLowerCase().includes(query);
+                    row.style.display = matches ? '' : 'none';
                 });
             };
 
-            const renderPlayers = () => {
-                const query = searchInput.value.trim().toLowerCase();
-                const filtered = players.filter((player) => {
-                    return player.name.toLowerCase().includes(query)
-                        || player.email.toLowerCase().includes(query)
-                        || player.status.toLowerCase().includes(query);
+            actionButtons.forEach((button) => {
+                button.addEventListener('click', () => {
+                    const actionUrl = button.dataset.actionUrl;
+                    const modalTitle = button.dataset.actionTitle || 'Acción';
+                    const itemLabel = button.dataset.itemLabel || 'elemento';
+                    const itemName = button.dataset.itemName || '';
+
+                    actionForm.action = actionUrl;
+                    actionTitle.textContent = modalTitle;
+                    actionDescription.textContent = `Indica el motivo para esta acción:`;
+                    actionReason.value = '';
+                    actionSubmit.textContent = modalTitle;
+
+                    actionModal.show();
                 });
-
-                playersBody.innerHTML = '';
-
-                if (filtered.length === 0) {
-                    const row = document.createElement('tr');
-                    row.innerHTML = '<td colspan="4" class="text-muted">No hay jugadores para mostrar.</td>';
-                    playersBody.appendChild(row);
-                    return;
-                }
-
-                filtered.forEach((player) => {
-                    const statusBadge = player.status === 'Activo' ? 'text-bg-success' : 'text-bg-secondary';
-                    const actionLabel = player.status === 'Suspendido' ? 'Reactivar' : 'Suspender';
-                    const actionClass = player.status === 'Suspendido' ? 'btn-outline-success' : 'btn-outline-danger';
-
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${player.name}</td>
-                        <td>${player.email}</td>
-                        <td><span class="badge ${statusBadge}">${player.status}</span></td>
-                        <td>
-                            <button class="btn btn-sm ${actionClass}" data-action="suspend-player" data-id="${player.id}">${actionLabel}</button>
-                        </td>
-                    `;
-                    playersBody.appendChild(row);
-                });
-            };
-
-            const renderTeams = () => {
-                const query = searchInput.value.trim().toLowerCase();
-                const filtered = teams.filter((team) => {
-                    return team.name.toLowerCase().includes(query)
-                        || team.captain.toLowerCase().includes(query)
-                        || team.status.toLowerCase().includes(query);
-                });
-
-                teamsBody.innerHTML = '';
-
-                if (filtered.length === 0) {
-                    const row = document.createElement('tr');
-                    row.innerHTML = '<td colspan="4" class="text-muted">No hay equipos para mostrar.</td>';
-                    teamsBody.appendChild(row);
-                    return;
-                }
-
-                filtered.forEach((team) => {
-                    const statusBadge = team.status === 'Activo' ? 'text-bg-success' : 'text-bg-warning';
-                    const actionLabel = team.status === 'Sancionado' ? 'Quitar sanción' : 'Sancionar';
-                    const actionClass = team.status === 'Sancionado' ? 'btn-outline-success' : 'btn-outline-warning';
-
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${team.name}</td>
-                        <td>${team.captain}</td>
-                        <td><span class="badge ${statusBadge}">${team.status}</span></td>
-                        <td>
-                            <button class="btn btn-sm ${actionClass}" data-action="sanction-team" data-id="${team.id}">${actionLabel}</button>
-                        </td>
-                    `;
-                    teamsBody.appendChild(row);
-                });
-            };
-
-            createCompetitionButton.addEventListener('click', () => {
-                competitions.push({
-                    id: Date.now(),
-                    name: 'Torneo Relámpago Demo',
-                    type: 'Torneo',
-                    teams: '0/8',
-                    status: 'Inscripción'
-                });
-                renderAll();
             });
 
-            competitionsBody.addEventListener('click', (event) => {
-                const button = event.target.closest('button[data-action="matchmaking"]');
-                if (!button) {
-                    return;
-                }
-
-                const competitionId = Number(button.dataset.id);
-                const competition = competitions.find((item) => item.id === competitionId);
-                if (!competition || competition.status !== 'Inscripción') {
-                    return;
-                }
-
-                competition.status = 'En curso';
-                renderAll();
-            });
-
-            playersBody.addEventListener('click', (event) => {
-                const button = event.target.closest('button[data-action="suspend-player"]');
-                if (!button) {
-                    return;
-                }
-
-                const playerId = Number(button.dataset.id);
-                const player = players.find((item) => item.id === playerId);
-                if (!player) {
-                    return;
-                }
-
-                player.status = player.status === 'Suspendido' ? 'Activo' : 'Suspendido';
-                renderAll();
-            });
-
-            teamsBody.addEventListener('click', (event) => {
-                const button = event.target.closest('button[data-action="sanction-team"]');
-                if (!button) {
-                    return;
-                }
-
-                const teamId = Number(button.dataset.id);
-                const team = teams.find((item) => item.id === teamId);
-                if (!team) {
-                    return;
-                }
-
-                team.status = team.status === 'Sancionado' ? 'Activo' : 'Sancionado';
-                renderAll();
-            });
-
-            searchInput.addEventListener('input', renderAll);
-            renderAll();
+            searchInput.addEventListener('input', applySearchFilter);
         })();
     </script>
 </body>

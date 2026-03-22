@@ -1,0 +1,39 @@
+
+.admin-search-input,
+.admin-search-button {
+    min-height: 46px;
+}
+
+.admin-search-button {
+    height: auto;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.admin-card-header {
+    background-color: white;
+    border-bottom: 1px solid #dee2e6;
+    padding: 0.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.admin-card-title {
+    margin-bottom: 0;
+}
+
+.admin-card-subtitle {
+    color: #6c757d;
+    font-size: 0.875rem;
+}
+
+.admin-table-header {
+    background-color: #fcf8e3;
+}
+
+@media (max-width: 575.98px) {
+    .admin-search-button {
+        width: 100%;
+    }
+}
