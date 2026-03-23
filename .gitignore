@@ -35,5 +35,6 @@ build/
 deploy/
 iwdata.zip
 iwdb.mv.db
+iwdb.trace.db
 log.txt
 

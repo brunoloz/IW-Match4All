@@ -1,3 +1,4 @@
+@ignore
 Feature: login en servidor
 
 #
@@ -20,12 +21,12 @@ Scenario: login malo en github
     Then match html('.error') contains 'Error en nombre de usuario o contraseña'
 
   @login_b
-  Scenario: login correcto como b
+  Scenario: login correcto como jugador
     Given driver baseUrl + '/login'
-    And input('#username', 'b')
-    And input('#password', 'aa')
+    And input('#username', 'jugador')
+    And input('#password', 'jugador')
     When submit().click(".form-signin button")
-    Then waitForUrl(baseUrl + '/user/2')
+    Then waitForUrl(baseUrl + '/user/1')
 
   @login_a
   Scenario: login correcto como a

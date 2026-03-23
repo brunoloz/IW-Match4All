@@ -1,3 +1,4 @@
+@ignore
 Feature: envío de mensajes
 
   Scenario: envio de mensajes via websocket

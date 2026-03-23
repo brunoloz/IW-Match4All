@@ -387,12 +387,15 @@ public class RootController {
             HttpSession session,
             Model model) {
 
-        User currentUser = (User) session.getAttribute("u");
+
+        User sessionUser = (User) session.getAttribute("u");
 
         // Validaciones
-        if (currentUser == null) {
+        if (sessionUser == null) {
             return "redirect:/login";
         }
+
+        User currentUser = entityManager.find(User.class, sessionUser.getId());
 
         if (currentUser.getEquipo() != null) {
             model.addAttribute("error", "Ya perteneces a un equipo. No puedes crear uno nuevo.");
@@ -435,6 +438,9 @@ public class RootController {
                 Files.write(uploadPath.resolve(fileName), escudo.getBytes());
                 nuevoEquipo.setEscudo("equipos/" + fileName);
             }
+            else {
+                nuevoEquipo.setEscudo("equipos/default.png");
+            }
 
             // Añadir el usuario a la lista de jugadores 
             if (nuevoEquipo.getJugadores() == null) {
@@ -450,7 +456,7 @@ public class RootController {
             User usuarioActualizado = entityManager.merge(currentUser);
             session.setAttribute("u", usuarioActualizado); 
 
-            return "redirect:/user/" + usuarioActualizado.getId();
+            return "redirect:/vistagestionequipo";
 
         } catch (IOException e) {
             log.error("Error al subir el escudo del equipo", e);
