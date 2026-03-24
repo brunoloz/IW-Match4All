@@ -64,6 +64,7 @@ public class SecurityConfig {
 				.requestMatchers("/vistagestionequipo").permitAll()
 				.requestMatchers("/vistacompeticiones").permitAll()
 				.requestMatchers("/vistalistacompeticiones").permitAll()
+				.requestMatchers("/vistalistaequipos").permitAll()
 				.requestMatchers("/vistaactapartido").permitAll()
 				.requestMatchers("/vistapaneladmin").hasRole("ADMIN")
 				.requestMatchers("/autores").permitAll()

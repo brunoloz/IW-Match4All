@@ -45,6 +45,10 @@ public class User implements Transferable<User.Transfer> {
   @JoinColumn(name="id_equipo")
   private Equipo equipo;
 
+  @ManyToOne
+  @JoinColumn(name="id_equipo_solicitado")
+  private Equipo equipoSolicitado;
+
   @Column(nullable = false, unique = true)
   private String username;
   @Column(nullable = false)

@@ -57,11 +57,6 @@ public class RootController {
         return "fragments/index";
     }
 
-    @GetMapping("/vistaperfil")      //ruta
-    public String vistaperfil(Model model) { //nombre da igual
-        return "vistaperfil";            //nombre de vista
-    }
-
     @GetMapping("/vistagestionequipo")
     @Transactional
     public String vistagestionequipo(Model model, HttpSession session) {
@@ -73,6 +68,7 @@ public class RootController {
             Equipo equipo = entityManager.find(Equipo.class, u.getEquipo().getId());
 
             org.hibernate.Hibernate.initialize(equipo.getJugadores());
+            org.hibernate.Hibernate.initialize(equipo.getSolicitantes());
 
             model.addAttribute("equipo", equipo);
         } else {
@@ -111,6 +107,13 @@ public class RootController {
         List<Competicion> listaCompeticiones = entityManager.createQuery("SELECT c FROM Competicion c", Competicion.class).getResultList();
         model.addAttribute("competiciones", listaCompeticiones);
         return "vistalistacompeticiones";            //nombre de vista
+    }
+
+        @GetMapping("/vistalistaequipos")      
+    public String vistalistaequipos(Model model){
+        List<Equipo> listaEquipos = entityManager.createQuery("SELECT e FROM Equipo e", Equipo.class).getResultList();
+        model.addAttribute("equipos", listaEquipos);
+        return "vistalistaequipos";
     }
 
     @GetMapping("/vistaactapartido")      //ruta
@@ -475,4 +478,51 @@ public class RootController {
         return "autores";            //nombre de vista
     }
 
+    @PostMapping("/equipo/solicitar")
+    @Transactional
+    public String solicitarUnirse(@RequestParam("idEquipo") long idEquipo, HttpSession session, RedirectAttributes redir) {
+        User sessionUser = (User) session.getAttribute("u");
+        if (sessionUser == null) return "redirect:/login";
+
+        User currentUser = entityManager.find(User.class, sessionUser.getId());
+        
+        if (currentUser.getEquipo() != null) {
+            redir.addFlashAttribute("error", "Ya perteneces a un equipo.");
+            return "redirect:/vistaperfil";
+        }
+
+        Equipo eq = entityManager.find(Equipo.class, idEquipo);
+        currentUser.setEquipoSolicitado(eq);
+        
+        entityManager.merge(currentUser);
+        session.setAttribute("u", currentUser); 
+        
+        redir.addFlashAttribute("success", "Solicitud enviada a " + eq.getNombre());
+        return "redirect:/vistaperfil";
+    }
+
+    @PostMapping("/equipo/aceptar")
+    @Transactional
+    public String aceptarJugador(@RequestParam("idUsuario") long idUsuario, HttpSession session, RedirectAttributes redir) {
+        User capitan = (User) session.getAttribute("u");
+        if (capitan == null) return "redirect:/login";
+        
+        User dbCapitan = entityManager.find(User.class, capitan.getId());
+        Equipo equipo = dbCapitan.getEquipo();
+        
+        if (equipo == null || equipo.getCapitan().getId() != capitan.getId()) {
+            redir.addFlashAttribute("error", "No tienes permisos.");
+            return "redirect:/vistagestionequipo";
+        }
+
+        User solicitante = entityManager.find(User.class, idUsuario);
+        if (solicitante != null && solicitante.getEquipoSolicitado() != null && solicitante.getEquipoSolicitado().getId() == equipo.getId()) {
+            solicitante.setEquipo(equipo);
+            solicitante.setEquipoSolicitado(null);
+            entityManager.merge(solicitante);
+            
+            redir.addFlashAttribute("success", solicitante.getUsername() + " ha sido aceptado en el equipo.");
+        }
+        return "redirect:/vistagestionequipo";
+    }
 }

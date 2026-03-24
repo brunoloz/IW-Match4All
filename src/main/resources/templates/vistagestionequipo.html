@@ -125,17 +125,27 @@
                     </ul>
                 </div>
 
-                <div id="admin-panel" th:if="${equipo != null && u != null && u.id == equipo.capitan.id}" class="card shadow-sm">
-                    <div class="card-header">
-                        <h3 class="h6 mb-0">Gestión rápida</h3>
+                <div id="admin-panel" th:if="${equipo != null && u != null && u.id == equipo.capitan.id}" class="card shadow-sm border-success">
+                    <div class="card-header bg-success text-white">
+                        <h3 class="h6 mb-0">Solicitudes de Ingreso</h3>
                     </div>
-                    <div class="card-body">
-                        <div class="mb-3">
-                            <div class="d-flex flex-wrap gap-2">
-                                <button id="add-existing-player" type="button" class="btn btn-primary btn-sm">Añadir jugador</button>
-                                <button id="approve-request" type="button" class="btn btn-success btn-sm">Aceptar solicitud</button>
-                            </div>
+                    <div class="card-body p-0">
+                        <div th:if="${equipo.solicitantes == null || equipo.solicitantes.isEmpty()}" class="p-3 text-center text-muted">
+                            <small>No hay solicitudes pendientes.</small>
                         </div>
+                        
+                        <ul class="list-group list-group-flush" th:if="${equipo.solicitantes != null && !equipo.solicitantes.isEmpty()}">
+                            <li th:each="solicitante : ${equipo.solicitantes}" class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <span class="fw-bold" th:text="${solicitante.firstName} + ' ' + ${solicitante.lastName}">Jugador</span>
+                                    <span class="badge bg-secondary ms-1" th:text="${solicitante.posicion != null ? solicitante.posicion : 'Sin pos.'}">Posición</span>
+                                </div>
+                                <form th:action="@{/equipo/aceptar}" method="post" class="m-0">
+                                    <input type="hidden" name="idUsuario" th:value="${solicitante.id}">
+                                    <button type="submit" class="btn btn-sm btn-success">Aceptar</button>
+                                </form>
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </section>

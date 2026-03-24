@@ -5,7 +5,7 @@ SET REFERENTIAL_INTEGRITY FALSE;
 INSERT INTO competicion (id, nombre, tipo, capacidad) 
 SELECT id, nombre, tipo, capacidad FROM CSVREAD('classpath:competicion.csv');
 
-INSERT INTO equipos (id, nom, descripcion, ubicacion, escudo, id_capitan) 
+INSERT INTO equipo (id, nom, descripcion, ubicacion, escudo, id_capitan) 
 SELECT id, nom, descripcion, ubicacion, escudo, id_capitan FROM CSVREAD('classpath:equipos.csv');
 
 INSERT INTO iwuser (id, username, password, first_name, last_name, age, avatar, descripcion, posicion, goles, asist, t_ama, t_roj, p_jug, porimb, lesion, enabled, roles, id_equipo) 

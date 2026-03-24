@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Data
 @NoArgsConstructor
-@Table(name = "Equipos")
+@Table(name = "Equipo")
 public class Equipo {
 
     @Id
@@ -45,4 +45,7 @@ public class Equipo {
 
     @OneToMany(mappedBy = "equipo")
     private List<User> jugadores = new ArrayList<>();
+
+    @OneToMany(mappedBy = "equipoSolicitado")
+    private List<User> solicitantes = new ArrayList<>();
 }

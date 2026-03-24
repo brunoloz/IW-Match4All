@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html class="h-100" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <th:block th:replace="~{fragments/head :: header}" />
+    <title>Listado de Equipos</title>
+</head>
+
+<body class="d-flex flex-column h-100">
+    <header th:replace="~{fragments/nav.html :: nav}"></header>
+
+    <main class="flex-shrink-0">
+        <div class="container mb-5 mt-4">
+            
+            <div class="row align-items-center mb-4">
+                <div class="col-md-8">
+                    <h1 class="display-5 fw-bold" style="color: var(--brand-blue);">Equipos Disponibles</h1>
+                    <p class="text-muted">Explora los equipos registrados.</p>
+                </div>
+                <div class="col-md-5 text-end">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0"></span>
+                        <input type="text" class="form-control border-start-0" placeholder="Buscar equipos">
+                        <button class="btn btn-primary px-4" type="button" style="background-color: var(--brand-blue);">Buscar</button>
+                    </div>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <span class="badge badge-custom" style="background-color: var(--brand-blue); color: white;" th:text="${equipos.size() + ' equipos encontrados'}">0 equipos</span>
+                </div>
+            </div>
+
+            <hr class="my-4">
+
+            <!-- equipos en tarjetas -->
+            <div class="row">
+                <div class="col-12">
+                    <th:block th:if="${!equipos.isEmpty()}">
+                        <div th:each="e : ${equipos}" class="competicion-card hover-lift">
+                            <!-- Imagen/Icono -->
+                            <div class="competicion-image">
+                                <i class="bi bi-trophy-fill"></i>
+                            </div>
+
+                            <!-- Contenido -->
+                            <div class="competicion-content">
+                                <!-- Encabezado -->
+                                <div class="competicion-header">
+                                    <h2 class="competicion-title" th:text="${e.nombre}">Nombre de Equipo</h2>
+                                </div>
+
+                                <!-- Información -->
+                                <div class="competicion-info">
+                                    <!-- Tipo/Modalidad -->
+                                    <div class="info-item">
+                                        <i class="bi bi-bookmark-fill"></i>
+                                        <div class="info-item-content">
+                                            <span class="info-label">Descripción</span>
+                                            <span class="info-value" th:text="${e.descripcion}"></span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Capacidad -->
+                                    <div class="info-item">
+                                        <i class="bi bi-people-fill"></i>
+                                        <div class="info-item-content">
+                                            <span class="info-label">Número de jugadores</span>
+                                            <span class="info-value" th:text="${e.jugadores.size() + 'jugadores'}">0 jugadores</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Estado -->
+                                    <div class="info-item">
+                                        <div class="info-item-content">
+                                            <span class="info-label">Ubicación</span>
+                                            <span class="info-value" th:text="${e.ubicacion}"></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Botones de acción -->
+                                <div class="competicion-footer">
+                                    <a th:href="@{/vistagestionequipo/{id}(id=${e.id})}" class="btn-brand-blue" style="text-decoration:none; display:inline-flex; align-items:center;">
+                                        <i class="bi bi-arrow-right me-2"></i>Ver Detalles
+                                    </a>
+                                </div>
+
+                                <div class="competicion-footer">
+                                    <a th:href="@{/vistaequipos/{id}(id=${e.id})}" class="btn-brand-blue" style="text-decoration:none; display:inline-flex; align-items:center;">
+                                        <i class="bi bi-arrow-right me-2"></i>Solicitar inscripción
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </th:block>
+
+                    <!-- Estado vacío -->
+                    <th:block th:if="${equipos.isEmpty()}">
+                        <div class="empty-state">
+                            <i class="bi bi-inbox"></i>
+                            <h4>No hay equipos disponibles</h4>
+                            <p class="text-muted mb-0">No hay equipos registrados en el sistema en este momento.</p>
+                        </div>
+                    </th:block>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <th:block th:replace="~{fragments/footer.html :: footer}" />
+</body>
+</html>
