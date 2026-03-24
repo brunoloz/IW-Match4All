@@ -488,7 +488,12 @@ public class RootController {
         
         if (currentUser.getEquipo() != null) {
             redir.addFlashAttribute("error", "Ya perteneces a un equipo.");
-            return "redirect:/vistaperfil";
+            return "redirect:/vistalistaequipos";
+        }
+
+        if (currentUser.getEquipoSolicitado() != null) {
+            redir.addFlashAttribute("error", "Ya tienes una solicitud pendiente para otro equipo.");
+            return "redirect:/vistalistaequipos";
         }
 
         Equipo eq = entityManager.find(Equipo.class, idEquipo);
@@ -498,7 +503,7 @@ public class RootController {
         session.setAttribute("u", currentUser); 
         
         redir.addFlashAttribute("success", "Solicitud enviada a " + eq.getNombre());
-        return "redirect:/vistaperfil";
+        return "redirect:/vistalistaequipos";
     }
 
     @PostMapping("/equipo/aceptar")
@@ -523,6 +528,69 @@ public class RootController {
             
             redir.addFlashAttribute("success", solicitante.getUsername() + " ha sido aceptado en el equipo.");
         }
+        return "redirect:/vistagestionequipo";
+    }
+
+    @PostMapping("/equipo/rechazar")
+    @Transactional
+    public String rechazarJugador(@RequestParam("idUsuario") long idUsuario, HttpSession session, RedirectAttributes redir) {
+        User capitan = (User) session.getAttribute("u");
+        if (capitan == null) return "redirect:/login";
+        
+        User dbCapitan = entityManager.find(User.class, capitan.getId());
+        Equipo equipo = dbCapitan.getEquipo();
+        
+        if (equipo == null || equipo.getCapitan().getId() != capitan.getId()) {
+            redir.addFlashAttribute("error", "No tienes permisos.");
+            return "redirect:/vistagestionequipo";
+        }
+
+        User solicitante = entityManager.find(User.class, idUsuario);
+        if (solicitante != null && solicitante.getEquipoSolicitado() != null && solicitante.getEquipoSolicitado().getId() == equipo.getId()) {
+            
+            solicitante.setEquipoSolicitado(null);
+            entityManager.merge(solicitante);
+            
+            redir.addFlashAttribute("success", "Has rechazado la solicitud de " + solicitante.getUsername() + ".");
+        }
+        return "redirect:/vistagestionequipo";
+    }
+
+    @PostMapping("/equipo/expulsar")
+    @Transactional
+    public String expulsarJugador(@RequestParam("idUsuario") long idUsuario, HttpSession session, RedirectAttributes redir) {
+        User sessionUser = (User) session.getAttribute("u");
+        if (sessionUser == null) return "redirect:/login";
+
+        User capitan = entityManager.find(User.class, sessionUser.getId());
+        Equipo equipo = capitan.getEquipo();
+        
+        if (equipo == null || equipo.getCapitan().getId() != capitan.getId()) {
+            redir.addFlashAttribute("error", "No tienes permisos para expulsar jugadores.");
+            return "redirect:/vistagestionequipo";
+        }
+
+        User jugadorAExpulsar = entityManager.find(User.class, idUsuario);
+
+        if (jugadorAExpulsar == null) {
+            redir.addFlashAttribute("error", "El jugador no existe.");
+            return "redirect:/vistagestionequipo";
+        }
+
+        if (jugadorAExpulsar.getEquipo() == null || jugadorAExpulsar.getEquipo().getId() != equipo.getId()) {
+            redir.addFlashAttribute("error", "Ese jugador no pertenece a tu equipo.");
+            return "redirect:/vistagestionequipo";
+        }
+
+        if (jugadorAExpulsar.getId() == capitan.getId()) {
+            redir.addFlashAttribute("error", "No puedes expulsarte a ti mismo. Para salir, debes disolver el equipo o ceder la capitanía.");
+            return "redirect:/vistagestionequipo";
+        }
+
+        jugadorAExpulsar.setEquipo(null);
+        entityManager.merge(jugadorAExpulsar);
+        
+        redir.addFlashAttribute("success", "Has expulsado a " + jugadorAExpulsar.getUsername() + " del equipo.");
         return "redirect:/vistagestionequipo";
     }
 }

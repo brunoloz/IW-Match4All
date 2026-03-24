@@ -10,6 +10,19 @@
     <header th:replace="~{fragments/nav.html :: nav}"></header>
 
     <main class="container py-4">
+        <div class="row mb-3">
+            <div class="col-12">
+                <div th:if="${success}" class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+                    <i class="bi bi-check-circle-fill me-2"></i><span th:text="${success}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                <div th:if="${error}" class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i><span th:text="${error}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            </div>
+        </div>
+
         <div class="row g-3 align-items-start">
             <section class="col-12 col-lg-8">
                 <div class="card shadow-sm">
@@ -45,12 +58,16 @@
                                         <td th:text="${jugador.goles}"></td>
                                         <td th:text="${jugador.asistencias}"></td>
                                         <td class="text-end" style="width: 56px;">
-                                            <button th:if="${u != null && u.id == equipo.capitan.id}" 
-                                                    type="button" 
-                                                    class="btn btn-sm btn-outline-danger"
-                                                    onclick='alert("Funcionalidad en desarrollo")'>
-                                                Quitar
-                                            </button>
+                                            <form th:if="${session.u != null and equipo.capitan != null and session.u.id == equipo.capitan.id and jugador.id != session.u.id}" 
+                                                th:action="@{/equipo/expulsar}" method="post" class="m-0"
+                                                onsubmit="return confirm('¿Estás seguro de que quieres expulsar a este jugador de la plantilla?');">
+                                                
+                                                <input type="hidden" name="idUsuario" th:value="${jugador.id}">
+                                                
+                                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Expulsar jugador">
+                                                    Quitar
+                                                </button>
+                                            </form>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -125,7 +142,7 @@
                     </ul>
                 </div>
 
-                <div id="admin-panel" th:if="${equipo != null && u != null && u.id == equipo.capitan.id}" class="card shadow-sm border-success">
+                <div id="admin-panel" th:if="${equipo != null && u != null && equipo.capitan != null && u.id == equipo.capitan.id}" class="card shadow-sm border-success">
                     <div class="card-header bg-success text-white">
                         <h3 class="h6 mb-0">Solicitudes de Ingreso</h3>
                     </div>
@@ -140,10 +157,21 @@
                                     <span class="fw-bold" th:text="${solicitante.firstName} + ' ' + ${solicitante.lastName}">Jugador</span>
                                     <span class="badge bg-secondary ms-1" th:text="${solicitante.posicion != null ? solicitante.posicion : 'Sin pos.'}">Posición</span>
                                 </div>
-                                <form th:action="@{/equipo/aceptar}" method="post" class="m-0">
-                                    <input type="hidden" name="idUsuario" th:value="${solicitante.id}">
-                                    <button type="submit" class="btn btn-sm btn-success">Aceptar</button>
-                                </form>
+                                <div class="d-flex gap-2 m-0">
+                                    <form th:action="@{/equipo/aceptar}" method="post" class="m-0">
+                                        <input type="hidden" name="idUsuario" th:value="${solicitante.id}">
+                                        <button type="submit" class="btn btn-sm btn-success" title="Aceptar en el equipo">
+                                            <i class="bi bi-check-lg"></i> Aceptar
+                                        </button>
+                                    </form>
+                                    
+                                    <form th:action="@{/equipo/rechazar}" method="post" class="m-0">
+                                        <input type="hidden" name="idUsuario" th:value="${solicitante.id}">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Rechazar solicitud">
+                                            <i class="bi bi-x-lg"></i> Rechazar
+                                        </button>
+                                    </form>
+                                </div>
                             </li>
                         </ul>
                     </div>
@@ -151,25 +179,6 @@
             </section>
         </div>
     </main>
-
-
-    <script>
-        // Script simplificado - Los datos se cargan dinámicamente desde Thymeleaf
-        const addExistingPlayerBtn = document.getElementById('add-existing-player');
-        const approveRequestBtn = document.getElementById('approve-request');
-
-        if (addExistingPlayerBtn) {
-            addExistingPlayerBtn.addEventListener('click', () => {
-                alert('Funcionalidad en desarrollo: Añadir jugador');
-            });
-        }
-
-        if (approveRequestBtn) {
-            approveRequestBtn.addEventListener('click', () => {
-                alert('Funcionalidad en desarrollo: Aceptar solicitud');
-            });
-        }
-    </script>
 
     <th:block th:replace="~{fragments/footer.html :: footer}" />
 </body>

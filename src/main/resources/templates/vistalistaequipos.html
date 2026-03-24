@@ -10,6 +10,17 @@
     <header th:replace="~{fragments/nav.html :: nav}"></header>
 
     <main class="flex-shrink-0">
+        <div class="container mt-3">
+            <div th:if="${success}" class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+                <i class="bi bi-check-circle-fill me-2"></i><span th:text="${success}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i><span th:text="${error}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </div>
+
         <div class="container mb-5 mt-4">
             
             <div class="row align-items-center mb-4">
@@ -82,12 +93,14 @@
                                     <a th:href="@{/vistagestionequipo/{id}(id=${e.id})}" class="btn-brand-blue" style="text-decoration:none; display:inline-flex; align-items:center;">
                                         <i class="bi bi-arrow-right me-2"></i>Ver Detalles
                                     </a>
-                                </div>
 
-                                <div class="competicion-footer">
-                                    <a th:href="@{/vistaequipos/{id}(id=${e.id})}" class="btn-brand-blue" style="text-decoration:none; display:inline-flex; align-items:center;">
-                                        <i class="bi bi-arrow-right me-2"></i>Solicitar inscripción
-                                    </a>
+                                    <form th:action="@{/equipo/solicitar}" method="post" class="m-0">
+                                        <input type="hidden" name="idEquipo" th:value="${e.id}">
+                                        
+                                        <button type="submit" class="btn-brand-blue" style="border: none; cursor: pointer; display: inline-flex; align-items: center;">
+                                            <i class="bi bi-arrow-right me-2"></i>Solicitar inscripción
+                                        </button>
+                                    </form>
                                 </div>
                             </div>
                         </div>
