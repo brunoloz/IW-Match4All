@@ -17,6 +17,13 @@
                     <h1 class="display-5 fw-bold" style="color: var(--brand-blue);">Competiciones Activas</h1>
                     <p class="text-muted">Explora los torneos y ligas disponibles actualmente.</p>
                 </div>
+                <div class="col-md-5 text-end">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0"></span>
+                        <input type="text" class="form-control border-start-0" placeholder="Buscar competiciones">
+                        <button class="btn btn-primary px-4" type="button" style="background-color: var(--brand-blue);">Buscar</button>
+                    </div>
+                </div>
                 <div class="col-md-4 text-md-end">
                     <span class="badge badge-custom" style="background-color: var(--brand-blue); color: white;" th:text="${competiciones.size() + ' competiciones encontradas'}">0 competiciones</span>
                 </div>
@@ -72,7 +79,7 @@
 
                                 <!-- Botones de acción -->
                                 <div class="competicion-footer">
-                                    <a th:href="@{/competicion/{id}(id=${c.id})}" class="btn-brand-blue">
+                                    <a th:href="@{/vistacompeticiones/{id}(id=${c.id})}" class="btn-brand-blue" style="text-decoration:none; display:inline-flex; align-items:center;">
                                         <i class="bi bi-arrow-right me-2"></i>Ver Detalles
                                     </a>
                                 </div>

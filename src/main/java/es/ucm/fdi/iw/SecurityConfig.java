@@ -65,11 +65,11 @@ public class SecurityConfig {
 				.requestMatchers("/vistacompeticiones").permitAll()
 				.requestMatchers("/vistalistacompeticiones").permitAll()
 				.requestMatchers("/vistaactapartido").permitAll()
-				.requestMatchers("/vistapaneladmin").permitAll()
+				.requestMatchers("/vistapaneladmin").hasRole("ADMIN")
 				.requestMatchers("/autores").permitAll()
 				.requestMatchers("/api/**").permitAll()            // <-- public api access
 				.requestMatchers("/admin/**").hasRole("ADMIN")	   // <-- administration
-				.requestMatchers("/user/**").hasAnyRole("USER", "ARBITRO")	     // <-- logged-in users
+				.requestMatchers("/user/**").permitAll()	     // <-- logged-in users
 				.requestMatchers("/vistacrearequipo").hasRole("USER")
 				.anyRequest().authenticated()
             )

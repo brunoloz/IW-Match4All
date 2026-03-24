@@ -13,18 +13,21 @@
         <div class="container mb-5">
             <div class="row align-items-end mb-4">
                 <div class="col-md-7">
-                    <h1 class="display-5 fw-bold">Clasificación de Torneos</h1>
-                </div>
-                <div class="col-md-5 text-end">
-                    <div class="input-group">
-                        <span class="input-group-text bg-white border-end-0"></span>
-                        <input type="text" class="form-control border-start-0" placeholder="buscar competiciones">
-                        <button class="btn btn-primary px-4" type="button" style="background-color: #0d6efd;">Buscar</button>
-                    </div>
+                    <h1 class="display-5 fw-bold" style="color: var(--brand-blue);" th:text="${competicionSeleccionada.nombre}">Clasificación de Torneos</h1>
                 </div>
             </div>
 
             <hr class="my-4">
+
+            <div th:if="${competicionSeleccionada != null}" class="mb-4">
+                <div class="card p-3">
+                    <h2 class="h4">Detalles de la competición</h2>
+                    <p><strong>Nombre:</strong> <span th:text="${competicionSeleccionada.nombre}">Nombre</span></p>
+                    <p><strong>Modalidad:</strong> <span th:text="${competicionSeleccionada.tipo}">Tipo</span></p>
+                    <p><strong>Capacidad:</strong> <span th:text="${competicionSeleccionada.capacidad}">0</span></p>
+                    <a href="/vistalistacompeticiones" class="btn btn-secondary">Volver a lista</a>
+                </div>
+            </div>
 
             <section class="card shadow-sm mb-5">
                 <div class="card-header bg-white border-bottom py-2">

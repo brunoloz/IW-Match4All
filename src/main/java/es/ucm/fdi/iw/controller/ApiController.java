@@ -32,10 +32,10 @@ import es.ucm.fdi.iw.model.Message;
 import es.ucm.fdi.iw.model.User;
 import es.ucm.fdi.iw.model.User.Role;
 import io.karatelabs.js.Context;
-//import io.karatelabs.js.Interpreter;
-//import io.karatelabs.js.Node;
-//import io.karatelabs.js.Parser;
-//import io.karatelabs.js.Source;
+import io.karatelabs.js.Interpreter;
+import io.karatelabs.js.Node;
+import io.karatelabs.js.Parser;
+import io.karatelabs.js.Source;
 import jakarta.persistence.EntityManager;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -103,7 +103,7 @@ public class ApiController {
    * @param vars
    * @return
    */
- /* private Object eval(String source, Map<String, Object> vars) {
+    private Object eval(String source, Map<String, Object> vars) {
     Parser parser = new Parser(new Source(source));
     Node node = parser.parse();
     Context context = Context.root();
@@ -117,7 +117,7 @@ public class ApiController {
    * Executes JS code loaded from a file in the server
    */
 
-  /*@GetMapping(value = "/js", produces = MediaType.APPLICATION_JSON_VALUE)
+  @GetMapping(value = "/js", produces = MediaType.APPLICATION_JSON_VALUE)
   public Map<String,String> testJs() throws Exception{
     String start = Files.readString(
       loadFromClasspath("static/js/js-eval.js").toPath());
@@ -127,7 +127,7 @@ public class ApiController {
       "v", 10, 
       "exampleExternalVar", "patata"));
     return Map.of("result", result.toString());
-  }*/
+  }
 
   @Autowired
   private SimpMessagingTemplate messagingTemplate;

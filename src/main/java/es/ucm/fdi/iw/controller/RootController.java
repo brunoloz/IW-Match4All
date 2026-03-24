@@ -101,11 +101,12 @@ public class RootController {
     @GetMapping("/vistacompeticiones/{id}")
     public String vistacompeticion(@PathVariable("id") long id, Model model) {
         Competicion competicion = entityManager.find(Competicion.class, id);
+        //List<Equipo> clasificacion = entityManager.createQuery()
         model.addAttribute("competicionSeleccionada", competicion);
         return "vistacompeticiones";
     }
 
-        @GetMapping("/vistalistacompeticiones")      //ruta
+    @GetMapping("/vistalistacompeticiones")      //ruta
     public String vistalistacompeticiones(Model model) { //nombre da igual
         List<Competicion> listaCompeticiones = entityManager.createQuery("SELECT c FROM Competicion c", Competicion.class).getResultList();
         model.addAttribute("competiciones", listaCompeticiones);
