@@ -45,7 +45,7 @@ Actualmente en nuestra aplicación hemos implementado 4 funcionalidades:
 
 <img width="1919" height="1079" alt="vistacrearequipo" src="https://github.com/user-attachments/assets/d859e03f-636e-4368-ae3c-a9c73ef3a402" />
 <br>
-- En cambio, si decidimos pulsar "Inscribirte a un equipo", accedemos a **vistalistaequipos.html**. En esta vista se muestra una lista con los equipos presentes en nuestra base de datos. Los botones de "Ver Detalles" y "Solicitar inscripción" funcionan correctamente. El buscador de competiciones aún no funciona.
+- En cambio, si decidimos pulsar "Inscribirte a un equipo", accedemos a **vistalistaequipos.html**. En esta vista se muestra una lista con los equipos presentes en nuestra base de datos. Los botones de "Ver Detalles" y "Solicitar inscripción" funcionan correctamente. El buscador aún no funciona.
 
 <img width="1918" height="1078" alt="vistalistaequipos" src="https://github.com/user-attachments/assets/7ec1190c-0693-4034-b995-900497a13089" />
 <br>
