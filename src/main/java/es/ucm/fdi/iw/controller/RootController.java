@@ -130,6 +130,9 @@ public class RootController {
 
         for(Competicion c : competiciones) { //carga solicitudes de inscripcion
             org.hibernate.Hibernate.initialize(c.getEquiposSolicitantes());
+            if (c.getEquiposSolicitantes() == null) {
+                c.setEquiposSolicitantes(new java.util.ArrayList<>());
+            }
         }
 
         List<User> jugadores = entityManager
@@ -618,19 +621,24 @@ public class RootController {
         }
 
         Competicion comp = entityManager.find(Competicion.class, idCompeticion);
-        
         if (comp.getEquipos().contains(equipo)) {
             redir.addFlashAttribute("error", "Tu equipo ya está inscrito en esta competición.");
             return "redirect:/vistalistacompeticiones";
         }
-        if (equipo.getCompeticionSolicitada() != null) {
-            redir.addFlashAttribute("error", "Tu equipo ya tiene una solicitud pendiente para otra competición.");
+        // Evita duplicados en solicitudes
+        if (comp.getEquiposSolicitantes().contains(equipo)) {
+            redir.addFlashAttribute("error", "Tu equipo ya ha solicitado unirse a esta competición.");
             return "redirect:/vistalistacompeticiones";
         }
-        
-        equipo.setCompeticionSolicitada(comp);
-        entityManager.merge(equipo);
-
+        // Evita que un equipo solicite varias a la vez
+        for (Competicion c : entityManager.createQuery("SELECT c FROM Competicion c", Competicion.class).getResultList()) {
+            if (c.getEquiposSolicitantes().contains(equipo)) {
+                redir.addFlashAttribute("error", "Tu equipo ya tiene una solicitud pendiente para otra competición.");
+                return "redirect:/vistalistacompeticiones";
+            }
+        }
+        comp.getEquiposSolicitantes().add(equipo);
+        entityManager.merge(comp);
         redir.addFlashAttribute("success", "Solicitud de inscripción enviada a " + comp.getNombre());
         return "redirect:/vistalistacompeticiones";
     }
@@ -644,11 +652,10 @@ public class RootController {
         Competicion comp = entityManager.find(Competicion.class, idCompeticion);
         Equipo eq = entityManager.find(Equipo.class, idEquipo);
 
-        if (comp != null && eq != null && eq.getCompeticionSolicitada() != null && eq.getCompeticionSolicitada().getId() == comp.getId()) {
-            eq.setCompeticionSolicitada(null);
+        if (comp != null && eq != null && comp.getEquiposSolicitantes().contains(eq)) {
+            comp.getEquiposSolicitantes().remove(eq);
             comp.getEquipos().add(eq);
             entityManager.merge(comp);
-            entityManager.merge(eq);
             redir.addFlashAttribute("success", eq.getNombre() + " ha sido aceptado en " + comp.getNombre());
         }
         return "redirect:/vistapaneladmin";
@@ -663,9 +670,9 @@ public class RootController {
         Competicion comp = entityManager.find(Competicion.class, idCompeticion);
         Equipo eq = entityManager.find(Equipo.class, idEquipo);
 
-        if (comp != null && eq != null && eq.getCompeticionSolicitada() != null && eq.getCompeticionSolicitada().getId() == comp.getId()) {
-            eq.setCompeticionSolicitada(null);
-            entityManager.merge(eq);
+        if (comp != null && eq != null && comp.getEquiposSolicitantes().contains(eq)) {
+            comp.getEquiposSolicitantes().remove(eq);
+            entityManager.merge(comp);
             redir.addFlashAttribute("success", "Solicitud de " + eq.getNombre() + " rechazada.");
         }
         return "redirect:/vistapaneladmin";

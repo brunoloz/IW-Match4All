@@ -51,6 +51,7 @@
                                         <th>Tipo</th>
                                         <th>Equipos</th>
                                         <th>Estado</th>
+                                        <th>Solicitudes</th>
                                         <th>Acción</th>
                                     </tr>
                                 </thead>
@@ -72,22 +73,23 @@
                                             <div th:if="${competition.equiposSolicitantes == null or #lists.isEmpty(competition.equiposSolicitantes)}" class="text-muted small">
                                                 Ninguna
                                             </div>
-                                            
-                                            <div th:if="${competition.equiposSolicitantes != null and not #lists.isEmpty(competition.equiposSolicitantes)}" class="d-flex flex-column gap-1">
-                                                <div th:each="eq : ${competition.equiposSolicitantes}" class="d-flex align-items-center justify-content-between p-1 border rounded bg-light" style="font-size: 0.85rem; min-width: 140px;">
-                                                    <span class="text-truncate fw-semibold me-2" th:text="${eq.nombre}" style="max-width: 90px;" title="Nombre del equipo"></span>
-                                                    <div class="d-flex gap-1">
-                                                        <form th:action="@{/competicion/aceptar}" method="post" class="m-0">
-                                                            <input type="hidden" name="idCompeticion" th:value="${competition.id}">
-                                                            <input type="hidden" name="idEquipo" th:value="${eq.id}">
-                                                            <button type="submit" class="btn btn-sm btn-success py-0 px-1" title="Aceptar equipo"><i class="bi bi-check-lg"></i></button>
-                                                        </form>
-                                                        <form th:action="@{/competicion/rechazar}" method="post" class="m-0">
-                                                            <input type="hidden" name="idCompeticion" th:value="${competition.id}">
-                                                            <input type="hidden" name="idEquipo" th:value="${eq.id}">
-                                                            <button type="submit" class="btn btn-sm btn-outline-danger py-0 px-1" title="Rechazar solicitud"><i class="bi bi-x-lg"></i></button>
-                                                        </form>
-                                                    </div>
+                                            <div th:each="equipo : ${competition.equiposSolicitantes}" class="d-flex align-items-center justify-content-between p-1 border rounded bg-light" style="font-size: 0.95rem; min-width: 160px;">
+                                                <a th:href="@{/vistagestionequipo/{id}(id=${equipo.id})}" class="text-truncate fw-semibold me-2 text-decoration-underline link-primary" th:text="${equipo.nombre}" style="max-width: 90px;" title="Ver equipo"></a>
+                                                <div class="d-flex gap-2">
+                                                    <form th:action="@{/competicion/aceptar}" method="post" class="m-0">
+                                                        <input type="hidden" name="idCompeticion" th:value="${competition.id}">
+                                                        <input type="hidden" name="idEquipo" th:value="${equipo.id}">
+                                                        <button type="submit" class="btn btn-sm btn-outline-success border-2 px-2 py-0 d-flex align-items-center" title="Aceptar equipo" style="font-size:1.1rem;">
+                                                            <i class="bi bi-check-lg"></i>
+                                                        </button>
+                                                    </form>
+                                                    <form th:action="@{/competicion/rechazar}" method="post" class="m-0">
+                                                        <input type="hidden" name="idCompeticion" th:value="${competition.id}">
+                                                        <input type="hidden" name="idEquipo" th:value="${equipo.id}">
+                                                        <button type="submit" class="btn btn-sm btn-outline-danger border-2 px-2 py-0 d-flex align-items-center" title="Rechazar solicitud" style="font-size:1.1rem;">
+                                                            <i class="bi bi-x-lg"></i>
+                                                        </button>
+                                                    </form>
                                                 </div>
                                             </div>
                                         </td>

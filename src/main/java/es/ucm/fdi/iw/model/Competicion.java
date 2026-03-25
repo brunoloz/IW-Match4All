@@ -1,17 +1,22 @@
 package es.ucm.fdi.iw.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;          
-import lombok.EqualsAndHashCode;
-
-import jakarta.persistence.*;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Data
@@ -45,7 +50,12 @@ public class Competicion {
     )
     private List<Equipo> equipos = new ArrayList<>();
 
-    @OneToMany(mappedBy = "competicionSolicitada")
+    @ManyToMany
+    @JoinTable(
+        name = "competicion_solicitantes", // Nombre de la tabla intermedia que se creará
+        joinColumns = @JoinColumn(name = "competicion_id"),
+        inverseJoinColumns = @JoinColumn(name = "equipo_id")
+    )
     private List<Equipo> equiposSolicitantes = new ArrayList<>();
 
     // Como en Partido.java ya definimos la relación con @ManyToOne hacia 'idCompeticion',
