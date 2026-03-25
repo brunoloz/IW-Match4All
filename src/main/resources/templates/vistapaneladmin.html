@@ -69,6 +69,29 @@
                                             <span th:unless="${#lists.isEmpty(competition.partidos)}" class="badge text-bg-success">En curso</span>
                                         </td>
                                         <td>
+                                            <div th:if="${competition.equiposSolicitantes == null or #lists.isEmpty(competition.equiposSolicitantes)}" class="text-muted small">
+                                                Ninguna
+                                            </div>
+                                            
+                                            <div th:if="${competition.equiposSolicitantes != null and not #lists.isEmpty(competition.equiposSolicitantes)}" class="d-flex flex-column gap-1">
+                                                <div th:each="eq : ${competition.equiposSolicitantes}" class="d-flex align-items-center justify-content-between p-1 border rounded bg-light" style="font-size: 0.85rem; min-width: 140px;">
+                                                    <span class="text-truncate fw-semibold me-2" th:text="${eq.nombre}" style="max-width: 90px;" title="Nombre del equipo"></span>
+                                                    <div class="d-flex gap-1">
+                                                        <form th:action="@{/competicion/aceptar}" method="post" class="m-0">
+                                                            <input type="hidden" name="idCompeticion" th:value="${competition.id}">
+                                                            <input type="hidden" name="idEquipo" th:value="${eq.id}">
+                                                            <button type="submit" class="btn btn-sm btn-success py-0 px-1" title="Aceptar equipo"><i class="bi bi-check-lg"></i></button>
+                                                        </form>
+                                                        <form th:action="@{/competicion/rechazar}" method="post" class="m-0">
+                                                            <input type="hidden" name="idCompeticion" th:value="${competition.id}">
+                                                            <input type="hidden" name="idEquipo" th:value="${eq.id}">
+                                                            <button type="submit" class="btn btn-sm btn-outline-danger py-0 px-1" title="Rechazar solicitud"><i class="bi bi-x-lg"></i></button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
                                             <button type="button" class="btn btn-sm btn-outline-danger open-action-modal"
                                                 data-action-url=""
                                                 th:attr="data-action-url=@{/admin/eliminar-competicion/{id}(id=${competition.id})}"

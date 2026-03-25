@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;       
+import lombok.EqualsAndHashCode;
 
 import jakarta.persistence.*;
 
@@ -17,6 +19,8 @@ import java.util.List;
 @Entity
 @Data
 @NoArgsConstructor
+@ToString(exclude = {"equipo", "equipoSolicitado", "sent", "received", "groups"})
+@EqualsAndHashCode(exclude = {"equipo", "equipoSolicitado", "sent", "received", "groups"})
 @NamedQueries({
     @NamedQuery(name = "User.byUsername", query = "SELECT u FROM User u "
         + "WHERE u.username = :username AND u.enabled = TRUE"),

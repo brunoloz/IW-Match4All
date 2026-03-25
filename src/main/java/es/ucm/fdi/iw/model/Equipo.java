@@ -15,10 +15,14 @@ import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;       
+import lombok.EqualsAndHashCode;  
 
 @Entity
 @Data
 @NoArgsConstructor
+@ToString(exclude = {"jugadores", "solicitantes", "competicionSolicitada"})
+@EqualsAndHashCode(exclude = {"jugadores", "solicitantes", "competicionSolicitada"})
 @Table(name = "Equipo")
 public class Equipo {
 
@@ -48,4 +52,8 @@ public class Equipo {
 
     @OneToMany(mappedBy = "equipoSolicitado")
     private List<User> solicitantes = new ArrayList<>();
+
+    @ManyToOne
+    @JoinColumn(name = "id_comp_solicitada")
+    private Competicion competicionSolicitada;
 }

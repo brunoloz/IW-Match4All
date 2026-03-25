@@ -122,10 +122,15 @@ public class RootController {
     }
 
     @GetMapping("/vistapaneladmin")      //ruta
+    @Transactional
     public String vistapaneladmin(Model model) { //nombre da igual
         List<Competicion> competiciones = entityManager
             .createQuery("SELECT DISTINCT c FROM Competicion c LEFT JOIN FETCH c.equipos ORDER BY c.id DESC", Competicion.class)
             .getResultList();
+
+        for(Competicion c : competiciones) { //carga solicitudes de inscripcion
+            org.hibernate.Hibernate.initialize(c.getEquiposSolicitantes());
+        }
 
         List<User> jugadores = entityManager
             .createQuery("SELECT u FROM User u ORDER BY u.username ASC", User.class)
@@ -478,6 +483,8 @@ public class RootController {
         return "autores";            //nombre de vista
     }
 
+    //----Solicitar, Aceptar, Rechazar, expulsar jugadores----
+
     @PostMapping("/equipo/solicitar")
     @Transactional
     public String solicitarUnirse(@RequestParam("idEquipo") long idEquipo, HttpSession session, RedirectAttributes redir) {
@@ -592,5 +599,75 @@ public class RootController {
         
         redir.addFlashAttribute("success", "Has expulsado a " + jugadorAExpulsar.getUsername() + " del equipo.");
         return "redirect:/vistagestionequipo";
+    }
+
+    //----Solicitar, Aceptar, Rechazar, expulsar equipos----
+
+    @PostMapping("/competicion/solicitar")
+    @Transactional
+    public String solicitarCompeticion(@RequestParam("idCompeticion") long idCompeticion, HttpSession session, RedirectAttributes redir) {
+        User sessionUser = (User) session.getAttribute("u");
+        if (sessionUser == null) return "redirect:/login";
+
+        User capitan = entityManager.find(User.class, sessionUser.getId());
+        Equipo equipo = capitan.getEquipo();
+
+        if (equipo == null || equipo.getCapitan().getId() != capitan.getId()) {
+            redir.addFlashAttribute("error", "Solo los capitanes pueden inscribir al equipo en una competición.");
+            return "redirect:/vistalistacompeticiones";
+        }
+
+        Competicion comp = entityManager.find(Competicion.class, idCompeticion);
+        
+        if (comp.getEquipos().contains(equipo)) {
+            redir.addFlashAttribute("error", "Tu equipo ya está inscrito en esta competición.");
+            return "redirect:/vistalistacompeticiones";
+        }
+        if (equipo.getCompeticionSolicitada() != null) {
+            redir.addFlashAttribute("error", "Tu equipo ya tiene una solicitud pendiente para otra competición.");
+            return "redirect:/vistalistacompeticiones";
+        }
+        
+        equipo.setCompeticionSolicitada(comp);
+        entityManager.merge(equipo);
+
+        redir.addFlashAttribute("success", "Solicitud de inscripción enviada a " + comp.getNombre());
+        return "redirect:/vistalistacompeticiones";
+    }
+
+    @PostMapping("/competicion/aceptar")
+    @Transactional
+    public String aceptarEquipoCompeticion(@RequestParam("idCompeticion") long idCompeticion, @RequestParam("idEquipo") long idEquipo, HttpSession session, RedirectAttributes redir) {
+        User admin = (User) session.getAttribute("u");
+        if (admin == null || !admin.hasRole(User.Role.ADMIN)) return "redirect:/vistapaneladmin";
+
+        Competicion comp = entityManager.find(Competicion.class, idCompeticion);
+        Equipo eq = entityManager.find(Equipo.class, idEquipo);
+
+        if (comp != null && eq != null && eq.getCompeticionSolicitada() != null && eq.getCompeticionSolicitada().getId() == comp.getId()) {
+            eq.setCompeticionSolicitada(null);
+            comp.getEquipos().add(eq);
+            entityManager.merge(comp);
+            entityManager.merge(eq);
+            redir.addFlashAttribute("success", eq.getNombre() + " ha sido aceptado en " + comp.getNombre());
+        }
+        return "redirect:/vistapaneladmin";
+    }
+
+    @PostMapping("/competicion/rechazar")
+    @Transactional
+    public String rechazarEquipoCompeticion(@RequestParam("idCompeticion") long idCompeticion, @RequestParam("idEquipo") long idEquipo, HttpSession session, RedirectAttributes redir) {
+        User admin = (User) session.getAttribute("u");
+        if (admin == null || !admin.hasRole(User.Role.ADMIN)) return "redirect:/vistapaneladmin";
+
+        Competicion comp = entityManager.find(Competicion.class, idCompeticion);
+        Equipo eq = entityManager.find(Equipo.class, idEquipo);
+
+        if (comp != null && eq != null && eq.getCompeticionSolicitada() != null && eq.getCompeticionSolicitada().getId() == comp.getId()) {
+            eq.setCompeticionSolicitada(null);
+            entityManager.merge(eq);
+            redir.addFlashAttribute("success", "Solicitud de " + eq.getNombre() + " rechazada.");
+        }
+        return "redirect:/vistapaneladmin";
     }
 }

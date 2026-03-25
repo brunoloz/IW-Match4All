@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;          
+import lombok.EqualsAndHashCode;
 
 import jakarta.persistence.*;
 
@@ -13,6 +15,9 @@ import java.util.List;
 
 @Entity
 @Data
+@NoArgsConstructor
+@ToString(exclude = {"equipos", "equiposSolicitantes", "partidos"})
+@EqualsAndHashCode(exclude = {"equipos", "equiposSolicitantes", "partidos"})
 public class Competicion {
 
     public enum Tipo{
@@ -39,6 +44,9 @@ public class Competicion {
         inverseJoinColumns = @JoinColumn(name = "equipo_id")
     )
     private List<Equipo> equipos = new ArrayList<>();
+
+    @OneToMany(mappedBy = "competicionSolicitada")
+    private List<Equipo> equiposSolicitantes = new ArrayList<>();
 
     // Como en Partido.java ya definimos la relación con @ManyToOne hacia 'idCompeticion',
     // aquí solo usamos mappedBy para decirle a JPA que es una relación bidireccional.
