@@ -26,7 +26,7 @@ En la raíz del proyecto, junto al pom.xml, se encuentran herramientas clave par
 -   pom.xml: Archivo de configuración de Maven que define las dependencias del proyecto
     
 ## Estado actual de la aplicación (Entrega Intermedia 25 de marzo)
-# Funcionalidades
+### Funcionalidades
 Actualmente en nuestra aplicación hemos implementado 4 funcionalidades:
 - Crear un equipo nuevo: Un usuario (jugador) sin equipo puede crear su propio equipo y convertirse en su capitán.
 - Inscripción de un equipo en una competición: El capitán del equipo puede solicitar la inscripción de su equipo a cualquier competición disponible. Será el administrador quién acepte la solicitud.
