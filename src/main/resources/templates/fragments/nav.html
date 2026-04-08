@@ -23,30 +23,33 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav ms-auto">
                          <!-- <li class="nav-item mx-3">
-                                <a class="nav-link" th:href="@{/vistaperfil}">Perfil</a>
+                                <a class="nav-link" th:href="@{/perfil}">Perfil</a>
                         </li> -->
                         <li class="nav-item mx-3">
-                                <a class="nav-link" th:href="@{/vistagestionequipo}">Gestión Equipo</a>
+                                <a class="nav-link" th:href="@{/gestionequipo}">Gestión Equipo</a>
                         </li>
                         <!-- <li class="nav-item mx-3">
-                                <a class="nav-link" th:href="@{/vistacompeticiones}">Competicion</a>
+                                <a class="nav-link" th:href="@{/competiciones}">Competicion</a>
                         </li> -->
                         <li class="nav-item mx-3">
-                                <a class="nav-link" th:href="@{/vistaactapartido}">Actas</a>
+                                <a class="nav-link" th:href="@{/actapartido}">Actas</a>
                         </li>
                         <li class="nav-item mx-3">
-                                <a class="nav-link" th:href="@{/vistalistacompeticiones}">Competiciones</a>
+                                <a class="nav-link" th:href="@{/listacompeticiones}">Competiciones</a>
                         </li>
                         <li class="nav-item mx-3">
-                                <a class="nav-link" th:href="@{/vistapaneladmin}">Panel Admin</a>
-                        </li>  
+                                <a class="nav-link" th:href="@{/listaequipos}">Equipos</a>
+                        </li>                        
+                        <!--<li class="nav-item mx-3">
+                                <a class="nav-link" th:href="@{/paneladmin}">Panel Admin</a>
+                        </li>  -->
                         <li class="nav-item mx-3">
                                 <a class="nav-link" th:href="@{/autores}">Autores</a>
                         </li>                                                                        
                         <th:block th:if="${u}">
-                            <li class="nav-item mx-3">
+                            <!-- <li class="nav-item mx-3">
                                 <a class="nav-link" th:if="${u.hasRole('ADMIN')}" th:href="@{/admin/}">Administrar</a>
-                            </li>
+                            </li> -->
 
                             <li class="nav-item mx-2">
                                 <a class="nav-link" th:href="@{/user/{id}(id=${u.id})}">
@@ -77,15 +80,15 @@
                             */-->
                             <li class="nav-item debug align-self-center" th:if="${application.debug}">
                                 <form class="d-flex" th:action="@{/login}" method="post">
-                                    <input type="hidden" name="username" value="a">
-                                    <input type="hidden" name="password" value="aa">
+                                    <input type="hidden" name="username" value="admin">
+                                    <input type="hidden" name="password" value="1234">
                                     <button type="submit" class="btn btn-outline-danger btn-sm">a</button>
                                 </form>
                             </li>
                             <li class="nav-item debug align-self-center" th:if="${application.debug}">
                                 <form class="d-flex" th:action="@{/login}" method="post">
-                                    <input type="hidden" name="username" value="b">
-                                    <input type="hidden" name="password" value="aa">
+                                    <input type="hidden" name="username" value="jugador">
+                                    <input type="hidden" name="password" value="jugador">
                                     <button type="submit" class="btn btn-outline-danger btn-sm">b</button>
                                 </form>
                             </li>

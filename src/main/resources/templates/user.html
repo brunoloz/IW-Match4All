@@ -60,13 +60,27 @@
                         </div>
 
                         <a th:if="${user.equipo != null}" 
-                           th:href="@{/vistagestionequipo}" 
+                           th:href="@{/gestionequipo}" 
                            class="btn btn-brand-blue w-100 mt-3 fw-bold text-uppercase rounded-3">
                             <i class="bi bi-people-fill me-2"></i>Mi Equipo
                         </a>
 
                     </div>
                 </div>
+
+                <div sec:authorize="hasRole('ADMIN')"class="col-lg-8 d-flex flex-column gap-4 h-100">
+                    <div class="rounded-4 shadow hover-lift p-5 flex-grow-1 d-flex flex-column justify-content-center align-items-center gap-4" style="background-color: #fff; border: 4px solid var(--brand-blue);">
+                        <p class="text-muted mb-4">Accede al panel de admistración, y toma acción sobre la aplicación.</p>
+                        <div class="d-flex gap-3 flex-wrap justify-content-center w-100">
+                            <a th:href="@{/paneladmin}" class="btn btn-brand-blue btn-lg fw-bold text-uppercase rounded-3 px-4">
+                                <i></i>Panel de Administración
+                            </a>
+                        </div>
+                    </div>
+
+        
+                </div>
+
 
                 <div sec:authorize="hasRole('USER')"class="col-lg-8 d-flex flex-column gap-4 h-100">
                     
@@ -81,10 +95,10 @@
                             <p class="text-muted mb-4">Únete a un equipo o crea uno propio para comenzar a jugar</p>
                         </div>
                         <div class="d-flex gap-3 flex-wrap justify-content-center w-100">
-                            <a th:href="@{/vistacrearequipo}" class="btn btn-brand-blue btn-lg fw-bold text-uppercase rounded-3 px-4">
+                            <a th:href="@{/crearequipo}" class="btn btn-brand-blue btn-lg fw-bold text-uppercase rounded-3 px-4">
                                 <i class="bi bi-plus-circle me-2"></i>Crear tu propio equipo
                             </a>
-                            <a th:href="@{/vistalistaequipos}" class="btn btn-brand-blue btn-lg fw-bold text-uppercase rounded-3 px-4">
+                            <a th:href="@{/listaequipos}" class="btn btn-brand-blue btn-lg fw-bold text-uppercase rounded-3 px-4">
                                 <i class="bi bi-plus-circle me-2"></i>Inscribete a un equipo
                             </a>
                         </div>

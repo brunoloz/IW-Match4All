@@ -30,9 +30,8 @@
                 </div>
                 <div class="col-md-5 text-end">
                     <div class="input-group">
-                        <span class="input-group-text bg-white border-end-0"></span>
-                        <input type="text" class="form-control border-start-0" placeholder="Buscar competiciones">
-                        <button class="btn btn-primary px-4" type="button" style="background-color: var(--brand-blue);">Buscar</button>
+                        <span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span>
+                        <input type="text" id="searchCompeticiones" class="form-control border-start-0" placeholder="Buscar competiciones por nombre...">
                     </div>
                 </div>
                 <div class="col-md-4 text-md-end">
@@ -91,7 +90,7 @@
                                 <!-- Botones de acción -->
                                 <div class="competicion-footer d-flex justify-content-start gap-2 align-items-center mt-3">
                                     
-                                    <a th:href="@{/vistacompeticiones/{id}(id=${c.id})}" class="btn btn-outline-secondary btn-sm" style="text-decoration:none; display:inline-flex; align-items:center; padding: 0.5rem 1rem; border-radius: 6px;">
+                                    <a th:href="@{/competiciones/{id}(id=${c.id})}" class="btn btn-outline-secondary btn-sm" style="text-decoration:none; display:inline-flex; align-items:center; padding: 0.5rem 1rem; border-radius: 6px;">
                                         <i class="bi bi-eye me-2"></i>Ver Detalles
                                     </a>
 
@@ -121,12 +120,36 @@
 
             <div class="mt-5 p-4 bg-light rounded-3 border" style="border-color: var(--brand-blue) !important; border-width: 2px;">
                 <h5 class="fw-bold" style="color: var(--brand-blue);"><i class="bi bi-lightbulb me-2"></i>¿Quieres crear una competición?</h5>
-                <p class="mb-0 text-muted">Si eres administrador, puedes gestionar nuevas ligas desde el <a href="/vistapaneladmin" style="color: var(--brand-red); text-decoration: none; font-weight: 600;">panel de control</a>.</p>
+                <p class="mb-0 text-muted">Si eres administrador, puedes gestionar nuevas ligas desde el <a href="/paneladmin" style="color: var(--brand-red); text-decoration: none; font-weight: 600;">panel de control</a>.</p>
             </div>
 
         </div>
     </main>
 
     <th:block th:replace="~{fragments/footer.html :: footer}" />
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('searchCompeticiones');
+            const competicionCards = document.querySelectorAll('.competicion-card');
+            const badgeCount = document.querySelector('.badge-custom');
+            
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase().trim();
+                let visibleCount = 0;
+                
+                competicionCards.forEach(card => {
+                    const competicionTitle = card.querySelector('.competicion-title').textContent.toLowerCase();
+                    const isVisible = competicionTitle.includes(searchTerm);
+                    
+                    card.style.display = isVisible ? 'flex' : 'none';
+                    if (isVisible) visibleCount++;
+                });
+                
+                // Actualizar el contador de competiciones
+                badgeCount.textContent = visibleCount + ' competición' + (visibleCount !== 1 ? 'es' : '') + ' encontrada' + (visibleCount !== 1 ? 's' : '');
+            });
+        });
+    </script>
 </body>
 </html>

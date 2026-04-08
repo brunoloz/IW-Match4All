@@ -1,2 +1,5 @@
 id,nombre,tipo,capacidad
-
+1, COPA ESPAÑA,LIGA, 25
+2, Torneo Complutense,TORNEO, 16
+3, Liga Universitaria, LIGA, 20
+4, Youth League, LIGA, 10

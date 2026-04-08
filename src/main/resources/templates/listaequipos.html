@@ -30,9 +30,8 @@
                 </div>
                 <div class="col-md-5 text-end">
                     <div class="input-group">
-                        <span class="input-group-text bg-white border-end-0"></span>
-                        <input type="text" class="form-control border-start-0" placeholder="Buscar equipos">
-                        <button class="btn btn-primary px-4" type="button" style="background-color: var(--brand-blue);">Buscar</button>
+                        <span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span>
+                        <input type="text" id="searchEquipos" class="form-control border-start-0" placeholder="Buscar equipos por nombre...">
                     </div>
                 </div>
                 <div class="col-md-4 text-md-end">
@@ -47,9 +46,12 @@
                 <div class="col-12">
                     <th:block th:if="${!equipos.isEmpty()}">
                         <div th:each="e : ${equipos}" class="competicion-card hover-lift">
-                            <!-- Imagen/Icono -->
+                            <!-- Escudo del equipo -->
                             <div class="competicion-image">
-                                <i class="bi bi-trophy-fill"></i>
+                                <img th:src="@{'/img/' + ${e.escudo}}" 
+                                     alt="Escudo" 
+                                     onerror="this.src='/img/default-team-shield.png';" 
+                                     style="width: 100%; height: 100%; object-fit: contain; padding: 10px;">
                             </div>
 
                             <!-- Contenido -->
@@ -75,7 +77,7 @@
                                         <i class="bi bi-people-fill"></i>
                                         <div class="info-item-content">
                                             <span class="info-label">Número de jugadores</span>
-                                            <span class="info-value" th:text="${e.jugadores.size() + 'jugadores'}">0 jugadores</span>
+                                            <span class="info-value" th:text="${e.jugadores.size() + ' jugadores'}">0 jugadores</span>
                                         </div>
                                     </div>
 
@@ -90,8 +92,8 @@
 
                                 <!-- Botones de acción -->
                                 <div class="competicion-footer">
-                                    <a th:href="@{/vistagestionequipo/{id}(id=${e.id})}" class="btn-brand-blue" style="text-decoration:none; display:inline-flex; align-items:center;">
-                                        <i class="bi bi-arrow-right me-2"></i>Ver Detalles
+                                    <a th:href="@{/gestionequipo/{id}(id=${e.id})}" class="btn btn-outline-secondary btn-sm" style="text-decoration:none; display:inline-flex; align-items:center; padding: 0.5rem 1rem; border-radius: 6px;">
+                                        <i class="bi bi-eye me-2"></i>Ver Detalles
                                     </a>
 
                                     <form th:action="@{/equipo/solicitar}" method="post" class="m-0">
@@ -120,5 +122,29 @@
     </main>
 
     <th:block th:replace="~{fragments/footer.html :: footer}" />
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('searchEquipos');
+            const equipoCards = document.querySelectorAll('.competicion-card');
+            const badgeCount = document.querySelector('.badge-custom');
+            
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase().trim();
+                let visibleCount = 0;
+                
+                equipoCards.forEach(card => {
+                    const equipoTitle = card.querySelector('.competicion-title').textContent.toLowerCase();
+                    const isVisible = equipoTitle.includes(searchTerm);
+                    
+                    card.style.display = isVisible ? 'flex' : 'none';
+                    if (isVisible) visibleCount++;
+                });
+                
+                // Actualizar el contador de equipos
+                badgeCount.textContent = visibleCount + ' equipo' + (visibleCount !== 1 ? 's' : '') + ' encontrado' + (visibleCount !== 1 ? 's' : '');
+            });
+        });
+    </script>
 </body>
 </html>

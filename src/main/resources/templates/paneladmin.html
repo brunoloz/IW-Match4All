@@ -61,7 +61,7 @@
                                     </tr>
                                     <tr th:each="competition : ${competiciones}" class="admin-search-row">
                                         <td>
-                                            <a th:href="@{/vistacompeticiones/{id}(id=${competition.id})}" class="text-decoration-none fw-semibold" th:text="${competition.nombre}">Nombre</a>
+                                            <a th:href="@{/competiciones/{id}(id=${competition.id})}" class="text-decoration-none fw-semibold" th:text="${competition.nombre}">Nombre</a>
                                         </td>
                                         <td th:text="${competition.tipo}">Tipo</td>
                                         <td th:text="|${#lists.size(competition.equipos)}/${competition.capacidad}|">0/0</td>
@@ -74,7 +74,7 @@
                                                 Ninguna
                                             </div>
                                             <div th:each="equipo : ${competition.equiposSolicitantes}" class="d-flex align-items-center justify-content-between p-1 border rounded bg-light" style="font-size: 0.95rem; min-width: 160px;">
-                                                <a th:href="@{/vistagestionequipo/{id}(id=${equipo.id})}" class="text-truncate fw-semibold me-2 text-decoration-underline link-primary" th:text="${equipo.nombre}" style="max-width: 90px;" title="Ver equipo"></a>
+                                                <a th:href="@{/gestionequipo/{id}(id=${equipo.id})}" class="text-truncate fw-semibold me-2 text-decoration-underline link-primary" th:text="${equipo.nombre}" style="max-width: 90px;" title="Ver equipo"></a>
                                                 <div class="d-flex gap-2">
                                                     <form th:action="@{/competicion/aceptar}" method="post" class="m-0">
                                                         <input type="hidden" name="idCompeticion" th:value="${competition.id}">
@@ -182,7 +182,7 @@
                                     </tr>
                                     <tr th:each="team : ${equipos}" class="admin-search-row">
                                         <td>
-                                            <a th:href="@{/vistagestionequipo/{id}(id=${team.id})}" class="text-decoration-none fw-semibold" th:text="${team.nombre}">Equipo</a>
+                                            <a th:href="@{/gestionequipo/{id}(id=${team.id})}" class="text-decoration-none fw-semibold" th:text="${team.nombre}">Equipo</a>
                                         </td>
                                         <td>
                                             <a th:if="${team.capitan != null}" th:href="@{/user/{id}(id=${team.capitan.id})}" class="text-decoration-none" th:text="${team.capitan.username}">capitan</a>
@@ -256,7 +256,7 @@
                     <h5 class="modal-title" id="actionReasonModalLabel">Acción de moderación</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form id="actionReasonForm" method="post">
+                <form id="actionReasonForm" method="post" th:action="@{/paneladmin}">
                     <div class="modal-body">
                         <p class="mb-3" id="actionReasonDescription">Indica el motivo de la acción.</p>
                         <div class="mb-0">

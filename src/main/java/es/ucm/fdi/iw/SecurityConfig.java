@@ -60,18 +60,18 @@ public class SecurityConfig {
 			)
       .authorizeHttpRequests(authorize -> authorize
 				.requestMatchers("/css/**", "/js/**", "/img/**", "/", "/error").permitAll()
-				.requestMatchers("/vistaperfil").permitAll()
-				.requestMatchers("/vistagestionequipo").permitAll()
-				.requestMatchers("/vistacompeticiones").permitAll()
-				.requestMatchers("/vistalistacompeticiones").permitAll()
-				.requestMatchers("/vistalistaequipos").permitAll()
-				.requestMatchers("/vistaactapartido").permitAll()
-				.requestMatchers("/vistapaneladmin").hasRole("ADMIN")
+				.requestMatchers("/perfil").permitAll()
+				.requestMatchers("/gestionequipo").permitAll()
+				.requestMatchers("/competiciones").permitAll()
+				.requestMatchers("/listacompeticiones").permitAll()
+				.requestMatchers("/listaequipos").permitAll()
+				.requestMatchers("/actapartido").permitAll()
+				.requestMatchers("/paneladmin").hasRole("ADMIN")
 				.requestMatchers("/autores").permitAll()
 				.requestMatchers("/api/**").permitAll()            // <-- public api access
 				.requestMatchers("/admin/**").hasRole("ADMIN")	   // <-- administration
 				.requestMatchers("/user/**").permitAll()	     // <-- logged-in users
-				.requestMatchers("/vistacrearequipo").hasRole("USER")
+				.requestMatchers("/crearequipo").hasRole("USER")
 				.anyRequest().authenticated()
             )
             .formLogin(formLogin -> formLogin

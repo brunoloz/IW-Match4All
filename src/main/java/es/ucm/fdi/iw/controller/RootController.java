@@ -57,9 +57,9 @@ public class RootController {
         return "fragments/index";
     }
 
-    @GetMapping("/vistagestionequipo")
+    @GetMapping("/gestionequipo")
     @Transactional
-    public String vistagestionequipo(Model model, HttpSession session) {
+    public String gestionequipo(Model model, HttpSession session) {
 
         User u = (User) session.getAttribute("u");
 
@@ -75,55 +75,55 @@ public class RootController {
             model.addAttribute("equipo", null);
         }
 
-        return "vistagestionequipo";
+        return "gestionequipo";
     }
 
-    @GetMapping("/vistagestionequipo/{id}")
+    @GetMapping("/gestionequipo/{id}")
     @Transactional
-    public String vistagestionequipoById(@PathVariable("id") long id, Model model) {
+    public String gestionequipoById(@PathVariable("id") long id, Model model) {
         Equipo equipo = entityManager.find(Equipo.class, id);
         if (equipo != null) {
             org.hibernate.Hibernate.initialize(equipo.getJugadores());
         }
         model.addAttribute("equipo", equipo);
-        return "vistagestionequipo";
+        return "gestionequipo";
     }
 
-    @GetMapping("/vistacompeticiones")      //ruta
-    public String vistacompeticiones(Model model) { //nombre da igual
-        return "vistacompeticiones";            //nombre de vista
+    @GetMapping("/competiciones")      //ruta
+    public String competiciones(Model model) { //nombre da igual
+        return "competiciones";            //nombre de 
     }
 
-    @GetMapping("/vistacompeticiones/{id}")
-    public String vistacompeticion(@PathVariable("id") long id, Model model) {
+    @GetMapping("/competiciones/{id}")
+    public String competicion(@PathVariable("id") long id, Model model) {
         Competicion competicion = entityManager.find(Competicion.class, id);
         //List<Equipo> clasificacion = entityManager.createQuery()
         model.addAttribute("competicionSeleccionada", competicion);
-        return "vistacompeticiones";
+        return "competiciones";
     }
 
-    @GetMapping("/vistalistacompeticiones")      //ruta
-    public String vistalistacompeticiones(Model model) { //nombre da igual
+    @GetMapping("/listacompeticiones")      //ruta
+    public String listacompeticiones(Model model) { //nombre da igual
         List<Competicion> listaCompeticiones = entityManager.createQuery("SELECT c FROM Competicion c", Competicion.class).getResultList();
         model.addAttribute("competiciones", listaCompeticiones);
-        return "vistalistacompeticiones";            //nombre de vista
+        return "listacompeticiones";            //nombre de 
     }
 
-        @GetMapping("/vistalistaequipos")      
-    public String vistalistaequipos(Model model){
+        @GetMapping("/listaequipos")      
+    public String listaequipos(Model model){
         List<Equipo> listaEquipos = entityManager.createQuery("SELECT e FROM Equipo e", Equipo.class).getResultList();
         model.addAttribute("equipos", listaEquipos);
-        return "vistalistaequipos";
+        return "listaequipos";
     }
 
-    @GetMapping("/vistaactapartido")      //ruta
-    public String vistaactapartido(Model model) { //nombre da igual
-        return "vistaactapartido";            //nombre de vista
+    @GetMapping("/actapartido")      //ruta
+    public String actapartido(Model model) { //nombre da igual
+        return "actapartido";            //nombre de 
     }
 
-    @GetMapping("/vistapaneladmin")      //ruta
+    @GetMapping("/paneladmin")      //ruta
     @Transactional
-    public String vistapaneladmin(Model model) { //nombre da igual
+    public String paneladmin(Model model) { //nombre da igual
         List<Competicion> competiciones = entityManager
             .createQuery("SELECT DISTINCT c FROM Competicion c LEFT JOIN FETCH c.equipos ORDER BY c.id DESC", Competicion.class)
             .getResultList();
@@ -146,7 +146,7 @@ public class RootController {
         model.addAttribute("competiciones", competiciones);
         model.addAttribute("jugadores", jugadores);
         model.addAttribute("equipos", equipos);
-        return "vistapaneladmin";            //nombre de vista
+        return "paneladmin";            //nombre de 
     }
 
     @PostMapping("/admin/crear-competicion")
@@ -165,17 +165,17 @@ public class RootController {
 
         if (!currentUser.hasRole(User.Role.ADMIN)) {
             redirectAttributes.addFlashAttribute("error", "No tienes permisos para crear competiciones.");
-            return "redirect:/vistapaneladmin";
+            return "redirect:/paneladmin";
         }
 
         if (nombre == null || nombre.trim().length() < 3) {
             redirectAttributes.addFlashAttribute("error", "El nombre de la competición debe tener al menos 3 caracteres.");
-            return "redirect:/vistapaneladmin";
+            return "redirect:/paneladmin";
         }
 
         if (capacidad < 2 || capacidad > 128) {
             redirectAttributes.addFlashAttribute("error", "La capacidad debe estar entre 2 y 128 equipos.");
-            return "redirect:/vistapaneladmin";
+            return "redirect:/paneladmin";
         }
 
         List<Competicion> existentes = entityManager
@@ -185,7 +185,7 @@ public class RootController {
 
         if (!existentes.isEmpty()) {
             redirectAttributes.addFlashAttribute("error", "Ya existe una competición con ese nombre.");
-            return "redirect:/vistapaneladmin";
+            return "redirect:/paneladmin";
         }
 
         Competicion.Tipo tipoCompeticion;
@@ -193,7 +193,7 @@ public class RootController {
             tipoCompeticion = Competicion.Tipo.valueOf(tipo.trim().toUpperCase());
         } catch (IllegalArgumentException ex) {
             redirectAttributes.addFlashAttribute("error", "Tipo de competición no válido.");
-            return "redirect:/vistapaneladmin";
+            return "redirect:/paneladmin";
         }
 
         Competicion competicion = new Competicion();
@@ -203,7 +203,7 @@ public class RootController {
         entityManager.persist(competicion);
 
         redirectAttributes.addFlashAttribute("success", "Competición creada correctamente.");
-        return "redirect:/vistapaneladmin";
+        return "redirect:/paneladmin";
     }
 
     @PostMapping("/admin/toggle-user/{id}")
@@ -220,29 +220,29 @@ public class RootController {
         }
         if (!currentUser.hasRole(User.Role.ADMIN)) {
             redirectAttributes.addFlashAttribute("error", "No tienes permisos para moderar usuarios.");
-            return "redirect:/vistapaneladmin";
+            return "redirect:/paneladmin";
         }
 
         User target = entityManager.find(User.class, id);
         if (target == null) {
             redirectAttributes.addFlashAttribute("error", "Usuario no encontrado.");
-            return "redirect:/vistapaneladmin";
+            return "redirect:/paneladmin";
         }
 
         if (target.getId() == currentUser.getId()) {
             redirectAttributes.addFlashAttribute("error", "No puedes deshabilitar tu propio usuario.");
-            return "redirect:/vistapaneladmin";
+            return "redirect:/paneladmin";
         }
 
         if (reason == null || reason.trim().length() < 3) {
             redirectAttributes.addFlashAttribute("error", "Debes indicar un motivo de al menos 3 caracteres.");
-            return "redirect:/vistapaneladmin";
+            return "redirect:/paneladmin";
         }
 
         target.setEnabled(!target.isEnabled());
         log.info("Moderación de usuario {} por admin {}. Motivo: {}", target.getUsername(), currentUser.getUsername(), reason.trim());
         redirectAttributes.addFlashAttribute("success", "Estado de usuario actualizado.");
-        return "redirect:/vistapaneladmin";
+        return "redirect:/paneladmin";
     }
 
     @PostMapping("/admin/eliminar-competicion/{id}")
@@ -259,17 +259,17 @@ public class RootController {
         }
         if (!currentUser.hasRole(User.Role.ADMIN)) {
             redirectAttributes.addFlashAttribute("error", "No tienes permisos para eliminar competiciones.");
-            return "redirect:/vistapaneladmin";
+            return "redirect:/paneladmin";
         }
         if (reason == null || reason.trim().length() < 3) {
             redirectAttributes.addFlashAttribute("error", "Debes indicar un motivo de al menos 3 caracteres.");
-            return "redirect:/vistapaneladmin";
+            return "redirect:/paneladmin";
         }
 
         Competicion competicion = entityManager.find(Competicion.class, id);
         if (competicion == null) {
             redirectAttributes.addFlashAttribute("error", "Competición no encontrada.");
-            return "redirect:/vistapaneladmin";
+            return "redirect:/paneladmin";
         }
 
         long partidosCount = entityManager
@@ -279,7 +279,7 @@ public class RootController {
 
         if (partidosCount > 0) {
             redirectAttributes.addFlashAttribute("error", "No se puede eliminar la competición porque tiene partidos asociados.");
-            return "redirect:/vistapaneladmin";
+            return "redirect:/paneladmin";
         }
 
         competicion.getEquipos().clear();
@@ -288,7 +288,7 @@ public class RootController {
 
         log.info("Competición {} eliminada por admin {}. Motivo: {}", competicion.getNombre(), currentUser.getUsername(), reason.trim());
         redirectAttributes.addFlashAttribute("success", "Competición eliminada correctamente.");
-        return "redirect:/vistapaneladmin";
+        return "redirect:/paneladmin";
     }
 
     @PostMapping("/admin/moderar-equipo/{id}")
@@ -305,22 +305,22 @@ public class RootController {
         }
         if (!currentUser.hasRole(User.Role.ADMIN)) {
             redirectAttributes.addFlashAttribute("error", "No tienes permisos para moderar equipos.");
-            return "redirect:/vistapaneladmin";
+            return "redirect:/paneladmin";
         }
         if (reason == null || reason.trim().length() < 3) {
             redirectAttributes.addFlashAttribute("error", "Debes indicar un motivo de al menos 3 caracteres.");
-            return "redirect:/vistapaneladmin";
+            return "redirect:/paneladmin";
         }
 
         Equipo equipo = entityManager.find(Equipo.class, id);
         if (equipo == null) {
             redirectAttributes.addFlashAttribute("error", "Equipo no encontrado.");
-            return "redirect:/vistapaneladmin";
+            return "redirect:/paneladmin";
         }
 
         log.info("Equipo {} moderado por admin {}. Motivo: {}", equipo.getNombre(), currentUser.getUsername(), reason.trim());
         redirectAttributes.addFlashAttribute("success", "Equipo moderado correctamente.");
-        return "redirect:/vistapaneladmin";
+        return "redirect:/paneladmin";
     }
 
     @PostMapping("/admin/eliminar-equipo/{id}")
@@ -337,17 +337,17 @@ public class RootController {
         }
         if (!currentUser.hasRole(User.Role.ADMIN)) {
             redirectAttributes.addFlashAttribute("error", "No tienes permisos para eliminar equipos.");
-            return "redirect:/vistapaneladmin";
+            return "redirect:/paneladmin";
         }
         if (reason == null || reason.trim().length() < 3) {
             redirectAttributes.addFlashAttribute("error", "Debes indicar un motivo de al menos 3 caracteres.");
-            return "redirect:/vistapaneladmin";
+            return "redirect:/paneladmin";
         }
 
         Equipo equipo = entityManager.find(Equipo.class, id);
         if (equipo == null) {
             redirectAttributes.addFlashAttribute("error", "Equipo no encontrado.");
-            return "redirect:/vistapaneladmin";
+            return "redirect:/paneladmin";
         }
 
         long partidosCount = entityManager
@@ -357,7 +357,7 @@ public class RootController {
 
         if (partidosCount > 0) {
             redirectAttributes.addFlashAttribute("error", "No se puede eliminar el equipo porque tiene partidos asociados.");
-            return "redirect:/vistapaneladmin";
+            return "redirect:/paneladmin";
         }
 
         List<User> usersInTeam = entityManager
@@ -381,12 +381,12 @@ public class RootController {
 
         log.info("Equipo {} eliminado por admin {}. Motivo: {}", equipo.getNombre(), currentUser.getUsername(), reason.trim());
         redirectAttributes.addFlashAttribute("success", "Equipo eliminado correctamente.");
-        return "redirect:/vistapaneladmin";
+        return "redirect:/paneladmin";
     }
 
-    @GetMapping("/vistacrearequipo")      //ruta
-    public String vistacrearequipo(Model model) { //nombre da igual
-        return "vistacrearequipo";            //nombre de vista
+    @GetMapping("/crearequipo")      //ruta
+    public String crearequipo(Model model) { //nombre da igual
+        return "crearequipo";            //nombre de 
     }
 
     @PostMapping("/crear-equipo")
@@ -411,12 +411,12 @@ public class RootController {
 
         if (currentUser.getEquipo() != null) {
             model.addAttribute("error", "Ya perteneces a un equipo. No puedes crear uno nuevo.");
-            return "vistacrearequipo";
+            return "crearequipo";
         }
 
         if (nombre == null || nombre.trim().length() < 3) {
             model.addAttribute("error", "El nombre del equipo debe tener al menos 3 caracteres.");
-            return "vistacrearequipo";
+            return "crearequipo";
         }
 
         // Verificar si ya existe un equipo con ese nombre
@@ -427,7 +427,7 @@ public class RootController {
 
         if (!equiposExistentes.isEmpty()) {
             model.addAttribute("error", "Ya existe un equipo con ese nombre. Elige otro nombre.");
-            return "vistacrearequipo";
+            return "crearequipo";
         }
 
         try {
@@ -468,22 +468,22 @@ public class RootController {
             User usuarioActualizado = entityManager.merge(currentUser);
             session.setAttribute("u", usuarioActualizado); 
 
-            return "redirect:/vistagestionequipo";
+            return "redirect:/gestionequipo";
 
         } catch (IOException e) {
             log.error("Error al subir el escudo del equipo", e);
             model.addAttribute("error", "Error al procesar la imagen del escudo. Inténtalo de nuevo.");
-            return "vistacrearequipo";
+            return "crearequipo";
         } catch (Exception e) {
             log.error("Error al crear el equipo", e);
             model.addAttribute("error", "Error al crear el equipo. Inténtalo de nuevo.");
-            return "vistacrearequipo";
+            return "crearequipo";
         }
     }
 
     @GetMapping("/autores")      //ruta
     public String autores(Model model) { //nombre da igual
-        return "autores";            //nombre de vista
+        return "autores";            //nombre de 
     }
 
     //----Solicitar, Aceptar, Rechazar, expulsar jugadores----
@@ -498,12 +498,12 @@ public class RootController {
         
         if (currentUser.getEquipo() != null) {
             redir.addFlashAttribute("error", "Ya perteneces a un equipo.");
-            return "redirect:/vistalistaequipos";
+            return "redirect:/listaequipos";
         }
 
         if (currentUser.getEquipoSolicitado() != null) {
             redir.addFlashAttribute("error", "Ya tienes una solicitud pendiente para otro equipo.");
-            return "redirect:/vistalistaequipos";
+            return "redirect:/listaequipos";
         }
 
         Equipo eq = entityManager.find(Equipo.class, idEquipo);
@@ -513,7 +513,7 @@ public class RootController {
         session.setAttribute("u", currentUser); 
         
         redir.addFlashAttribute("success", "Solicitud enviada a " + eq.getNombre());
-        return "redirect:/vistalistaequipos";
+        return "redirect:/listaequipos";
     }
 
     @PostMapping("/equipo/aceptar")
@@ -527,7 +527,7 @@ public class RootController {
         
         if (equipo == null || equipo.getCapitan().getId() != capitan.getId()) {
             redir.addFlashAttribute("error", "No tienes permisos.");
-            return "redirect:/vistagestionequipo";
+            return "redirect:/gestionequipo";
         }
 
         User solicitante = entityManager.find(User.class, idUsuario);
@@ -538,7 +538,7 @@ public class RootController {
             
             redir.addFlashAttribute("success", solicitante.getUsername() + " ha sido aceptado en el equipo.");
         }
-        return "redirect:/vistagestionequipo";
+        return "redirect:/gestionequipo";
     }
 
     @PostMapping("/equipo/rechazar")
@@ -552,7 +552,7 @@ public class RootController {
         
         if (equipo == null || equipo.getCapitan().getId() != capitan.getId()) {
             redir.addFlashAttribute("error", "No tienes permisos.");
-            return "redirect:/vistagestionequipo";
+            return "redirect:/gestionequipo";
         }
 
         User solicitante = entityManager.find(User.class, idUsuario);
@@ -563,7 +563,7 @@ public class RootController {
             
             redir.addFlashAttribute("success", "Has rechazado la solicitud de " + solicitante.getUsername() + ".");
         }
-        return "redirect:/vistagestionequipo";
+        return "redirect:/gestionequipo";
     }
 
     @PostMapping("/equipo/expulsar")
@@ -577,31 +577,31 @@ public class RootController {
         
         if (equipo == null || equipo.getCapitan().getId() != capitan.getId()) {
             redir.addFlashAttribute("error", "No tienes permisos para expulsar jugadores.");
-            return "redirect:/vistagestionequipo";
+            return "redirect:/gestionequipo";
         }
 
         User jugadorAExpulsar = entityManager.find(User.class, idUsuario);
 
         if (jugadorAExpulsar == null) {
             redir.addFlashAttribute("error", "El jugador no existe.");
-            return "redirect:/vistagestionequipo";
+            return "redirect:/gestionequipo";
         }
 
         if (jugadorAExpulsar.getEquipo() == null || jugadorAExpulsar.getEquipo().getId() != equipo.getId()) {
             redir.addFlashAttribute("error", "Ese jugador no pertenece a tu equipo.");
-            return "redirect:/vistagestionequipo";
+            return "redirect:/gestionequipo";
         }
 
         if (jugadorAExpulsar.getId() == capitan.getId()) {
             redir.addFlashAttribute("error", "No puedes expulsarte a ti mismo. Para salir, debes disolver el equipo o ceder la capitanía.");
-            return "redirect:/vistagestionequipo";
+            return "redirect:/gestionequipo";
         }
 
         jugadorAExpulsar.setEquipo(null);
         entityManager.merge(jugadorAExpulsar);
         
         redir.addFlashAttribute("success", "Has expulsado a " + jugadorAExpulsar.getUsername() + " del equipo.");
-        return "redirect:/vistagestionequipo";
+        return "redirect:/gestionequipo";
     }
 
     //----Solicitar, Aceptar, Rechazar, expulsar equipos----
@@ -617,37 +617,37 @@ public class RootController {
 
         if (equipo == null || equipo.getCapitan().getId() != capitan.getId()) {
             redir.addFlashAttribute("error", "Solo los capitanes pueden inscribir al equipo en una competición.");
-            return "redirect:/vistalistacompeticiones";
+            return "redirect:/listacompeticiones";
         }
 
         Competicion comp = entityManager.find(Competicion.class, idCompeticion);
         if (comp.getEquipos().contains(equipo)) {
             redir.addFlashAttribute("error", "Tu equipo ya está inscrito en esta competición.");
-            return "redirect:/vistalistacompeticiones";
+            return "redirect:/listacompeticiones";
         }
         // Evita duplicados en solicitudes
         if (comp.getEquiposSolicitantes().contains(equipo)) {
             redir.addFlashAttribute("error", "Tu equipo ya ha solicitado unirse a esta competición.");
-            return "redirect:/vistalistacompeticiones";
+            return "redirect:/listacompeticiones";
         }
         // Evita que un equipo solicite varias a la vez
         for (Competicion c : entityManager.createQuery("SELECT c FROM Competicion c", Competicion.class).getResultList()) {
             if (c.getEquiposSolicitantes().contains(equipo)) {
                 redir.addFlashAttribute("error", "Tu equipo ya tiene una solicitud pendiente para otra competición.");
-                return "redirect:/vistalistacompeticiones";
+                return "redirect:/listacompeticiones";
             }
         }
         comp.getEquiposSolicitantes().add(equipo);
         entityManager.merge(comp);
         redir.addFlashAttribute("success", "Solicitud de inscripción enviada a " + comp.getNombre());
-        return "redirect:/vistalistacompeticiones";
+        return "redirect:/listacompeticiones";
     }
 
     @PostMapping("/competicion/aceptar")
     @Transactional
     public String aceptarEquipoCompeticion(@RequestParam("idCompeticion") long idCompeticion, @RequestParam("idEquipo") long idEquipo, HttpSession session, RedirectAttributes redir) {
         User admin = (User) session.getAttribute("u");
-        if (admin == null || !admin.hasRole(User.Role.ADMIN)) return "redirect:/vistapaneladmin";
+        if (admin == null || !admin.hasRole(User.Role.ADMIN)) return "redirect:/paneladmin";
 
         Competicion comp = entityManager.find(Competicion.class, idCompeticion);
         Equipo eq = entityManager.find(Equipo.class, idEquipo);
@@ -658,14 +658,14 @@ public class RootController {
             entityManager.merge(comp);
             redir.addFlashAttribute("success", eq.getNombre() + " ha sido aceptado en " + comp.getNombre());
         }
-        return "redirect:/vistapaneladmin";
+        return "redirect:/paneladmin";
     }
 
     @PostMapping("/competicion/rechazar")
     @Transactional
     public String rechazarEquipoCompeticion(@RequestParam("idCompeticion") long idCompeticion, @RequestParam("idEquipo") long idEquipo, HttpSession session, RedirectAttributes redir) {
         User admin = (User) session.getAttribute("u");
-        if (admin == null || !admin.hasRole(User.Role.ADMIN)) return "redirect:/vistapaneladmin";
+        if (admin == null || !admin.hasRole(User.Role.ADMIN)) return "redirect:/paneladmin";
 
         Competicion comp = entityManager.find(Competicion.class, idCompeticion);
         Equipo eq = entityManager.find(Equipo.class, idEquipo);
@@ -675,6 +675,6 @@ public class RootController {
             entityManager.merge(comp);
             redir.addFlashAttribute("success", "Solicitud de " + eq.getNombre() + " rechazada.");
         }
-        return "redirect:/vistapaneladmin";
+        return "redirect:/paneladmin";
     }
 }

@@ -1,11 +1,5 @@
 id,nom,descripcion,ubicacion,id_capitan,escudo
-1,Rayo Vallecas,"Equipo histórico del sur de Madrid","Madrid",1,escudo1.png
-2,Sporting Retiro,"Club deportivo del distrito de Retiro","Madrid",2,escudo2.png
-3,CD Getafe Sur,"Club del sur de Getafe","Getafe",3,escudo3.png
-4,Atlético Leganés,"Equipo de Leganés","Leganés",4,escudo4.png
-5,UD Alcorcón,"Unión Deportiva de Alcorcón","Alcorcón",5,escudo5.png
-6,Fuenlabrada FC,"Fuenlabrada Football Club","Fuenlabrada",6,escudo6.png
-7,Móstoles City,"Ciudad Deportiva de Móstoles","Móstoles",7,escudo7.png
-8,Carabanchel United,"United Carabanchel","Madrid",8,escudo8.png
-9,Real Moratalaz,"Real Club de Moratalaz","Madrid",9,escudo9.png
+1,Rayo Vallecas,"Equipo histórico del sur de Madrid","Madrid",1,rayovallecas.png
+2,Sporting Retiro,"Club deportivo del distrito de Retiro","Madrid",2,sporting.png
+3,Real Moratalaz,"Real Club de Moratalaz","Madrid",9,moratalaz.png
 
