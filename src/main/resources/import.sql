@@ -1,6 +1,11 @@
 -- 1. Desactivamos las claves foráneas temporalmente para evitar errores de dependencias al cargar
 SET REFERENTIAL_INTEGRITY FALSE;
 
+ALTER TABLE competicion ALTER COLUMN id RESTART WITH 5;
+ALTER TABLE equipo ALTER COLUMN id RESTART WITH 5;
+ALTER TABLE iwuser ALTER COLUMN id RESTART WITH 5;
+ALTER TABLE partidos ALTER COLUMN id RESTART WITH 5;
+
 -- 2. Cargamos los datos usando la función nativa CSVREAD de H2
 INSERT INTO competicion (id, nombre, tipo, capacidad) 
 SELECT id, nombre, tipo, capacidad FROM CSVREAD('classpath:competicion.csv');

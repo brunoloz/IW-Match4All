@@ -1,5 +1,6 @@
 id,username,password,first_name,last_name,age,avatar,descripcion,posicion,goles,asistencias,tarjetas_amarillas,tarjetas_rojas,partidos_jugados,porterias_imbatidas,lesionado,enabled,roles,id_equipo
-1,jugador,{noop}jugador,Bruno,Lozano,21,user.jpg,Delantero con gran olfato goleador,Delantero,5,2,1,0,10,0,false,true,USER,
+1,jugador,{noop}jugador,Bruno,Lozano,21,user.jpg,Delantero con gran olfato goleador,Delantero,5,2,1,0,10,0,false,true,USER,1
 2,arbitro,{noop}1234,Mateu,Lahoz,45,user.jpg,Juez implacable con el reglamento,Árbitro,0,0,0,0,0,0,false,true,ARBITRO,
 3,admin,{noop}1234,Admin,Principal,38,admin.png,Administrador total de la plataforma,Soporte,0,0,0,0,0,0,false,true,ADMIN,
-4,jugador2,{noop}jugador2,Siro,Fernandez,7,user.jpg,Defensa con gran capacidad de juego,Defensa,3,0,1,2,10,0,false,true,USER,
+4,jugador2,{noop}jugador2,Siro,Fernandez,7,user.jpg,Defensa con gran capacidad de juego,Defensa,3,0,1,2,10,0,false,true,USER,2
+5,jugador3,{noop}jugador3,Pablo,Rodriguez,7,user.jpg,Mediocentro con gran capacidad de pase,Mediocentro,3,0,1,2,10,0,false,true,USER,3
