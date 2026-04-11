@@ -16,8 +16,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import es.ucm.fdi.iw.model.Topic;
+import es.ucm.fdi.iw.model.Competicion;
+import es.ucm.fdi.iw.model.Equipo;
 import es.ucm.fdi.iw.model.Lorem;
 import es.ucm.fdi.iw.model.Message;
 import es.ucm.fdi.iw.model.Transferable;
@@ -122,4 +125,240 @@ public class AdminController {
     }
     return "{\"admin\": \"populated\"}";
   }
+
+  @PostMapping("/crear-competicion")
+  @Transactional
+  public String crearCompeticion(
+          @RequestParam("nombre") String nombre,
+          @RequestParam("tipo") String tipo,
+          @RequestParam("capacidad") int capacidad,
+          HttpSession session,
+          RedirectAttributes redirectAttributes) {
+
+      User currentUser = (User) session.getAttribute("u");
+      if (currentUser == null) {
+          return "redirect:/login";
+      }
+
+      if (!currentUser.hasRole(User.Role.ADMIN)) {
+          redirectAttributes.addFlashAttribute("error", "No tienes permisos para crear competiciones.");
+          return "redirect:/paneladmin";
+      }
+
+      if (nombre == null || nombre.trim().length() < 3) {
+          redirectAttributes.addFlashAttribute("error", "El nombre de la competición debe tener al menos 3 caracteres.");
+          return "redirect:/paneladmin";
+      }
+
+      if (capacidad < 2 || capacidad > 128) {
+          redirectAttributes.addFlashAttribute("error", "La capacidad debe estar entre 2 y 128 equipos.");
+          return "redirect:/paneladmin";
+      }
+
+      List<Competicion> existentes = entityManager
+          .createQuery("SELECT c FROM Competicion c WHERE LOWER(c.nombre) = LOWER(:nombre)", Competicion.class)
+          .setParameter("nombre", nombre.trim())
+          .getResultList();
+
+      if (!existentes.isEmpty()) {
+          redirectAttributes.addFlashAttribute("error", "Ya existe una competición con ese nombre.");
+          return "redirect:/paneladmin";
+      }
+
+      Competicion.Tipo tipoCompeticion;
+      try {
+          tipoCompeticion = Competicion.Tipo.valueOf(tipo.trim().toUpperCase());
+      } catch (IllegalArgumentException ex) {
+          redirectAttributes.addFlashAttribute("error", "Tipo de competición no válido.");
+          return "redirect:/paneladmin";
+      }
+
+      Competicion competicion = new Competicion();
+      competicion.setNombre(nombre.trim());
+      competicion.setTipo(tipoCompeticion);
+      competicion.setCapacidad(capacidad);
+      entityManager.persist(competicion);
+
+      redirectAttributes.addFlashAttribute("success", "Competición creada correctamente.");
+      return "redirect:/paneladmin";
+  }
+
+  @PostMapping("/toggle-user/{id}")
+  @Transactional
+  public String toggleUserPanel(
+          @PathVariable("id") long id,
+          @RequestParam("reason") String reason,
+          HttpSession session,
+          RedirectAttributes redirectAttributes) {
+
+      User currentUser = (User) session.getAttribute("u");
+      if (currentUser == null) {
+          return "redirect:/login";
+      }
+      if (!currentUser.hasRole(User.Role.ADMIN)) {
+          redirectAttributes.addFlashAttribute("error", "No tienes permisos para moderar usuarios.");
+          return "redirect:/paneladmin";
+      }
+
+      User target = entityManager.find(User.class, id);
+      if (target == null) {
+          redirectAttributes.addFlashAttribute("error", "Usuario no encontrado.");
+          return "redirect:/paneladmin";
+      }
+
+      if (target.getId() == currentUser.getId()) {
+          redirectAttributes.addFlashAttribute("error", "No puedes deshabilitar tu propio usuario.");
+          return "redirect:/paneladmin";
+      }
+
+      if (reason == null || reason.trim().length() < 3) {
+          redirectAttributes.addFlashAttribute("error", "Debes indicar un motivo de al menos 3 caracteres.");
+          return "redirect:/paneladmin";
+      }
+
+      target.setEnabled(!target.isEnabled());
+      log.info("Moderación de usuario {} por admin {}. Motivo: {}", target.getUsername(), currentUser.getUsername(), reason.trim());
+      redirectAttributes.addFlashAttribute("success", "Estado de usuario actualizado.");
+      return "redirect:/paneladmin";
+  }
+
+  @PostMapping("/eliminar-competicion/{id}")
+  @Transactional
+  public String eliminarCompeticion(
+          @PathVariable("id") long id,
+          @RequestParam("reason") String reason,
+          HttpSession session,
+          RedirectAttributes redirectAttributes) {
+
+      User currentUser = (User) session.getAttribute("u");
+      if (currentUser == null) {
+          return "redirect:/login";
+      }
+      if (!currentUser.hasRole(User.Role.ADMIN)) {
+          redirectAttributes.addFlashAttribute("error", "No tienes permisos para eliminar competiciones.");
+          return "redirect:/paneladmin";
+      }
+      if (reason == null || reason.trim().length() < 3) {
+          redirectAttributes.addFlashAttribute("error", "Debes indicar un motivo de al menos 3 caracteres.");
+          return "redirect:/paneladmin";
+      }
+
+      Competicion competicion = entityManager.find(Competicion.class, id);
+      if (competicion == null) {
+          redirectAttributes.addFlashAttribute("error", "Competición no encontrada.");
+          return "redirect:/paneladmin";
+      }
+
+      long partidosCount = entityManager
+          .createQuery("SELECT COUNT(p) FROM Partido p WHERE p.idCompeticion.id = :id", Long.class)
+          .setParameter("id", id)
+          .getSingleResult();
+
+      if (partidosCount > 0) {
+          redirectAttributes.addFlashAttribute("error", "No se puede eliminar la competición porque tiene partidos asociados.");
+          return "redirect:/paneladmin";
+      }
+
+      competicion.getEquipos().clear();
+      entityManager.merge(competicion);
+      entityManager.remove(competicion);
+
+      log.info("Competición {} eliminada por admin {}. Motivo: {}", competicion.getNombre(), currentUser.getUsername(), reason.trim());
+      redirectAttributes.addFlashAttribute("success", "Competición eliminada correctamente.");
+      return "redirect:/paneladmin";
+  }
+
+  @PostMapping("/moderar-equipo/{id}")
+  @Transactional
+  public String moderarEquipo(
+          @PathVariable("id") long id,
+          @RequestParam("reason") String reason,
+          HttpSession session,
+          RedirectAttributes redirectAttributes) {
+
+      User currentUser = (User) session.getAttribute("u");
+      if (currentUser == null) {
+          return "redirect:/login";
+      }
+      if (!currentUser.hasRole(User.Role.ADMIN)) {
+          redirectAttributes.addFlashAttribute("error", "No tienes permisos para moderar equipos.");
+          return "redirect:/paneladmin";
+      }
+      if (reason == null || reason.trim().length() < 3) {
+          redirectAttributes.addFlashAttribute("error", "Debes indicar un motivo de al menos 3 caracteres.");
+          return "redirect:/paneladmin";
+      }
+
+      Equipo equipo = entityManager.find(Equipo.class, id);
+      if (equipo == null) {
+          redirectAttributes.addFlashAttribute("error", "Equipo no encontrado.");
+          return "redirect:/paneladmin";
+      }
+
+      log.info("Equipo {} moderado por admin {}. Motivo: {}", equipo.getNombre(), currentUser.getUsername(), reason.trim());
+      redirectAttributes.addFlashAttribute("success", "Equipo moderado correctamente.");
+      return "redirect:/paneladmin";
+  }
+
+  @PostMapping("/eliminar-equipo/{id}")
+  @Transactional
+  public String eliminarEquipo(
+          @PathVariable("id") long id,
+          @RequestParam("reason") String reason,
+          HttpSession session,
+          RedirectAttributes redirectAttributes) {
+
+      User currentUser = (User) session.getAttribute("u");
+      if (currentUser == null) {
+          return "redirect:/login";
+      }
+      if (!currentUser.hasRole(User.Role.ADMIN)) {
+          redirectAttributes.addFlashAttribute("error", "No tienes permisos para eliminar equipos.");
+          return "redirect:/paneladmin";
+      }
+      if (reason == null || reason.trim().length() < 3) {
+          redirectAttributes.addFlashAttribute("error", "Debes indicar un motivo de al menos 3 caracteres.");
+          return "redirect:/paneladmin";
+      }
+
+      Equipo equipo = entityManager.find(Equipo.class, id);
+      if (equipo == null) {
+          redirectAttributes.addFlashAttribute("error", "Equipo no encontrado.");
+          return "redirect:/paneladmin";
+      }
+
+      long partidosCount = entityManager
+          .createQuery("SELECT COUNT(p) FROM Partido p WHERE p.local.id = :id OR p.visitante.id = :id", Long.class)
+          .setParameter("id", id)
+          .getSingleResult();
+
+      if (partidosCount > 0) {
+          redirectAttributes.addFlashAttribute("error", "No se puede eliminar el equipo porque tiene partidos asociados.");
+          return "redirect:/paneladmin";
+      }
+
+      List<User> usersInTeam = entityManager
+          .createQuery("SELECT u FROM User u WHERE u.equipo.id = :id", User.class)
+          .setParameter("id", id)
+          .getResultList();
+      for (User user : usersInTeam) {
+          user.setEquipo(null);
+      }
+
+      List<Competicion> competicionesConEquipo = entityManager
+          .createQuery("SELECT DISTINCT c FROM Competicion c JOIN c.equipos e WHERE e.id = :id", Competicion.class)
+          .setParameter("id", id)
+          .getResultList();
+      for (Competicion competicion : competicionesConEquipo) {
+          competicion.getEquipos().removeIf(e -> e.getId() == id);
+          entityManager.merge(competicion);
+      }
+
+      entityManager.remove(equipo);
+
+      log.info("Equipo {} eliminado por admin {}. Motivo: {}", equipo.getNombre(), currentUser.getUsername(), reason.trim());
+      redirectAttributes.addFlashAttribute("success", "Equipo eliminado correctamente.");
+      return "redirect:/paneladmin";
+  }
+
 }

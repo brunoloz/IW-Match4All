@@ -1,5 +1,22 @@
 id,nom,descripcion,ubicacion,id_capitan,escudo
-1,Rayo Vallecas,"Equipo histórico del sur de Madrid","Madrid",1,rayovallecas.png
-2,Sporting Retiro,"Club deportivo del distrito de Retiro","Madrid",4,sporting.png
-3,Real Moratalaz,"Real Club de Moratalaz","Madrid",5,moratalaz.png
+1,SD Eibar,Equipo armero,Eibar,3,eibar.png
+2,RC Celta Vigo,Equipo celeste,Vigo,14,celta.png
+3,Granada CF,Equipo nazarí,Granada,25,granada.png
+4,Athletic Club Bilbao,Los leones,Bilbao,36,athletic.png
+5,Cádiz CF,Submarino andaluz,Cádiz,47,cadiz.png
+6,CA Osasuna,Equipo rojillo,Pamplona,58,osasuna.png
+7,FC Barcelona,Equipo blaugrana,Barcelona,69,barcelona.png
+8,Elche CF,Equipo franjiverde,Elche,80,elche.png
+9,Real Madrid,Equipo merengue,Madrid,91,realmadrid.png
+10,Getafe CF,Equipo azulón,Getafe,102,getafe.png
+11,Deportivo Alavés,El glorioso,Vitoria,113,alaves.png
+12,Real Betis,Equipo verdiblanco,Sevilla,124,betis.png
+13,Real Valladolid CF,Equipo pucelano,Valladolid,135,valladolid.png
+14,Real Sociedad,Equipo txuri-urdin,San Sebastián,146,realsociedad.png
+15,Villarreal CF,El submarino amarillo,Villarreal,157,villarreal.png
+16,SD Huesca,Equipo oscense,Huesca,168,huesca.png
+17,Valencia CF,Equipo che,Valencia,179,valencia.png
+18,Levante UD,Equipo granota,Valencia,190,levante.png
+19,Atlético Madrid,Equipo colchonero,Madrid,201,atletico.png
+20,Sevilla FC,Equipo de Nervión,Sevilla,212,sevilla.png
 

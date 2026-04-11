@@ -3,7 +3,7 @@ SET REFERENTIAL_INTEGRITY FALSE;
 
 ALTER TABLE competicion ALTER COLUMN id RESTART WITH 5;
 ALTER TABLE equipo ALTER COLUMN id RESTART WITH 5;
-ALTER TABLE iwuser ALTER COLUMN id RESTART WITH 5;
+ALTER TABLE iwuser ALTER COLUMN id RESTART WITH 7;
 ALTER TABLE partidos ALTER COLUMN id RESTART WITH 5;
 
 -- 2. Cargamos los datos usando la función nativa CSVREAD de H2
@@ -15,6 +15,9 @@ SELECT id, nom, descripcion, ubicacion, escudo, id_capitan FROM CSVREAD('classpa
 
 INSERT INTO iwuser (id, username, password, first_name, last_name, age, avatar, descripcion, posicion, goles, asist, t_ama, t_roj, p_jug, porimb, lesion, enabled, roles, id_equipo) 
 SELECT id, username, password, first_name, last_name, age, avatar, descripcion, posicion, goles, asistencias, tarjetas_amarillas, tarjetas_rojas, partidos_jugados, porterias_imbatidas, lesionado, enabled, roles, id_equipo FROM CSVREAD('classpath:users.csv');
+
+INSERT INTO competicion_equipos (competicion_id, equipo_id) 
+SELECT competicion_id, equipo_id FROM CSVREAD('classpath:competicion_equipos.csv');
 
 INSERT INTO partidos (id, ubicacion, fecha, id_competicion, id_local, id_visitante, id_arbitro) 
 SELECT id, ubicacion, fecha, id_competicion, id_local, id_visitante, id_arbitro FROM CSVREAD('classpath:partidos.csv');

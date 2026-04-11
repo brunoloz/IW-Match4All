@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -24,6 +25,7 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 
 @Controller
+@RequestMapping("equipo")
 public class EquipoController {
 
     @PersistenceContext
@@ -36,122 +38,7 @@ public class EquipoController {
         }
     }
 
-    @GetMapping("/gestionequipo")
-    @Transactional
-    public String gestionequipo(Model model, HttpSession session) {
-        User u = (User) session.getAttribute("u");
-
-        if (u != null && u.getEquipo() != null) {
-            Equipo equipo = entityManager.find(Equipo.class, u.getEquipo().getId());
-            org.hibernate.Hibernate.initialize(equipo.getJugadores());
-            org.hibernate.Hibernate.initialize(equipo.getSolicitantes());
-            model.addAttribute("equipo", equipo);
-        } else {
-            model.addAttribute("equipo", null);
-        }
-
-        return "gestionequipo";
-    }
-
-    @GetMapping("/gestionequipo/{id}")
-    @Transactional
-    public String gestionequipoById(@PathVariable("id") long id, Model model) {
-        Equipo equipo = entityManager.find(Equipo.class, id);
-        if (equipo != null) {
-            org.hibernate.Hibernate.initialize(equipo.getJugadores());
-        }
-        model.addAttribute("equipo", equipo);
-        return "gestionequipo";
-    }
-
-    @GetMapping("/listaequipos")
-    public String listaequipos(Model model) {
-        List<Equipo> listaEquipos = entityManager.createQuery("SELECT e FROM Equipo e", Equipo.class)
-                .getResultList();
-        model.addAttribute("equipos", listaEquipos);
-        return "listaequipos";
-    }
-
-    @GetMapping("/crearequipo")
-    public String crearequipo(Model model) {
-        return "crearequipo";
-    }
-
-    @PostMapping("/crear-equipo")
-    @Transactional
-    public String crearEquipo(
-            @RequestParam("nombre") String nombre,
-            @RequestParam("descripcion") String descripcion,
-            @RequestParam("ubicacion") String ubicacion,
-            @RequestParam(value = "escudo", required = false) MultipartFile escudo,
-            HttpSession session,
-            Model model) {
-
-        User sessionUser = (User) session.getAttribute("u");
-        if (sessionUser == null) {
-            return "redirect:/login";
-        }
-
-        User currentUser = entityManager.find(User.class, sessionUser.getId());
-        if (currentUser.getEquipo() != null) {
-            model.addAttribute("error", "Ya perteneces a un equipo. No puedes crear uno nuevo.");
-            return "crearequipo";
-        }
-
-        if (nombre == null || nombre.trim().length() < 3) {
-            model.addAttribute("error", "El nombre del equipo debe tener al menos 3 caracteres.");
-            return "crearequipo";
-        }
-
-        List<Equipo> equiposExistentes = entityManager
-                .createQuery("SELECT e FROM Equipo e WHERE LOWER(e.nombre) = LOWER(:nombre)", Equipo.class)
-                .setParameter("nombre", nombre.trim())
-                .getResultList();
-
-        if (!equiposExistentes.isEmpty()) {
-            model.addAttribute("error", "Ya existe un equipo con ese nombre. Elige otro nombre.");
-            return "crearequipo";
-        }
-
-        try {
-            Equipo nuevoEquipo = new Equipo();
-            nuevoEquipo.setNombre(nombre.trim());
-            nuevoEquipo.setDescripcion(descripcion != null ? descripcion.trim() : "");
-            nuevoEquipo.setUbicacion(ubicacion != null ? ubicacion.trim() : "");
-            nuevoEquipo.setCapitan(currentUser);
-
-            if (escudo != null && !escudo.isEmpty()) {
-                String fileName = escudo.getOriginalFilename();
-                Path uploadPath = Paths.get("src/main/resources/static/img/equipos/");
-                if (!Files.exists(uploadPath)) {
-                    Files.createDirectories(uploadPath);
-                }
-                Files.write(uploadPath.resolve(fileName), escudo.getBytes());
-                nuevoEquipo.setEscudo("equipos/" + fileName);
-            } else {
-                nuevoEquipo.setEscudo("equipos/default.png");
-            }
-
-            if (nuevoEquipo.getJugadores() == null) {
-                nuevoEquipo.setJugadores(new java.util.ArrayList<>());
-            }
-            nuevoEquipo.getJugadores().add(currentUser);
-
-            entityManager.persist(nuevoEquipo);
-            currentUser.setEquipo(nuevoEquipo);
-            User usuarioActualizado = entityManager.merge(currentUser);
-            session.setAttribute("u", usuarioActualizado);
-            return "redirect:/gestionequipo";
-        } catch (IOException e) {
-            model.addAttribute("error", "Error al procesar la imagen del escudo. Inténtalo de nuevo.");
-            return "crearequipo";
-        } catch (Exception e) {
-            model.addAttribute("error", "Error al crear el equipo. Inténtalo de nuevo.");
-            return "crearequipo";
-        }
-    }
-
-    @PostMapping("/equipo/solicitar")
+    @PostMapping("/solicitar")
     @Transactional
     public String solicitarUnirse(@RequestParam("idEquipo") long idEquipo, HttpSession session,
             RedirectAttributes redir) {
@@ -178,7 +65,7 @@ public class EquipoController {
         return "redirect:/listaequipos";
     }
 
-    @PostMapping("/equipo/aceptar")
+    @PostMapping("/aceptar")
     @Transactional
     public String aceptarJugador(@RequestParam("idUsuario") long idUsuario, HttpSession session,
             RedirectAttributes redir) {
@@ -204,7 +91,7 @@ public class EquipoController {
         return "redirect:/gestionequipo";
     }
 
-    @PostMapping("/equipo/rechazar")
+    @PostMapping("/rechazar")
     @Transactional
     public String rechazarJugador(@RequestParam("idUsuario") long idUsuario, HttpSession session,
             RedirectAttributes redir) {
@@ -229,7 +116,7 @@ public class EquipoController {
         return "redirect:/gestionequipo";
     }
 
-    @PostMapping("/equipo/expulsar")
+    @PostMapping("/expulsar")
     @Transactional
     public String expulsarJugador(@RequestParam("idUsuario") long idUsuario, HttpSession session,
             RedirectAttributes redir) {

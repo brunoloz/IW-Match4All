@@ -82,7 +82,7 @@
                     <div class="card-body">
                         <div class="d-flex align-items-center gap-3 mb-3">
                             <img th:if="${equipo != null}" 
-                                 th:src="@{'/img/' + ${equipo.escudo}}"
+                                 th:src="@{'/img/equipos/' + ${equipo.escudo}}"
                                  src="/img/default-team.png" 
                                  alt="Escudo del equipo" 
                                  class="rounded" 
@@ -133,13 +133,16 @@
                     <div class="card-header">
                         <h3 class="h6 mb-0">Competiciones en juego</h3>
                     </div>
-                    <ul class="list-group list-group-flush" th:if="${equipo != null && !equipo.jugadores.isEmpty()}">
-                        <li class="list-group-item d-flex align-items-center gap-2">
-                            <div class="d-flex align-items-baseline justify-content-between gap-2 w-100">
-                                <span class="fw-bold text-nowrap">Ninguna</span>
+                    <ul class="list-group list-group-flush" th:if="${competicionesEquipo != null && !competicionesEquipo.isEmpty()}">
+                        <li th:each="comp : ${competicionesEquipo}" class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="fw-semibold" th:text="${comp.nombre}">Nombre competición</span>
                             </div>
                         </li>
                     </ul>
+                    <div class="card-body text-center text-muted" th:if="${competicionesEquipo == null || competicionesEquipo.isEmpty()}">
+                        <small>No estás inscrito en ninguna competición.</small>
+                    </div>
                 </div>
 
                 <div id="admin-panel" th:if="${equipo != null && u != null && equipo.capitan != null && u.id == equipo.capitan.id}" class="card shadow-sm border-success">

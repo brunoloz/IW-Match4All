@@ -48,7 +48,7 @@
                         <div th:each="e : ${equipos}" class="competicion-card hover-lift">
                             <!-- Escudo del equipo -->
                             <div class="competicion-image">
-                                <img th:src="@{'/img/' + ${e.escudo}}" 
+                                <img th:src="@{'/img/equipos/' + ${e.escudo}}" 
                                      alt="Escudo" 
                                      onerror="this.src='/img/default-team-shield.png';" 
                                      style="width: 100%; height: 100%; object-fit: contain; padding: 10px;">
@@ -96,7 +96,8 @@
                                         <i class="bi bi-eye me-2"></i>Ver Detalles
                                     </a>
 
-                                    <form th:action="@{/equipo/solicitar}" method="post" class="m-0">
+                                    <form th:if="${u != null && u.equipo == null && u.equipoSolicitado == null && !u.hasRole(T(es.ucm.fdi.iw.model.User.Role).ADMIN)}" 
+                                    th:action="@{/equipo/solicitar}" method="post" class="m-0">
                                         <input type="hidden" name="idEquipo" th:value="${e.id}">
                                         
                                         <button type="submit" class="btn-brand-blue" style="border: none; cursor: pointer; display: inline-flex; align-items: center;">
