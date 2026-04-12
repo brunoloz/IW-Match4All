@@ -18,8 +18,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import es.ucm.fdi.iw.model.Clasificacion;
 import es.ucm.fdi.iw.model.Competicion;
 import es.ucm.fdi.iw.model.Equipo;
+import es.ucm.fdi.iw.model.Partido;
 import es.ucm.fdi.iw.model.User;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -65,8 +67,19 @@ public class RootController {
     @GetMapping("/competiciones/{id}")
     public String competicion(@PathVariable("id") long id, Model model) {
         Competicion competicion = entityManager.find(Competicion.class, id);
-        //List<Equipo> clasificacion = entityManager.createQuery()
+        List<Clasificacion> clasificacion = entityManager.createQuery("SELECT c FROM Clasificacion c WHERE c.competicion.id = :id ORDER BY c.puntos DESC", Clasificacion.class)
+        .setParameter("id", id)
+        .getResultList()
+        ;
+        model.addAttribute("clasificacion", clasificacion);
         model.addAttribute("competicionSeleccionada", competicion);
+
+        List<Partido> partidos = entityManager.createQuery("SELECT p FROM Partido p WHERE p.competicion.id = :idCompeticion ORDER BY p.fecha ASC", Partido.class)
+        .setParameter("idCompeticion", id)
+        .getResultList();
+        model.addAttribute("partidos", partidos);
+
+
         return "competiciones";
     }
 

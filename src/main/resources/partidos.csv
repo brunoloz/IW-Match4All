@@ -1,1 +1,1 @@
-id,id_local,id_visitante,ubicacion,fecha,id_competicion,id_arbitro
+id,fase,ubicacion,fecha,id_local,id_visitante,id_competicion,estado,id_arbitro

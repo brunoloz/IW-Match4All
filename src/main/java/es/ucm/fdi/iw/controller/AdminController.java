@@ -155,6 +155,11 @@ public class AdminController {
           return "redirect:/paneladmin";
       }
 
+      if (capacidad % 2 == 1) {
+          redirectAttributes.addFlashAttribute("error", "El número de equipos debe ser par.");
+          return "redirect:/paneladmin";
+      }
+
       List<Competicion> existentes = entityManager
           .createQuery("SELECT c FROM Competicion c WHERE LOWER(c.nombre) = LOWER(:nombre)", Competicion.class)
           .setParameter("nombre", nombre.trim())

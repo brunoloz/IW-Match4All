@@ -60,6 +60,6 @@ public class Competicion {
 
     // Como en Partido.java ya definimos la relación con @ManyToOne hacia 'idCompeticion',
     // aquí solo usamos mappedBy para decirle a JPA que es una relación bidireccional.
-    @OneToMany(mappedBy = "idCompeticion")
+    @OneToMany(mappedBy = "competicion")
     private List<Partido> partidos = new ArrayList<>();
 }

@@ -94,7 +94,7 @@
                                         <i class="bi bi-eye me-2"></i>Ver Detalles
                                     </a>
 
-                                    <form th:if="${session.u != null and session.u.equipo != null and session.u.equipo.capitan != null and session.u.id == session.u.equipo.capitan.id}" 
+                                    <form th:if="${session.u != null and session.u.equipo != null and session.u.equipo.capitan != null and session.u.id == session.u.equipo.capitan.id} and ${#lists.size(c.equipos)} != ${c.capacidad}" 
                                           th:action="@{/competicion/solicitar}" method="post" class="m-0">
                                         <input type="hidden" name="idCompeticion" th:value="${c.id}">
                                         <button type="submit" class="btn-brand-blue" style="border: none; cursor: pointer; display: inline-flex; align-items: center; padding: 0.5rem 1rem; border-radius: 6px;">

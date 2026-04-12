@@ -10,6 +10,7 @@
     <header th:replace="~{fragments/nav.html :: nav}"></header>
 
     <main class="flex-shrink-0">
+        <br>
         <div class="container mb-5">
             <div class="row align-items-end mb-4">
                 <div class="col-md-7">
@@ -66,7 +67,8 @@
                                         <td th:text="${competition.tipo}">Tipo</td>
                                         <td th:text="|${#lists.size(competition.equipos)}/${competition.capacidad}|">0/0</td>
                                         <td>
-                                            <span th:if="${#lists.isEmpty(competition.partidos)}" class="badge text-bg-primary">Inscripción</span>
+                                            <span th:if="${#lists.size(competition.equipos)} == ${competition.capacidad} and ${#lists.isEmpty(competition.partidos)}" class=" badge text-bg-danger">Inscripción cerrada</span>
+                                            <span th:if="${#lists.isEmpty(competition.partidos)} and ${#lists.size(competition.equipos)} != ${competition.capacidad}" class="badge text-bg-primary">Inscripción</span>
                                             <span th:unless="${#lists.isEmpty(competition.partidos)}" class="badge text-bg-success">En curso</span>
                                         </td>
                                         <td>
@@ -94,14 +96,23 @@
                                             </div>
                                         </td>
                                         <td>
-                                            <button type="button" class="btn btn-sm btn-outline-danger open-action-modal"
-                                                data-action-url=""
-                                                th:attr="data-action-url=@{/admin/eliminar-competicion/{id}(id=${competition.id})}"
-                                                data-action-title="Eliminar competición"
-                                                data-item-label="competición"
-                                                th:attrappend="data-item-name=${competition.nombre}">
-                                                Eliminar
-                                            </button>
+                                            <div class="d-flex gap-2">
+                                                <button type="button" class="btn btn-sm btn-outline-danger open-action-modal"
+                                                    data-action-url=""
+                                                    th:attr="data-action-url=@{/admin/eliminar-competicion/{id}(id=${competition.id})}"
+                                                    data-action-title="Eliminar competición"
+                                                    data-item-label="competición"
+                                                    th:attrappend="data-item-name=${competition.nombre}">
+                                                    Eliminar
+                                                </button>
+                                                <form th:if="${#lists.size(competition.equipos)} == ${competition.capacidad} and ${#lists.isEmpty(competition.partidos)}"
+                                                    th:action="@{/competicion/generar-calendario}" method="post" class="m-0">
+                                                    <input type="hidden" name="idCompeticion" th:value="${competition.id}">
+                                                    <button type="submit" class="btn btn-sm btn-outline-primary open-action-modal" title="Generar Calendario">
+                                                        Generar Calendario
+                                                    </button>
+                                                </form>
+                                            </div>
                                         </td>
                                     </tr>
                                 </tbody>

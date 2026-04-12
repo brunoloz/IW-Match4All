@@ -25,6 +25,9 @@ public class Partido {
     @SequenceGenerator(name = "gen", sequenceName = "gen")
     private long id;
 
+    @Column(name = "fase", nullable = false, length = 225)
+    private String fase;
+
     @ManyToOne
     @JoinColumn(name = "id_local", nullable = false)
     private Equipo local;
@@ -41,9 +44,12 @@ public class Partido {
 
     @ManyToOne
     @JoinColumn(name = "id_competicion", nullable = false)
-    private Competicion idCompeticion;
+    private Competicion competicion;
+
+    @Column(name = "estado", nullable = false, length = 225)
+    private String estado;
 
     @ManyToOne
-    @JoinColumn(name = "id_arbitro", nullable = false)
+    @JoinColumn(name = "id_arbitro")
     private User arbitro;
 }

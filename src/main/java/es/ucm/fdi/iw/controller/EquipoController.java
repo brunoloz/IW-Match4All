@@ -88,6 +88,8 @@ public class EquipoController {
             entityManager.merge(solicitante);
             redir.addFlashAttribute("success", solicitante.getUsername() + " ha sido aceptado en el equipo.");
         }
+
+        
         return "redirect:/gestionequipo";
     }
 

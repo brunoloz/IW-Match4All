@@ -1,10 +1,10 @@
 -- 1. Desactivamos las claves foráneas temporalmente para evitar errores de dependencias al cargar
 SET REFERENTIAL_INTEGRITY FALSE;
 
-ALTER TABLE competicion ALTER COLUMN id RESTART WITH 5;
-ALTER TABLE equipo ALTER COLUMN id RESTART WITH 5;
-ALTER TABLE iwuser ALTER COLUMN id RESTART WITH 7;
-ALTER TABLE partidos ALTER COLUMN id RESTART WITH 5;
+ALTER TABLE competicion ALTER COLUMN id RESTART WITH 1024;
+ALTER TABLE equipo ALTER COLUMN id RESTART WITH 1024;
+ALTER TABLE iwuser ALTER COLUMN id RESTART WITH 1024;
+ALTER TABLE partidos ALTER COLUMN id RESTART WITH 1024;
 
 -- 2. Cargamos los datos usando la función nativa CSVREAD de H2
 INSERT INTO competicion (id, nombre, tipo, capacidad) 
@@ -19,8 +19,11 @@ SELECT id, username, password, first_name, last_name, age, avatar, descripcion, 
 INSERT INTO competicion_equipos (competicion_id, equipo_id) 
 SELECT competicion_id, equipo_id FROM CSVREAD('classpath:competicion_equipos.csv');
 
-INSERT INTO partidos (id, ubicacion, fecha, id_competicion, id_local, id_visitante, id_arbitro) 
-SELECT id, ubicacion, fecha, id_competicion, id_local, id_visitante, id_arbitro FROM CSVREAD('classpath:partidos.csv');
+INSERT INTO partidos (id, fase, ubicacion, fecha, id_local, id_visitante, id_competicion, estado, id_arbitro) 
+SELECT id, fase, ubicacion, fecha, id_local, id_visitante, id_competicion, estado, id_arbitro FROM CSVREAD('classpath:partidos.csv');
+
+INSERT INTO clasificacion (id, competicion_id, equipo_id, puntos, partidos_jugados, victorias, empates, derrotas, goles_a_favor, goles_en_contra) 
+SELECT id, competicion_id, equipo_id, puntos, partidos_jugados, victorias, empates, derrotas, goles_a_favor, goles_en_contra FROM CSVREAD('classpath:clasificacion.csv');
 
 SET REFERENTIAL_INTEGRITY TRUE;
 

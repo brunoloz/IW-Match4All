@@ -9,149 +9,179 @@
 <body class="d-flex flex-column h-100">
     <header th:replace="~{fragments/nav.html :: nav}"></header>
 
-    <main class="flex-shrink-0">
-        <br>
-        <div class="container mb-5">
-            <div class="row align-items-end mb-4">
-                <div class="col-md-7">
-                    <h1 class="display-5 fw-bold" style="color: var(--brand-blue);" th:text="${competicionSeleccionada.nombre}">Clasificación de Torneos</h1>
-                </div>
+    <main class="container py-4 flex-shrink-0">
+        <div class="row align-items-end mb-4">
+            <div class="col-md-7">
+                <h1 class="display-5 fw-bold" style="color: var(--brand-blue);" th:text="${competicionSeleccionada.nombre}">Clasificación de Torneos</h1>
             </div>
-
-            <hr class="my-4">
-
-            <div th:if="${competicionSeleccionada != null}" class="mb-4">
-                <div class="card p-3">
-                    <h2 class="h4">Detalles de la competición</h2>
-                    <p><strong>Nombre:</strong> <span th:text="${competicionSeleccionada.nombre}">Nombre</span></p>
-                    <p><strong>Modalidad:</strong> <span th:text="${competicionSeleccionada.tipo}">Tipo</span></p>
-                    <p><strong>Capacidad:</strong> <span th:text="${competicionSeleccionada.capacidad}">0</span></p>
-                    <a href="/listacompeticiones" class="btn btn-secondary">Volver a lista</a>
-                </div>
-            </div>
-
-            <section class="card shadow-sm mb-5">
-                <div class="card-header bg-white border-bottom py-2">
-                    <span class="text-muted">Tabla de Clasificación</span>
-                </div>
-                <div class="table-responsive">
-                    <table class="table table-bordered mb-0 align-middle">
-                        <thead style="background-color: #fcf8e3;"> <tr class="small text-dark">
-                                <th style="width: 50px;">#</th>
-                                <th>Equipo</th>
-                                <th class="text-center">PJ</th>
-                                <th class="text-center">PG</th>
-                                <th class="text-center">PE</th>
-                                <th class="text-center">PP</th>
-                                <th class="text-center">GC</th>
-                                <th class="text-center">GF</th>
-                                <th class="text-center">DG</th>
-                                <th class="text-center">PTS</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td class="text-center">1</td>
-                                <td>Informatica A <span class="badge rounded-circle border text-dark"></span></td>
-                                <td class="text-center">10</td>
-                                <td class="text-center">8</td>
-                                <td class="text-center">1</td>
-                                <td class="text-center">2</td>
-                                <td class="text-center">10</td>
-                                <td class="text-center">28</td>
-                                <td class="text-center text-success">+16</td>
-                                <td class="text-center text-success fw-bold">+25</td>
-                            </tr>
-                            <tr>
-                                <td class="text-center">2</td>
-                                <td>Física A <span class="badge rounded-circle border text-dark"></span></td>
-                                <td class="text-center">10</td>
-                                <td class="text-center">5</td>
-                                <td class="text-center">2</td>
-                                <td class="text-center">2</td>
-                                <td class="text-center">10</td>
-                                <td class="text-center">23</td>
-                                <td class="text-center text-success">+12</td>
-                                <td class="text-center text-success fw-bold">+20</td>
-                            </tr>
-                            <tr>
-                                <td class="text-center">3</td>
-                                <td>Medicina A <span class="badge rounded-circle border text-dark"></span></td>
-                                <td class="text-center">10</td>
-                                <td class="text-center">3</td>
-                                <td class="text-center">1</td>
-                                <td class="text-center">5</td>
-                                <td class="text-center">8</td>
-                                <td class="text-center">10</td>
-                                <td class="text-center text-success">+8</td>
-                                <td class="text-center text-success fw-bold">+19</td>
-                            </tr>
-                        </tbody>
-                    </table>
+        </div>
+        <hr class="my-4">
+        <div class="row g-3 align-items-start">
+            <section th:if="${competicionSeleccionada.tipo.name() == 'LIGA'}" class="col-12 col-lg-8">
+                <div class="card shadow-sm">
+                    <div class="card-header">
+                        <h2 class="h5 mb-0">Tabla de Clasificación</h2>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-bordered mb-0 align-middle fs-5">
+                                <thead style="background-color: #fcf8e3;">
+                                    <tr>
+                                        <th style="width: 50px;">#</th>
+                                        <th>Equipo</th>
+                                        <th class="text-center">PJ</th>
+                                        <th class="text-center">PG</th>
+                                        <th class="text-center">PE</th>
+                                        <th class="text-center">PP</th>
+                                        <th class="text-center">GC</th>
+                                        <th class="text-center">GF</th>
+                                        <th class="text-center">DG</th>
+                                        <th class="text-center">PTS</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:if="${#lists.isEmpty(clasificacion)}">
+                                        <td colspan="10" class="text-muted">No hay equipos en la competición</td>
+                                    </tr>
+                                    <tr th:each="fila, iterStat : ${clasificacion}"
+                                        th:classappend="${iterStat.count <= 4} ? 'table-success' : 
+                                        (${iterStat.count == 5 or iterStat.count == 6} ? 'table-warning' : 
+                                        (${iterStat.count > iterStat.size - 3} ? 'table-danger' : ''))">
+                                        <td th:text="${iterStat.count}">1</td>
+                                        <td>
+                                            <img th:if="${fila.equipo != null}" 
+                                                th:src="@{'/img/equipos/' + ${fila.equipo.escudo}}"
+                                                src="/img/default-team.png" 
+                                                alt="Escudo del equipo" 
+                                                class="rounded" 
+                                                width="37" 
+                                                height="40"
+                                                onerror="this.src='/img/default-team.png';">
+                                            <a th:href="@{/gestionequipo/{id}(id=${fila.equipo.id})}"
+                                                th:text="${fila.equipo.nombre}">Nombre del Equipo </a>
+                                        </td>
+                                        <td th:text="${fila.partidos_jugados}" class="text-center">0</td>
+                                        <td th:text="${fila.victorias}" class="text-center">0</td>
+                                        <td th:text="${fila.empates}" class="text-center">0</td>
+                                        <td th:text="${fila.derrotas}" class="text-center">0</td>
+                                        <td th:text="${fila.goles_a_favor}" class="text-center">0</td>
+                                        <td th:text="${fila.goles_en_contra}" class="text-center">0</td>
+                                        <td th:text="${fila.goles_a_favor - fila.goles_en_contra}" class="text-center">0</td>
+                                        <td th:text="${fila.puntos}" class="text-center fw-bold bs-black"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </section>
 
-            <section class="card shadow-sm mb-5">
-                <div class="card-header bg-white py-2 border-bottom d-flex justify-content-between align-items-center">
-                    <div>
-                        <button class="btn btn-sm border">&lt;</button>
-                        <span class="mx-2 fw-normal">Calendario de partidos</span>
-                        <button class="btn btn-sm border">&gt;</button>
-                    </div>
-                    <div>
-                        <button class="btn btn-sm border">&lt;</button>
-                        <span class="mx-2 fw-normal">Febrero 2026</span>
-                        <button class="btn btn-sm border">&gt;</button>
+            <section class="col-12 col-lg-4 d-flex flex-column gap-3">
+                <div class="card shadow-sm">
+                    <div class="card-header">
+                        <h2 class="h5 mb-0">Partidos</h2>
+                    </div> 
+                    <div class="card-body">
+                        <div class="overflow-auto" style="max-height: calc(700px - 56px);   overflow-y: auto;">
+                            <div th:if="${#lists.isEmpty(partidos)}" class="text-muted">Aún no se ha generado el calendario de partidos</div>
+                            <th:block th:each="partido, iterStat : ${partidos}">
+                                <div th:if="${iterStat.first or partido.fase != partidos[iterStat.index - 1].fase}"
+                                        class="card-header text-white text-center py-2 mt-4" style="background-color: var(--brand-blue);">
+                                    <h5 class="mb-0 fw-bold text-uppercase" th:text="${partido.fase}">JORNADA X</h5>
+                                </div>
+                                <div class="mb-4">
+                                    <div class="card shadow-sm h-100 border-0">
+                                        <div class="list-group list-group-flush">
+                                            <div class="list-group-item py-3">
+                                                <div class="row mt-1">
+                                                    <div class="col-12 text-center text-muted" style="font-size: 1rem;">
+                                                        <span th:text="${partido.ubicacion}">Estadio</span>
+                                                    </div>
+                                                </div>
+                                                <div class="row mt-1">
+                                                    <div th:if="${partido.estado == 'PENDIENTE'}" class="badge bg-light text-dark border p-2 w-100" style="font-size: 0.85rem;">
+                                                        <span th:text="${#temporals.format(partido.fecha, 'dd/MM/yyyy')}">12/09/2020</span>
+                                                    </div>
+                                                    <div th:unless="${partido.estado == 'PENDIENTE'}" class="badge bg-secondary p-2 w-100" style="font-size: 0.85rem;">
+                                                        <span th:text="${partido.estado}">FINALIZADO</span>
+                                                    </div>
+                                                </div> 
+                                                <br>                                               
+                                                <div class="row align-items-center">
+                                                    <div class="col-4 text-end fw-bold text-truncate">
+                                                        <img th:if="${partido.local != null}" 
+                                                            th:src="@{'/img/equipos/' + ${partido.local.escudo}}"
+                                                            src="/img/default-team.png" 
+                                                            alt="Escudo del equipo" 
+                                                            class="rounded" 
+                                                            width="37" 
+                                                            height="40"
+                                                            onerror="this.src='/img/default-team.png';">
+                                                        <span th:text="${partido.local.nombre}">Local</span>
+                                                    </div>
+                                                    <div class="col-4 text-center px-0">
+                                                        <span>VS</span>
+                                                    </div>
+                                                    <div class="col-4 text-start fw-bold text-truncate">
+                                                        <img th:if="${partido.visitante != null}" 
+                                                            th:src="@{'/img/equipos/' + ${partido.visitante.escudo}}"
+                                                            src="/img/default-team.png" 
+                                                            alt="Escudo del equipo" 
+                                                            class="rounded" 
+                                                            width="37" 
+                                                            height="40"
+                                                            onerror="this.src='/img/default-team.png';">                                                        
+                                                        <span th:text="${partido.visitante.nombre}">Visitante</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </th:block>
+                        </div>
                     </div>
                 </div>
-                <div class="card-body p-0">
-                    <table class="table table-bordered mb-0 text-center small">
-                        <thead>
-                            <tr class="bg-light">
-                                <th>Lunes</th><th>Martes</th><th>Miercoles</th><th>Jueves</th><th>Viernes</th><th>Sábado</th><th>Domingo</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td></tr>
-                            <tr><td>8</td><td>9</td><td>10</td><td>11</td><td>12</td><td>13</td><td>14</td></tr>
-                            <tr><td>15</td><td>16</td><td>17</td><td>18</td><td>19</td><td>20</td><td>21</td></tr>
-                            <tr><td>22</td><td>23</td><td>24</td><td>25</td><td>26</td><td class="bg-light fw-bold text-primary">27</td><td>28</td></tr>
-                            <tr><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-
-            <div class="row g-4 mb-5">
-                <div class="col-md-6">
-                    <div class="card shadow-sm h-100">
-                        <div class="card-header bg-white border-bottom py-2">Máximos goleadores</div>
-                        <div class="card-body d-flex align-items-center">
-                            <div class="rounded-circle bg-light border" style="width: 80px; height: 80px;"></div>
-                            <div class="ms-4">
-                                <h5 class="mb-0">Álvaro González</h5>
-                                <p class="text-muted mb-2">Informatica A</p>
-                                <h6 class="fw-bold">15 Goles</h6>
+                <div class="card shadow-sm">
+                    <div class="card-header">
+                        <h3 class="h6 mb-0">Estadisticas</h3>
+                    </div>
+                    <div class="card-body overflow-auto" style="max-height: calc(700px - 56px); overflow-y: auto;">
+                        <div class="row g-4">
+                            <div class="col-12">
+                                <div class="card shadow-sm h-100">
+                                    <div class="card-header bg-white border-bottom py-2">Máximos goleadores</div>
+                                    <div class="card-body d-flex align-items-center">
+                                        <div class="rounded-circle bg-light border" style="width: 80px; height: 80px;"></div>
+                                        <div class="ms-4">
+                                            <h5 class="mb-0">Álvaro González</h5>
+                                            <p class="text-muted mb-2">Informatica A</p>
+                                            <h6 class="fw-bold">15 Goles</h6>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="card shadow-sm h-100">
+                                    <div class="card-header bg-white border-bottom py-2">Porteros Imbatidos</div>
+                                    <div class="card-body d-flex align-items-center">
+                                        <div class="rounded-circle bg-light border" style="width: 80px; height: 80px;"></div>
+                                        <div class="ms-4">
+                                            <h5 class="mb-0">Pablo Fernández <small class="text-muted" style="font-size: 10px;"></small></h5>
+                                            <p class="text-muted mb-2">Fisicas A</p>
+                                            <h6 class="fw-bold">8 Partidos sin encajar</h6>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <div class="card shadow-sm h-100">
-                        <div class="card-header bg-white border-bottom py-2">Porteros Imbatidos</div>
-                        <div class="card-body d-flex align-items-center">
-                            <div class="rounded-circle bg-light border" style="width: 80px; height: 80px;"></div>
-                            <div class="ms-4">
-                                <h5 class="mb-0">Pablo Fernández <small class="text-muted" style="font-size: 10px;"></small></h5>
-                                <p class="text-muted mb-2">Fisicas A</p>
-                                <h6 class="fw-bold">8 Partidos sin encajar</h6>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            </section>
 
         </div>
+        
+            
     </main>
 
     <th:block th:replace="~{fragments/footer.html :: footer}" />
