@@ -7,8 +7,8 @@ ALTER TABLE iwuser ALTER COLUMN id RESTART WITH 1024;
 ALTER TABLE partidos ALTER COLUMN id RESTART WITH 1024;
 
 -- 2. Cargamos los datos usando la función nativa CSVREAD de H2
-INSERT INTO competicion (id, nombre, tipo, capacidad) 
-SELECT id, nombre, tipo, capacidad FROM CSVREAD('classpath:competicion.csv');
+INSERT INTO competicion (id, nombre, tipo, capacidad, estado) 
+SELECT id, nombre, tipo, capacidad, estado FROM CSVREAD('classpath:competicion.csv');
 
 INSERT INTO equipo (id, nom, descripcion, ubicacion, escudo, id_capitan) 
 SELECT id, nom, descripcion, ubicacion, escudo, id_capitan FROM CSVREAD('classpath:equipos.csv');

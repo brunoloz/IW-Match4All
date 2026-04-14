@@ -18,16 +18,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import es.ucm.fdi.iw.model.Topic;
 import es.ucm.fdi.iw.model.Competicion;
 import es.ucm.fdi.iw.model.Equipo;
 import es.ucm.fdi.iw.model.Lorem;
 import es.ucm.fdi.iw.model.Message;
+import es.ucm.fdi.iw.model.Topic;
 import es.ucm.fdi.iw.model.Transferable;
 import es.ucm.fdi.iw.model.User;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 
@@ -255,7 +254,7 @@ public class AdminController {
       }
 
       long partidosCount = entityManager
-          .createQuery("SELECT COUNT(p) FROM Partido p WHERE p.idCompeticion.id = :id", Long.class)
+          .createQuery("SELECT COUNT(p) FROM Partido p WHERE p.competicion.id = :id", Long.class)
           .setParameter("id", id)
           .getSingleResult();
 

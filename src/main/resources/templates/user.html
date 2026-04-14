@@ -60,7 +60,7 @@
                         </div>
 
                         <a th:if="${user.equipo != null}" 
-                           th:href="@{/gestionequipo}" 
+                           th:href="@{/equipo/{id}(id=${user.equipo.id})}" 
                            class="btn btn-brand-blue w-100 mt-3 fw-bold text-uppercase rounded-3">
                             <i class="bi bi-people-fill me-2"></i>Mi Equipo
                         </a>

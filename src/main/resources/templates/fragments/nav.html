@@ -22,17 +22,8 @@
             </button>
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav ms-auto">
-                         <!-- <li class="nav-item mx-3">
-                                <a class="nav-link" th:href="@{/perfil}">Perfil</a>
-                        </li> -->
-                        <!-- <li class="nav-item mx-3">
-                                <a class="nav-link" th:href="@{/gestionequipo}">Gestión Equipo</a>
-                        </li> -->
-                        <!-- <li class="nav-item mx-3">
-                                <a class="nav-link" th:href="@{/competiciones}">Competicion</a>
-                        </li> -->
-                        <li class="nav-item mx-3">
-                                <a class="nav-link" th:href="@{/actapartido}">Actas</a>
+                        <li class="nav-item mx-3" th:if="${u != null and u.hasRole('ARBITRO')}">
+                            <a class="nav-link" th:href="@{/actapartido}">Actas</a>
                         </li>
                         <li class="nav-item mx-3">
                                 <a class="nav-link" th:href="@{/listacompeticiones}">Competiciones</a>
@@ -40,27 +31,19 @@
                         <li class="nav-item mx-3">
                                 <a class="nav-link" th:href="@{/listaequipos}">Equipos</a>
                         </li>                        
-                        <!--<li class="nav-item mx-3">
-                                <a class="nav-link" th:href="@{/paneladmin}">Panel Admin</a>
-                        </li>  -->
                         <li class="nav-item mx-3">
                                 <a class="nav-link" th:href="@{/autores}">Autores</a>
                         </li>                                                                        
                         <th:block th:if="${u}">
-                            <!-- <li class="nav-item mx-3">
-                                <a class="nav-link" th:if="${u.hasRole('ADMIN')}" th:href="@{/admin/}">Administrar</a>
-                            </li> -->
+                            <li class="nav-item mx-3">
+                                <a class="nav-link" th:if="${u.hasRole('ADMIN')}" th:href="@{/paneladmin}">Administrar</a>
+                            </li>
 
                             <li class="nav-item mx-2">
                                 <a class="nav-link" th:href="@{/user/{id}(id=${u.id})}">
                                     <img class="iwthumb rounded" th:src="@{/user/{id}/pic(id=${u.id})}">
                                     <span th:text="${u.username}">Pepe</span>
                                 </a>
-                            </li>
-                            <li class="nav-item align-self-center me-4">
-                                <button type="button" class="btn btn-outline-primary btn-sm position-relative">
-                                    ✉️ <span id="nav-unread" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-secondary">+99 <span class="visually-hidden">unread messages</span></span>
-                                </button>
                             </li>
                             <li class="nav-item align-self-center">
                                 <form th:action="@{/logout}" method="post">
@@ -90,6 +73,13 @@
                                     <input type="hidden" name="username" value="kike">
                                     <input type="hidden" name="password" value="pass">
                                     <button type="submit" class="btn btn-outline-danger btn-sm">b</button>
+                                </form>
+                            </li>
+                            <li class="nav-item debug align-self-center" th:if="${application.debug}">
+                                <form class="d-flex" th:action="@{/login}" method="post">
+                                    <input type="hidden" name="username" value="arbitro">
+                                    <input type="hidden" name="password" value="1234">
+                                    <button type="submit" class="btn btn-outline-danger btn-sm">c</button>
                                 </form>
                             </li>
                         </th:block>

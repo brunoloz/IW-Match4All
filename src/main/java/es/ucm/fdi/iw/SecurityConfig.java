@@ -61,7 +61,7 @@ public class SecurityConfig {
       .authorizeHttpRequests(authorize -> authorize
 				.requestMatchers("/css/**", "/js/**", "/img/**", "/", "/error").permitAll()
 				.requestMatchers("/perfil").permitAll()
-				.requestMatchers("/gestionequipo").permitAll()
+				.requestMatchers("/equipo/**").permitAll()
 				.requestMatchers("/competiciones").permitAll()
 				.requestMatchers("/listacompeticiones").permitAll()
 				.requestMatchers("/listaequipos").permitAll()

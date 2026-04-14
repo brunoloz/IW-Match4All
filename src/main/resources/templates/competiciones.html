@@ -57,7 +57,7 @@
                                                 width="37" 
                                                 height="40"
                                                 onerror="this.src='/img/default-team.png';">
-                                            <a th:href="@{/gestionequipo/{id}(id=${fila.equipo.id})}"
+                                            <a th:href="@{/equipo/{id}(id=${fila.equipo.id})}"
                                                 th:text="${fila.equipo.nombre}">Nombre del Equipo </a>
                                         </td>
                                         <td th:text="${fila.partidos_jugados}" class="text-center">0</td>

@@ -30,6 +30,12 @@ public class Competicion {
         TORNEO
     }
 
+    public enum Estado{
+        INSCRIPCION,
+        EN_CURSO,
+        FINALIZADA
+    }
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -40,6 +46,9 @@ public class Competicion {
     private Tipo tipo;
     
     private int capacidad;
+
+    @Enumerated(EnumType.STRING)
+    private Estado estado;
 
 // Para ManyToMany he usado @JoinTable para definir la tabla intermedia
     @ManyToMany

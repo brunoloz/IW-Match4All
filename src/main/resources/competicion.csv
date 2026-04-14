@@ -1,4 +1,4 @@
-id,nombre,tipo,capacidad
-1,La Liga,LIGA,20
-2,Copa del Rey,TORNEO,32
-3,Supercopa de España,TORNEO,4
+id,nombre,tipo,capacidad,estado
+1,La Liga,LIGA,20,INSCRIPCION
+2,Copa del Rey,TORNEO,32,INSCRIPCION
+3,Supercopa de España,TORNEO,4,INSCRIPCION

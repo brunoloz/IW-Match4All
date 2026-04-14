@@ -6,8 +6,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,7 +14,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import es.ucm.fdi.iw.model.Clasificacion;
 import es.ucm.fdi.iw.model.Competicion;
@@ -128,34 +125,10 @@ public class RootController {
         return "autores";            //nombre de 
     }
 
-    @GetMapping("/gestionequipo")
+
+    @GetMapping("/equipo/{id}")
     @Transactional
-    public String gestionequipo(Model model, HttpSession session) {
-        User u = (User) session.getAttribute("u");
-
-        if (u != null && u.getEquipo() != null) {
-            Equipo equipo = entityManager.find(Equipo.class, u.getEquipo().getId());
-            org.hibernate.Hibernate.initialize(equipo.getJugadores());
-            org.hibernate.Hibernate.initialize(equipo.getSolicitantes());
-
-            List<Competicion> competicionesEquipo = entityManager
-                    .createQuery("SELECT c FROM Competicion c JOIN c.equipos e WHERE e.id = :id", Competicion.class)
-                    .setParameter("id", equipo.getId())
-                    .getResultList();
-
-            model.addAttribute("equipo", equipo);
-            model.addAttribute("competicionesEquipo", competicionesEquipo);
-        } else {
-            model.addAttribute("equipo", null);
-            model.addAttribute("competicionesEquipo", java.util.Collections.emptyList());
-        }
-
-        return "gestionequipo";
-    }
-
-    @GetMapping("/gestionequipo/{id}")
-    @Transactional
-    public String gestionequipoById(@PathVariable("id") long id, Model model) {
+    public String equipoById(@PathVariable("id") long id, Model model) {
         Equipo equipo = entityManager.find(Equipo.class, id);
         if (equipo != null) {
             org.hibernate.Hibernate.initialize(equipo.getJugadores());
@@ -169,7 +142,7 @@ public class RootController {
             model.addAttribute("equipo", null);
             model.addAttribute("competicionesEquipo", java.util.Collections.emptyList());
         }
-        return "gestionequipo";
+        return "equipo";
     }
 
     @GetMapping("/listaequipos")

@@ -82,7 +82,12 @@
                                     <div class="info-item">
                                         <div class="info-item-content">
                                             <span class="info-label">Estado</span>
-                                            <span class="info-value">Inscripción Abierta</span>
+                                            <th:block th:switch="${c.estado}">
+                                                <span th:case="'INSCRIPCION'" class="info-value">Inscripción</span>
+                                                <span th:case="'EN_CURSO'" class="badge text-bg-success">En curso</span>
+                                                <span th:case="'FINALIZADA'" class="info-value">Finalizada</span>
+                                                <span th:case="*" class="info-value" th:text="${c.estado}"></span>
+                                            </th:block>
                                         </div>
                                     </div>
                                 </div>

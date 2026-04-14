@@ -52,6 +52,11 @@ public class CompeticionController {
         }
 
         Competicion comp = entityManager.find(Competicion.class, idCompeticion);
+        // Solo permite inscripciones si el estado es INSCRIPCION
+        if (comp.getEstado() != Competicion.Estado.INSCRIPCION) {
+            redir.addFlashAttribute("error", "La competición no está abierta a inscripciones.");
+            return "redirect:/listacompeticiones";
+        }
         if (comp.getEquipos().contains(equipo)) {
             redir.addFlashAttribute("error", "Tu equipo ya está inscrito en esta competición.");
             return "redirect:/listacompeticiones";
@@ -90,28 +95,29 @@ public class CompeticionController {
         Equipo eq = entityManager.find(Equipo.class, idEquipo);
 
         if (comp != null && eq != null && comp.getEquiposSolicitantes().contains(eq)) {
+            // Solo permite aceptar si el estado es INSCRIPCION
+            if (comp.getEstado() != Competicion.Estado.INSCRIPCION) {
+                redir.addFlashAttribute("error", "No se pueden aceptar equipos, la competición no está en fase de inscripción.");
+                return "redirect:/paneladmin";
+            }
             comp.getEquiposSolicitantes().remove(eq);
             comp.getEquipos().add(eq);
             entityManager.merge(comp);
             redir.addFlashAttribute("success", eq.getNombre() + " ha sido aceptado en " + comp.getNombre());
-        }
 
-        if (comp.getTipo().name().equals("LIGA")) {
-            
-            Clasificacion nuevaClasificacion = new Clasificacion();
-
-            nuevaClasificacion.setCompeticion(comp);
-            nuevaClasificacion.setEquipo(eq);
-            
-            nuevaClasificacion.setPuntos(0);
-            nuevaClasificacion.setPartidos_jugados(0);
-            nuevaClasificacion.setVictorias(0);
-            nuevaClasificacion.setEmpates(0);
-            nuevaClasificacion.setDerrotas(0);
-            nuevaClasificacion.setGoles_a_favor(0);
-            nuevaClasificacion.setGoles_en_contra(0);
-
-            entityManager.persist(nuevaClasificacion);
+            if (comp.getTipo().name().equals("LIGA")) {
+                Clasificacion nuevaClasificacion = new Clasificacion();
+                nuevaClasificacion.setCompeticion(comp);
+                nuevaClasificacion.setEquipo(eq);
+                nuevaClasificacion.setPuntos(0);
+                nuevaClasificacion.setPartidos_jugados(0);
+                nuevaClasificacion.setVictorias(0);
+                nuevaClasificacion.setEmpates(0);
+                nuevaClasificacion.setDerrotas(0);
+                nuevaClasificacion.setGoles_a_favor(0);
+                nuevaClasificacion.setGoles_en_contra(0);
+                entityManager.persist(nuevaClasificacion);
+            }
         }
 
         return "redirect:/paneladmin";
@@ -141,6 +147,11 @@ public String generarCalendario(@RequestParam("idCompeticion") long idCompeticio
     if (admin == null || !admin.hasRole(User.Role.ADMIN)) return "redirect:/paneladmin";
 
     Competicion comp = entityManager.find(Competicion.class, idCompeticion);
+    // Solo permite generar calendario si el estado es INSCRIPCION
+    if (comp.getEstado() != Competicion.Estado.INSCRIPCION) {
+        redir.addFlashAttribute("error", "Solo se puede generar el calendario cuando la competición está en fase de inscripción.");
+        return "redirect:/paneladmin";
+    }
     List<Equipo> equipos = new ArrayList<>(comp.getEquipos());
 
     int numEquipos = equipos.size();
@@ -148,19 +159,16 @@ public String generarCalendario(@RequestParam("idCompeticion") long idCompeticio
     int numPartidosPorJornada = numEquipos / 2;
 
     for (int i = 0; i < numJornadasIda; i++) {
-        
         for (int j = 0; j < numPartidosPorJornada; j++) {
             Equipo local = equipos.get(j);
             Equipo visitante = equipos.get(numEquipos - 1 - j);
 
-            
             Partido partidoIda = new Partido();
             partidoIda.setCompeticion(comp);
             partidoIda.setFase("JORNADA " + (i + 1));
             partidoIda.setFecha(LocalDate.now().plusWeeks(i));
             partidoIda.setEstado("PENDIENTE");
 
-            // Para equilibrar quién juega en casa y fuera (especialmente el equipo fijo en índice 0)
             if (j == 0 && i % 2 == 1) {
                 partidoIda.setLocal(visitante);
                 partidoIda.setVisitante(local);
@@ -182,17 +190,17 @@ public String generarCalendario(@RequestParam("idCompeticion") long idCompeticio
             partidoVuelta.setLocal(partidoIda.getVisitante());
             partidoVuelta.setVisitante(partidoIda.getLocal());
             partidoVuelta.setUbicacion(partidoVuelta.getLocal().getUbicacion());
-            
             entityManager.persist(partidoVuelta);
-        
         }
 
-        // El equipo 0 se queda fijo. Extraemos el último de la lista y lo ponemos en la posición 1.
         Equipo ultimo = equipos.remove(equipos.size() - 1);
         equipos.add(1, ultimo);
     }
 
-    redir.addFlashAttribute("success", "Calendario generado con éxito.");
+
+    comp.setEstado(Competicion.Estado.EN_CURSO);
+    entityManager.merge(comp);
+    redir.addFlashAttribute("success", "Calendario generado con éxito. La competición ha comenzado.");
     return "redirect:/paneladmin";
 }
     
