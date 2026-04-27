@@ -27,8 +27,12 @@ public class Competicion {
 
     public enum Tipo{
         LIGA,
-        TORNEO
+        TORNEO,
+        ROUND_ROBIN_ARBOL
     }
+
+    private Integer equiposPorGrupo;
+    private Integer equiposClasificanArbol;
 
     public enum Estado{
         INSCRIPCION,

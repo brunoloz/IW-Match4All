@@ -4,7 +4,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -46,7 +51,7 @@ public class RootController {
 
 	@GetMapping("/login")
     public String login(Model model, HttpServletRequest request) {
-        boolean error = request.getQueryString() != null && request.getQueryString().indexOf("error") != -1;
+        boolean error = request.getQueryString() != null && request.getQueryString().contains("error");
         model.addAttribute("loginError", error);
         return "login";
     }
@@ -76,8 +81,87 @@ public class RootController {
         .getResultList();
         model.addAttribute("partidos", partidos);
 
+        List<Partido> partidosRoundRobin = new ArrayList<>();
+        Map<String, List<Partido>> partidosRoundRobinPorGrupo = new LinkedHashMap<>();
+        Map<String, Map<Long, Equipo>> equiposRoundRobinTemp = new LinkedHashMap<>();
+        Map<String, List<Partido>> bracketPartidosPorFase = new LinkedHashMap<>();
+
+        if (competicion != null) {
+            for (Partido partido : partidos) {
+                boolean faseRoundRobin = esFaseRoundRobin(partido.getFase());
+                if (competicion.getTipo() == Competicion.Tipo.ROUND_ROBIN_ARBOL && faseRoundRobin) {
+                    partidosRoundRobin.add(partido);
+
+                    String grupo = extraerNombreGrupo(partido.getFase());
+                    if (grupo != null) {
+                        partidosRoundRobinPorGrupo.computeIfAbsent(grupo, k -> new ArrayList<>()).add(partido);
+
+                        equiposRoundRobinTemp.computeIfAbsent(grupo, k -> new LinkedHashMap<>());
+                        Map<Long, Equipo> equiposGrupo = equiposRoundRobinTemp.get(grupo);
+                        equiposGrupo.put(partido.getLocal().getId(), partido.getLocal());
+                        equiposGrupo.put(partido.getVisitante().getId(), partido.getVisitante());
+                    }
+                } else if (competicion.getTipo() == Competicion.Tipo.ROUND_ROBIN_ARBOL
+                        || competicion.getTipo() == Competicion.Tipo.TORNEO) {
+                    bracketPartidosPorFase.computeIfAbsent(partido.getFase(), k -> new ArrayList<>()).add(partido);
+                }
+            }
+        }
+
+        Map<String, List<Equipo>> equiposRoundRobinPorGrupo = new LinkedHashMap<>();
+        for (Map.Entry<String, Map<Long, Equipo>> entry : equiposRoundRobinTemp.entrySet()) {
+            List<Equipo> equiposGrupo = new ArrayList<>(entry.getValue().values());
+            equiposGrupo.sort(Comparator.comparingLong(Equipo::getId));
+            equiposRoundRobinPorGrupo.put(entry.getKey(), equiposGrupo);
+        }
+
+        Map<String, Map<Long, Map<Long, Partido>>> matrizRoundRobinPorGrupo = new LinkedHashMap<>();
+        for (Map.Entry<String, List<Equipo>> entry : equiposRoundRobinPorGrupo.entrySet()) {
+            String grupo = entry.getKey();
+            List<Equipo> equiposGrupo = entry.getValue();
+
+            Map<Long, Map<Long, Partido>> matrizGrupo = new LinkedHashMap<>();
+            for (Equipo equipo : equiposGrupo) {
+                matrizGrupo.put(equipo.getId(), new LinkedHashMap<>());
+            }
+
+            List<Partido> partidosGrupo = partidosRoundRobinPorGrupo.getOrDefault(grupo, new ArrayList<>());
+            for (Partido partido : partidosGrupo) {
+                long idA = Math.min(partido.getLocal().getId(), partido.getVisitante().getId());
+                long idB = Math.max(partido.getLocal().getId(), partido.getVisitante().getId());
+
+                matrizGrupo.computeIfAbsent(idA, k -> new LinkedHashMap<>()).put(idB, partido);
+            }
+
+            matrizRoundRobinPorGrupo.put(grupo, matrizGrupo);
+        }
+
+        model.addAttribute("partidosRoundRobin", partidosRoundRobin);
+        model.addAttribute("partidosRoundRobinPorGrupo", partidosRoundRobinPorGrupo);
+        model.addAttribute("equiposRoundRobinPorGrupo", equiposRoundRobinPorGrupo);
+        model.addAttribute("matrizRoundRobinPorGrupo", matrizRoundRobinPorGrupo);
+        model.addAttribute("bracketPartidosPorFase", bracketPartidosPorFase);
+
 
         return "competiciones";
+    }
+
+    private boolean esFaseRoundRobin(String fase) {
+        return fase != null && fase.toUpperCase(Locale.ROOT).startsWith("ROUND ROBIN");
+    }
+
+    private String extraerNombreGrupo(String fase) {
+        if (fase == null || !fase.startsWith("ROUND ROBIN - GRUPO ")) {
+            return null;
+        }
+
+        int inicio = "ROUND ROBIN - GRUPO ".length();
+        int fin = fase.indexOf(" - JORNADA", inicio);
+        if (fin <= inicio) {
+            return null;
+        }
+
+        return fase.substring(inicio, fin).trim();
     }
 
     @GetMapping("/listacompeticiones")      //ruta

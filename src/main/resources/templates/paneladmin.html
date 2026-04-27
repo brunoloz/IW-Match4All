@@ -240,8 +240,9 @@
                         <div class="mb-3">
                             <label for="competition-type" class="form-label">Tipo</label>
                             <select id="competition-type" name="tipo" class="form-select" required>
-                                <option value="LIGA">Liga</option>
-                                <option value="TORNEO">Torneo</option>
+                                <option value="LIGA">Liga (Round Robin)</option>
+                                <option value="TORNEO">Torneo (Árbol)</option>
+                                <option value="ROUND_ROBIN_ARBOL">Liga + Playoff (Round Robin + Árbol)</option>
                             </select>
                         </div>
 
@@ -249,6 +250,13 @@
                             <label for="competition-size" class="form-label">Tamaño (equipos)</label>
                             <input id="competition-size" name="capacidad" type="number" min="2" max="128" class="form-control" required>
                             <div class="form-text">Selecciona un valor entre 2 y 128.</div>
+                        </div>
+                        <div class="mb-3" id="group-config-fields" style="display:none;">
+                            <label for="equiposPorGrupo" class="form-label">Equipos por grupo</label>
+                            <input id="equiposPorGrupo" name="equiposPorGrupo" type="number" min="2" max="128" class="form-control">
+                            <label for="equiposClasificanArbol" class="form-label mt-2">Equipos que pasan al árbol</label>
+                            <input id="equiposClasificanArbol" name="equiposClasificanArbol" type="number" min="1" max="128" class="form-control">
+                            <div class="form-text">Solo necesario para Round Robin + Árbol.</div>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -292,12 +300,22 @@
             const allRows = Array.from(document.querySelectorAll('.admin-search-row'));
             const actionButtons = Array.from(document.querySelectorAll('.open-action-modal'));
 
-            const actionForm = document.getElementById('actionReasonForm');
-            const actionDescription = document.getElementById('actionReasonDescription');
-            const actionTitle = document.getElementById('actionReasonModalLabel');
-            const actionReason = document.getElementById('action-reason');
-            const actionSubmit = document.getElementById('actionReasonSubmit');
-            const actionModalElement = document.getElementById('actionReasonModal');
+            // Mostrar campos extra solo si corresponde
+            const typeSelect = document.getElementById('competition-type');
+            const groupFields = document.getElementById('group-config-fields');
+            if (typeSelect && groupFields) {
+                typeSelect.addEventListener('change', function() {
+                    if (this.value === 'ROUND_ROBIN_ARBOL') {
+                        groupFields.style.display = '';
+                        groupFields.querySelectorAll('input').forEach(i => i.required = true);
+                    } else {
+                        groupFields.style.display = 'none';
+                        groupFields.querySelectorAll('input').forEach(i => i.required = false);
+                    }
+                });
+            }
+
+            // ...existing code...
             const actionModal = new bootstrap.Modal(actionModalElement);
 
             const applySearchFilter = () => {

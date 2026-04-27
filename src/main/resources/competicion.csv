@@ -1,4 +1,5 @@
-id,nombre,tipo,capacidad,estado
-1,La Liga,LIGA,20,INSCRIPCION
-2,Copa del Rey,TORNEO,32,INSCRIPCION
-3,Supercopa de España,TORNEO,4,INSCRIPCION
+id,nombre,tipo,capacidad,estado,equiposPorGrupo,equiposClasificanArbol
+1,La Liga,LIGA,20,INSCRIPCION,0,0
+2,Copa del Rey,TORNEO,32,INSCRIPCION,0,0
+3,Supercopa de España,TORNEO,4,INSCRIPCION,0,0
+4,TEST,ROUND_ROBIN_ARBOL,9,INSCRIPCION,2,1

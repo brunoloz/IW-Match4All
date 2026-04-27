@@ -131,6 +131,8 @@ public class AdminController {
           @RequestParam("nombre") String nombre,
           @RequestParam("tipo") String tipo,
           @RequestParam("capacidad") int capacidad,
+          @RequestParam(value = "equiposPorGrupo", required = false) Integer equiposPorGrupo,
+          @RequestParam(value = "equiposClasificanArbol", required = false) Integer equiposClasificanArbol,
           HttpSession session,
           RedirectAttributes redirectAttributes) {
 
@@ -154,10 +156,6 @@ public class AdminController {
           return "redirect:/paneladmin";
       }
 
-      if (capacidad % 2 == 1) {
-          redirectAttributes.addFlashAttribute("error", "El número de equipos debe ser par.");
-          return "redirect:/paneladmin";
-      }
 
       List<Competicion> existentes = entityManager
           .createQuery("SELECT c FROM Competicion c WHERE LOWER(c.nombre) = LOWER(:nombre)", Competicion.class)
@@ -177,10 +175,27 @@ public class AdminController {
           return "redirect:/paneladmin";
       }
 
+      if (tipoCompeticion == Competicion.Tipo.ROUND_ROBIN_ARBOL) {
+          if (equiposPorGrupo == null || equiposPorGrupo < 2) {
+              redirectAttributes.addFlashAttribute("error", "El número de equipos por grupo debe ser al menos 2.");
+              return "redirect:/paneladmin";
+          }
+          if (equiposClasificanArbol == null || equiposClasificanArbol < 1 || equiposClasificanArbol > equiposPorGrupo) {
+              redirectAttributes.addFlashAttribute("error", "El número de equipos que pasan a playoff debe ser al menos 1 y no mayor que los equipos por grupo.");
+              return "redirect:/paneladmin";
+          }
+      }
+
+
       Competicion competicion = new Competicion();
       competicion.setNombre(nombre.trim());
       competicion.setTipo(tipoCompeticion);
       competicion.setCapacidad(capacidad);
+
+      if (tipoCompeticion == Competicion.Tipo.ROUND_ROBIN_ARBOL) {
+          competicion.setEquiposPorGrupo(equiposPorGrupo);
+          competicion.setEquiposClasificanArbol(equiposClasificanArbol);
+      }
       entityManager.persist(competicion);
 
       redirectAttributes.addFlashAttribute("success", "Competición creada correctamente.");

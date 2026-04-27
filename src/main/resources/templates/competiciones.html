@@ -17,12 +17,22 @@
         </div>
         <hr class="my-4">
         <div class="row g-3 align-items-start">
-            <section th:if="${competicionSeleccionada.tipo.name() == 'LIGA'}" class="col-12 col-lg-8">
+            <section th:if="${competicionSeleccionada.tipo.name() == 'LIGA' or competicionSeleccionada.tipo.name() == 'ROUND_ROBIN_ARBOL'}"
+                class="col-12"
+                th:classappend="${competicionSeleccionada.tipo.name() == 'LIGA' ? ' col-lg-8' : (#maps.isEmpty(bracketPartidosPorFase) ? ' col-xl-8' : ' col-xl-4')}">
                 <div class="card shadow-sm">
-                    <div class="card-header">
-                        <h2 class="h5 mb-0">Tabla de Clasificación</h2>
+                    <div class="card-header d-flex align-items-center justify-content-between gap-2 flex-wrap">
+                        <h2 class="h5 mb-0" th:text="${competicionSeleccionada.tipo.name() == 'LIGA' ? 'Tabla de Clasificación' : 'Grupos Round Robin'}">Tabla de Clasificación</h2>
+
+                        <form th:if="${u != null and u.hasRole('ADMIN') and competicionSeleccionada.tipo.name() == 'ROUND_ROBIN_ARBOL'}"
+                            th:action="@{/competicion/debug-finalizar-round-robin}" method="post" class="m-0">
+                            <input type="hidden" name="idCompeticion" th:value="${competicionSeleccionada.id}">
+                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Finaliza Round Robin y genera el árbol">
+                                Debug: Cerrar Round Robin
+                            </button>
+                        </form>
                     </div>
-                    <div class="card-body p-0">
+                    <div class="card-body p-0" th:if="${competicionSeleccionada.tipo.name() == 'LIGA'}">
                         <div class="table-responsive">
                             <table class="table table-bordered mb-0 align-middle fs-5">
                                 <thead style="background-color: #fcf8e3;">
@@ -73,71 +83,153 @@
                             </table>
                         </div>
                     </div>
+
+                    <div class="card-body" th:unless="${competicionSeleccionada.tipo.name() == 'LIGA'}">
+                        <div th:if="${#maps.isEmpty(partidosRoundRobinPorGrupo)}" class="text-muted rr-empty-state">
+                            Aun no se han generado partidos de grupos.
+                        </div>
+
+                        <div th:each="grupoEntry : ${partidosRoundRobinPorGrupo}" class="rr-group-card mb-4">
+                            <div class="rr-group-header">
+                                <h3 class="h6 fw-bold text-uppercase mb-0" th:text="${'Grupo ' + grupoEntry.key}">Grupo A</h3>
+                                <span class="rr-group-count" th:text="${#lists.size(equiposRoundRobinPorGrupo[grupoEntry.key])} + ' equipos'">4 equipos</span>
+                            </div>
+
+                            <div class="table-responsive rr-matrix-wrap">
+                                <table class="table table-sm table-bordered align-middle mb-0 rr-matrix-table">
+                                    <thead>
+                                        <tr>
+                                            <th class="rr-axis rr-axis-corner">Equipo</th>
+                                            <th th:each="teamCol : ${equiposRoundRobinPorGrupo[grupoEntry.key]}" class="rr-axis-col"
+                                                th:text="${teamCol.nombre}">Equipo X</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="teamRow, rowStat : ${equiposRoundRobinPorGrupo[grupoEntry.key]}">
+                                            <th class="rr-axis-row" th:text="${teamRow.nombre}">Equipo Y</th>
+
+                                            <td th:each="teamCol, colStat : ${equiposRoundRobinPorGrupo[grupoEntry.key]}"
+                                                th:classappend="${colStat.index == rowStat.index ? ' rr-cell-diagonal' : (colStat.index < rowStat.index ? ' rr-cell-blocked' : ' rr-cell-playable')}">
+
+                                                <th:block th:if="${colStat.index > rowStat.index}"
+                                                    th:with="partido=${matrizRoundRobinPorGrupo[grupoEntry.key][teamRow.id][teamCol.id]}">
+
+                                                    <div th:if="${partido != null}" class="rr-cell-content">
+                                                        <span class="rr-cell-fixture" th:text="${partido.local.nombre + ' vs ' + partido.visitante.nombre}">A vs B</span>
+                                                        <span class="rr-cell-date" th:text="${#temporals.format(partido.fecha, 'dd/MM')}">01/01</span>
+                                                        <span class="rr-status"
+                                                            th:classappend="${partido.estado == 'PENDIENTE' ? ' rr-status-pending' : ' rr-status-final'}"
+                                                            th:text="${partido.estado == 'PENDIENTE' ? 'Pendiente' : partido.estado}">Pendiente</span>
+                                                    </div>
+
+                                                    <span th:if="${partido == null}" class="rr-cell-empty">-</span>
+                                                </th:block>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
 
-            <section class="col-12 col-lg-4 d-flex flex-column gap-3">
+            <section th:if="${(competicionSeleccionada.tipo.name() == 'TORNEO' or competicionSeleccionada.tipo.name() == 'ROUND_ROBIN_ARBOL') and not #maps.isEmpty(bracketPartidosPorFase)}"
+                class="col-12"
+                th:classappend="${competicionSeleccionada.tipo.name() == 'ROUND_ROBIN_ARBOL' ? ' col-xl-4' : ' col-lg-8'}">
                 <div class="card shadow-sm">
                     <div class="card-header">
-                        <h2 class="h5 mb-0">Partidos</h2>
+                        <h2 class="h5 mb-0">Fase de Arbol</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="competition-bracket">
+                            <section th:each="faseEntry : ${bracketPartidosPorFase}">
+                                <h3 class="bracket-round-title" th:text="${faseEntry.key}">Round 1</h3>
+                                <ol class="bracket-round-list">
+                                    <li th:each="partido : ${faseEntry.value}">
+                                        <div class="bracket-match">
+                                            <a th:if="${partido.local != null}" th:href="@{/equipo/{id}(id=${partido.local.id})}" th:text="${partido.local.nombre}">Equipo 1</a>
+                                            <span th:unless="${partido.local != null}" class="text-muted">Por definir</span>
+
+                                            <a th:if="${partido.visitante != null}" th:href="@{/equipo/{id}(id=${partido.visitante.id})}" th:text="${partido.visitante.nombre}">Equipo 2</a>
+                                            <span th:unless="${partido.visitante != null}" class="text-muted">Por definir</span>
+
+                                            <span th:if="${partido.estado == 'PENDIENTE'}" th:text="${'Fecha: ' + #temporals.format(partido.fecha, 'dd/MM/yyyy')}">Fecha: 01/01/2026</span>
+                                            <span th:unless="${partido.estado == 'PENDIENTE'}" th:text="${partido.estado}">FINALIZADO</span>
+                                        </div>
+                                    </li>
+                                </ol>
+                            </section>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="col-12 d-flex flex-column gap-3"
+                th:classappend="${competicionSeleccionada.tipo.name() == 'LIGA' ? ' col-lg-4' : (competicionSeleccionada.tipo.name() == 'TORNEO' ? (#maps.isEmpty(bracketPartidosPorFase) ? ' col-lg-12' : ' col-lg-4') : ' col-xl-4')}">
+                <div class="card shadow-sm">
+                    <div class="card-header">
+                        <h2 class="h5 mb-0" th:text="${competicionSeleccionada.tipo.name() == 'ROUND_ROBIN_ARBOL' ? 'Partidos Round Robin' : 'Partidos'}">Partidos</h2>
                     </div> 
                     <div class="card-body">
                         <div class="overflow-auto" style="max-height: calc(700px - 56px);   overflow-y: auto;">
-                            <div th:if="${#lists.isEmpty(partidos)}" class="text-muted">Aún no se ha generado el calendario de partidos</div>
-                            <th:block th:each="partido, iterStat : ${partidos}">
-                                <div th:if="${iterStat.first or partido.fase != partidos[iterStat.index - 1].fase}"
-                                        class="card-header text-white text-center py-2 mt-4" style="background-color: var(--brand-blue);">
-                                    <h5 class="mb-0 fw-bold text-uppercase" th:text="${partido.fase}">JORNADA X</h5>
-                                </div>
-                                <div class="mb-4">
-                                    <div class="card shadow-sm h-100 border-0">
-                                        <div class="list-group list-group-flush">
-                                            <div class="list-group-item py-3">
-                                                <div class="row mt-1">
-                                                    <div class="col-12 text-center text-muted" style="font-size: 1rem;">
-                                                        <span th:text="${partido.ubicacion}">Estadio</span>
+                            <th:block th:with="partidosVista=${competicionSeleccionada.tipo.name() == 'ROUND_ROBIN_ARBOL' ? partidosRoundRobin : partidos}">
+                                <div th:if="${#lists.isEmpty(partidosVista)}" class="text-muted">Aún no se ha generado el calendario de partidos</div>
+                                <th:block th:each="partido, iterStat : ${partidosVista}">
+                                    <div th:if="${iterStat.first or partido.fase != partidosVista[iterStat.index - 1].fase}"
+                                            class="card-header text-white text-center py-2 mt-4" style="background-color: var(--brand-blue);">
+                                        <h5 class="mb-0 fw-bold text-uppercase" th:text="${partido.fase}">JORNADA X</h5>
+                                    </div>
+                                    <div class="mb-4">
+                                        <div class="card shadow-sm h-100 border-0">
+                                            <div class="list-group list-group-flush">
+                                                <div class="list-group-item py-3">
+                                                    <div class="row mt-1">
+                                                        <div class="col-12 text-center text-muted" style="font-size: 1rem;">
+                                                            <span th:text="${partido.ubicacion}">Estadio</span>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <div class="row mt-1">
-                                                    <div th:if="${partido.estado == 'PENDIENTE'}" class="badge bg-light text-dark border p-2 w-100" style="font-size: 0.85rem;">
-                                                        <span th:text="${#temporals.format(partido.fecha, 'dd/MM/yyyy')}">12/09/2020</span>
-                                                    </div>
-                                                    <div th:unless="${partido.estado == 'PENDIENTE'}" class="badge bg-secondary p-2 w-100" style="font-size: 0.85rem;">
-                                                        <span th:text="${partido.estado}">FINALIZADO</span>
-                                                    </div>
-                                                </div> 
-                                                <br>                                               
-                                                <div class="row align-items-center">
-                                                    <div class="col-4 text-end fw-bold text-truncate">
-                                                        <img th:if="${partido.local != null}" 
-                                                            th:src="@{'/img/equipos/' + ${partido.local.escudo}}"
-                                                            src="/img/default-team.png" 
-                                                            alt="Escudo del equipo" 
-                                                            class="rounded" 
-                                                            width="37" 
-                                                            height="40"
-                                                            onerror="this.src='/img/default-team.png';">
-                                                        <span th:text="${partido.local.nombre}">Local</span>
-                                                    </div>
-                                                    <div class="col-4 text-center px-0">
-                                                        <span>VS</span>
-                                                    </div>
-                                                    <div class="col-4 text-start fw-bold text-truncate">
-                                                        <img th:if="${partido.visitante != null}" 
-                                                            th:src="@{'/img/equipos/' + ${partido.visitante.escudo}}"
-                                                            src="/img/default-team.png" 
-                                                            alt="Escudo del equipo" 
-                                                            class="rounded" 
-                                                            width="37" 
-                                                            height="40"
-                                                            onerror="this.src='/img/default-team.png';">                                                        
-                                                        <span th:text="${partido.visitante.nombre}">Visitante</span>
+                                                    <div class="row mt-1">
+                                                        <div th:if="${partido.estado == 'PENDIENTE'}" class="badge bg-light text-dark border p-2 w-100" style="font-size: 0.85rem;">
+                                                            <span th:text="${#temporals.format(partido.fecha, 'dd/MM/yyyy')}">12/09/2020</span>
+                                                        </div>
+                                                        <div th:unless="${partido.estado == 'PENDIENTE'}" class="badge bg-secondary p-2 w-100" style="font-size: 0.85rem;">
+                                                            <span th:text="${partido.estado}">FINALIZADO</span>
+                                                        </div>
+                                                    </div> 
+                                                    <br>                                               
+                                                    <div class="row align-items-center">
+                                                        <div class="col-4 text-end fw-bold text-truncate">
+                                                            <img th:if="${partido.local != null}" 
+                                                                th:src="@{'/img/equipos/' + ${partido.local.escudo}}"
+                                                                src="/img/default-team.png" 
+                                                                alt="Escudo del equipo" 
+                                                                class="rounded" 
+                                                                width="37" 
+                                                                height="40"
+                                                                onerror="this.src='/img/default-team.png';">
+                                                            <span th:text="${partido.local.nombre}">Local</span>
+                                                        </div>
+                                                        <div class="col-4 text-center px-0">
+                                                            <span>VS</span>
+                                                        </div>
+                                                        <div class="col-4 text-start fw-bold text-truncate">
+                                                            <img th:if="${partido.visitante != null}" 
+                                                                th:src="@{'/img/equipos/' + ${partido.visitante.escudo}}"
+                                                                src="/img/default-team.png" 
+                                                                alt="Escudo del equipo" 
+                                                                class="rounded" 
+                                                                width="37" 
+                                                                height="40"
+                                                                onerror="this.src='/img/default-team.png';">                                                        
+                                                            <span th:text="${partido.visitante.nombre}">Visitante</span>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                </th:block>
                             </th:block>
                         </div>
                     </div>
