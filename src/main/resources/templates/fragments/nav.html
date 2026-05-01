@@ -37,6 +37,10 @@
                         <th:block th:if="${u}">
                             <li class="nav-item mx-3">
                                 <a class="nav-link" th:if="${u.hasRole('ADMIN')}" th:href="@{/paneladmin}">Administrar</a>
+                            </li>                            
+                            
+                            <li class="nav-item mx-3">
+                                <a class="nav-link" th:if="${u.hasRole('ARBITRO')}" th:href="@{/panelarbitro}">Panel Árbitro</a>
                             </li>
 
                             <li class="nav-item mx-2">

@@ -96,7 +96,7 @@
                                         <i class="bi bi-eye me-2"></i>Ver Detalles
                                     </a>
 
-                                    <form th:if="${u != null && u.equipo == null && u.equipoSolicitado == null && !u.hasRole(T(es.ucm.fdi.iw.model.User.Role).ADMIN)}" 
+                                    <form th:if="${u != null && u.equipo == null && u.equipoSolicitado == null && u.hasRole(T(es.ucm.fdi.iw.model.User.Role).USER)}" 
                                     th:action="@{/equipo/solicitar}" method="post" class="m-0">
                                         <input type="hidden" name="idEquipo" th:value="${e.id}">
                                         

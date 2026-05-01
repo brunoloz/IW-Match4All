@@ -45,7 +45,7 @@
 									<tr th:each="jugador : ${equipo != null ? equipo.jugadores : {}}">
 										<td>
 											<div class="d-flex align-items-center gap-2">
-												<a th:href="@{/user/{id}(id=${jugador.id})}" class="d-flex align-items-center gap-2 link-primary" style="text-decoration:none;">
+												<a th:href="@{/perfil/{id}(id=${jugador.id})}" class="d-flex align-items-center gap-2 link-primary" style="text-decoration:none;">
 													<img th:src="@{'/img/' + ${jugador.avatar}}" 
 														 alt="Jugador" 
 														 class="rounded-circle" 
@@ -141,6 +141,57 @@
 					</ul>
 					<div class="card-body text-center text-muted" th:if="${competicionesEquipo == null || competicionesEquipo.isEmpty()}">
 						<small>No estás inscrito en ninguna competición.</small>
+					</div>
+				</div>
+
+				<div class="card shadow-sm">
+					<div class="card-header">
+						<h3 class="h6 mb-0">Partidos Jugados</h3>
+					</div>
+					<div class="card-body p-0">
+						<div class="overflow-auto" style="max-height: 260px;">
+							<div th:if="${#lists.isEmpty(partidosJugados)}" class="p-3 text-center text-muted">
+								<small>No hay partidos jugados aún.</small>
+							</div>
+							<ul class="list-group list-group-flush" th:if="${!#lists.isEmpty(partidosJugados)}">
+								<li th:each="partido : ${partidosJugados}" class="list-group-item py-2 px-3">
+								<a th:href="@{/partido/{id}(id=${partido.id})}"
+									class="d-block fw-bold text-decoration-none" style="color: var(--brand-blue);">									
+									<div class="d-flex justify-content-between align-items-center" style="font-size: 0.9rem;">
+										<span th:text="${partido.local.nombre} + ' vs ' + ${partido.visitante.nombre}">Equipo 1 vs Equipo 2</span>
+										<span class="badge text-bg-secondary" th:text="${partido.estado}">FINALIZADO</span>
+									</div>
+								</a>
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+
+				<div class="card shadow-sm">
+					<div class="card-header">
+						<h3 class="h6 mb-0">Próximos Partidos</h3>
+					</div>
+					<div class="card-body p-0">
+						<div class="overflow-auto" style="max-height: 260px;">
+							<div th:if="${#lists.isEmpty(proximosPartidos)}" class="p-3 text-center text-muted">
+								<small>No hay próximos partidos.</small>
+							</div>
+							<ul class="list-group list-group-flush" th:if="${!#lists.isEmpty(proximosPartidos)}">
+								<li th:each="partido : ${proximosPartidos}" class="list-group-item py-2 px-3">
+									<div class="d-flex justify-content-between align-items-center" style="font-size: 0.9rem;">
+										<div>
+											<a th:href="@{/partido/{id}(id=${partido.id})}"
+												class="d-block fw-bold text-decoration-none" style="color: var(--brand-blue);">
+											<div th:text="${partido.local.nombre} + ' - ' + ${partido.visitante.nombre}">Equipo 1 vs Equipo 2</div>
+											<small class="text-muted" th:text="${#temporals.format(partido.fecha, 'dd/MM/yyyy')}">01/01/2026</small>
+											</a>
+										</div>
+										<span class="badge text-bg-info">PRÓXIMO</span>
+									</div>
+								</li>
+							</ul>
+						</div>
 					</div>
 				</div>
 

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html class="h-100" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <th:block th:replace="~{fragments/head :: header}" />
+    <title>Perfil de Usuario</title>
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+    <header th:replace="~{fragments/nav.html :: nav}"></header>
+
+    <main class="flex-grow-1 d-flex flex-column p-3 p-md-4">
+        <div class="container-fluid flex-grow-1 d-flex flex-column h-100">
+            <div class="row g-4 flex-grow-1 h-100">
+                
+                <div class="col-lg-4 mb-4 mb-lg-0">
+                    
+                    <div class="bg-white rounded-4 shadow p-4 d-flex flex-column align-items-center h-100" 
+                        style="border: 4px solid var(--brand-blue);">
+                        
+                        <div class="w-100 d-flex flex-column align-items-center mt-3">
+                            <img class="preview rounded-circle border border-4 mb-4 shadow-sm" 
+                                id="avatar" 
+                                alt="Avatar del usuario" 
+                                th:src="@{'/img/' + ${user.avatar}}" 
+                                onerror="this.onerror=null;this.src='/img/default-avatar.png';" 
+                                style="width: 240px; height: 240px; object-fit: cover; border-color: var(--brand-blue) !important;" />
+                        </div>
+
+                        <hr class="w-100 opacity-25 my-4" style="border-color: var(--brand-blue);">
+
+                        <div class="w-100 text-start mb-auto px-2">
+                            <h5 class="fw-bold mb-3 text-center" style="color: var(--brand-blue);"><strong th:text="${user.descripcion}"></strong></h5>
+                            <br>
+                            <ul class="list-unstyled fs-5 mb-0 text-dark">
+                                <li class="mb-3">
+                                    <i class="bi bi-person-fill me-2" style="color: var(--brand-red);"></i> 
+                                    <span class="text-muted fw-semibold">Nombre:</span> 
+                                    <strong th:text="|${user.firstName} ${user.lastName}|"></strong>
+                                </li>
+                                <li class="mb-3">
+                                    <i class="bi bi-calendar-event-fill me-2" style="color: var(--brand-red);"></i>
+                                    <span class="text-muted fw-semibold">Edad:</span> 
+                                    <strong th:text="${user.age} + ' años'"></strong>
+                                </li>
+                                <li>
+                                    <i class="bi bi-controller me-2" style="color: var(--brand-red);"></i>
+                                    <span class="text-muted fw-semibold">Rol:</span> 
+                                    <strong th:text="|${user.posicion}"></strong>
+                                </li>
+                            </ul>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div sec:authorize="hasRole('ADMIN')"class="col-lg-8 d-flex flex-column gap-4 h-100">
+                    <div class="rounded-4 shadow hover-lift p-5 flex-grow-1 d-flex flex-column justify-content-center align-items-center gap-4" style="background-color: #fff; border: 4px solid var(--brand-blue);">
+                        <p class="text-muted mb-4">Accede al panel de admistración, y toma acción sobre la aplicación.</p>
+                        <div class="d-flex gap-3 flex-wrap justify-content-center w-100">
+                            <a th:href="@{/paneladmin}" class="btn btn-brand-blue btn-lg fw-bold text-uppercase rounded-3 px-4">
+                                <i></i>Panel de Administración
+                            </a>
+                        </div>
+                    </div>
+
+        
+                </div>
+
+
+                <div class="col-lg-8 d-flex flex-column gap-4 h-100">
+                                        
+                    <div th:if="${user.equipo != null}" class="card-red rounded-4 shadow hover-lift p-5 flex-grow-1 d-flex flex-column justify-content-center" style="background-color:#fff; border:4px solid var(--brand-blue);">
+                        <h5 class="text-uppercase mb-5" style="letter-spacing: 2px; color: var(--brand-blue);">Estadísticas</h5>
+                        <div class="row text-center align-items-center h-100">
+                            <div class="col-3">
+                                <p class="mb-2 fw-bold text-uppercase fs-4" style="color: var(--brand-blue);">Partidos Jugados</p>
+                                <p class="display-5 fw-bold mb-0" th:text="${user.partidosJugados}"></p>
+                            </div>
+                            <div class="col-3 border-start border-light border-opacity-25">
+                                <p class="mb-2 fw-bold text-uppercase fs-4" style="color: var(--brand-blue);">Goles</p>
+                                <p class="display-5 fw-bold mb-0" th:text="${user.goles}"></p>
+                            </div>
+                            <div class="col-3 border-start border-light border-opacity-25">
+                                <p class="mb-2 fw-bold text-uppercase fs-4" style="color: var(--brand-blue);">Asistencias</p>
+                                <p class="display-5 fw-bold mb-0" th:text="${user.asistencias}"></p>
+                            </div>
+                            <div class="col-3 border-start border-light border-opacity-25">
+                                <p class="mb-2 fw-bold text-uppercase fs-4" style="color: var(--brand-blue);">Tarjetas</p>
+                                <div class="d-flex justify-content-center align-items-center">
+                                    <span class="bg-warning rounded-1 border border-white" style="display: inline-block; width: 16px; height: 24px; margin-right: 6px;"></span> 
+                                    <span class="fs-3 fw-bold me-4" th:text="${user.tarjetasAmarillas}"></span>
+                                    
+                                    <span class="rounded-1 border border-white" style="background-color: var(--brand-red); display: inline-block; width: 16px; height: 24px; margin-right: 6px;"></span> 
+                                    <span class="fs-3 fw-bold" th:text="${user.tarjetasRojas}"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+
+            </div>
+            
+            <div class="text-center mt-4">
+                <small class="text-muted">
+                    Aplicación de plantilla de IW 2025-26. Accede a la última versión (y propón mejoras, es <a href="#" style="color: var(--brand-blue); text-decoration: none; font-weight: bold;">código abierto</a>) en el repositorio.
+                </small>
+            </div>
+        </div>
+    </main>
+
+    <th:block th:replace="~{fragments/footer.html :: footer}" />
+    <script th:src="@{/js/ajax-demo.js}"></script>
+    
+</body>
+
+</html>

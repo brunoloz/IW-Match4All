@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html class="h-100" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <th:block th:replace="~{fragments/head :: header}" />
+    <title>IW: Match4All - Partido</title>
+</head>
+
+<body class="d-flex flex-column h-100 bg-light">
+    <header th:replace="~{fragments/nav.html :: nav}"></header>
+
+    <main class="container py-4 px-lg-5">
+
+        <div class="row">
+            <div class="col-lg-3 col-md-12 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-header">
+                        <h2 class="h5 mb-0">Plantilla</h2>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table id="player-table" class="table table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Jugador</th>
+                                        <th class="text-end" style="width: 56px;"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="player-list">
+                                    <tr th:each="jugador : ${partido.local != null ? partido.local.jugadores : {}}">
+                                        <td>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <a th:href="@{/perfil/{id}(id=${jugador.id})}" class="d-flex align-items-center gap-2 link-primary" style="text-decoration:none;">
+                                                    <img th:src="@{'/img/' + ${jugador.avatar}}" 
+                                                            alt="Jugador" 
+                                                            class="rounded-circle" 
+                                                            width="28" 
+                                                            height="28"
+                                                            onerror="this.src='/img/default-avatar.png';">
+                                                    <span class="fw-semibold" th:text="${jugador.firstName} + ' ' + ${jugador.lastName}"></span>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-lg-6 col-md-12 mb-4">
+
+                <div class="card shadow-sm mx-auto" style="max-width: 700px">
+                    <div class="card-header">
+                        <h2 class="h5 mb-0 text-center">Marcador</h2>
+                    </div>
+
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="text-center" style="max-width: 170px;">
+                                <img th:if="${partido.local != null}"
+                                    th:src="@{'/img/equipos/' + ${partido.local.escudo}}"
+                                    src="/img/default-team.png"
+                                    alt="Escudo del equipo local"
+                                    onerror="this.src='/img/default-team-shield.png';"
+                                    class="img-fluid mb-2"
+                                    style="max-height: 120px; object-fit: contain;">
+                                <a th:href="@{/equipo/{id}(id=${partido.local.id})}"
+                                    th:text="${partido.local.nombre}"
+                                    class="d-block fw-bold text-decoration-none text-dark">Equipo local</a>
+                            </div>
+
+                            <div class="text-center px-4">
+                                <div th:if="${partido.estado.name() == 'PENDIENTE'}" class="badge bg-light text-dark border p-2 w-100" style="font-size: 0.85rem;">
+                                    <span th:text="${#temporals.format(partido.fecha, 'dd/MM/yyyy')}">12/09/2020</span>
+                                </div>
+                                <div th:if="${partido.estado.name() == 'EN_CURSO'}" class="badge bg-success text-white border p-2 w-100" style="font-size: 0.85rem;">
+                                    <span th:text="${partido.estado}">EN_CURSO</span>
+                                </div>                                                        
+                                <div th:if="${partido.estado.name() == 'FINALIZADO'}" class="badge bg-light text-dark border p-2 w-100" style="font-size: 0.85rem;">
+                                    <span th:text="${partido.estado}">FINALIZADO</span>
+                                </div>
+                                <div th:if="${partido.estado.name() == 'PENDIENTE'}" class="display-5 fw-bold">VS</div>
+                            <div th:unless="${partido.estado == null or partido.estado.name() == 'PENDIENTE'}" class="text-center">                  
+
+                                <div class="display-5 fw-bold mb-2">
+                                    <span id="goles-local" th:text="${acta.goles_local}">0</span>
+                                    -
+                                    <span id="goles-visitante" th:text="${acta.goles_visitante}">0</span>
+                                    
+                                </div>
+
+                            </div>
+                                <br>
+                                <a th:href="@{/competiciones/{id}(id=${partido.competicion.id})}"
+                                    class="d-block fw-bold text-decoration-none text-dark">
+                                    <div>
+                                        <small th:text="${partido.competicion.nombre}"class="text-muted fs-6">Competicion</small>
+                                    </div>
+                                </a>
+
+                            </div>
+
+                            <div class="text-center" style="max-width: 170px;">
+                                <img th:if="${partido.visitante != null}"
+                                    th:src="@{'/img/equipos/' + ${partido.visitante.escudo}}"
+                                    src="/img/default-team.png"
+                                    alt="Escudo del equipo visitante"
+                                    onerror="this.src='/img/default-team-shield.png';"
+                                    class="img-fluid mb-2"
+                                    style="max-height: 120px; object-fit: contain;">
+                                <a th:href="@{/equipo/{id}(id=${partido.visitante.id})}"
+                                    th:text="${partido.visitante.nombre}"
+                                    class="d-block fw-bold text-decoration-none text-dark">Equipo visitante</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <div th:if="${u != null && u.hasRole(T(es.ucm.fdi.iw.model.User.Role).ARBITRO)}" class="card shadow-sm mx-auto w-100 mb-4">
+                    <div class="card-header bg-light">
+                        <h3 class="h6 mb-0 text-center">Acciones</h3>
+                    </div>
+                    <div class="card-body text-center">
+                        <div th:if="${partido.estado.name() == 'PENDIENTE'}">
+                            <form id="form-iniciar" th:action="@{/partido/iniciar/{id}(id=${partido.id})}" method="post" class="d-inline">
+                                <input type="hidden" name="id" th:value="${partido.id}">
+                                <button type="submit" class="btn btn-success">
+                                    <i class="bi bi-play-circle me-2"></i>Iniciar Partido
+                                </button>
+                            </form>
+                        </div>
+                        <div th:if="${partido.estado.name() == 'EN_CURSO'}">
+                            <button id="btn-create-comp" type="button" class="btn btn-primary me-2"
+                                data-bs-toggle="modal" data-bs-target="#registrarEventoModal">
+                                <i class="bi bi-plus-circle me-2"></i>Registrar Evento
+                            </button>
+                            <form id="form-finalizar"th:action="@{/partido/finalizar/{id}(id=${partido.id})}" method="post" class="d-inline">
+                                <button type="submit" class="btn btn-danger">
+                                    <i class="bi bi-stop-circle me-2"></i>Finalizar Partido
+                                </button>
+                            </form>
+                        </div>
+                        <div th:if="${partido.estado.name() == 'FINALIZADO'}">
+                            <span class="text-muted">Partido finalizado</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card shadow-sm mx-auto w-100 mb-4">
+                    <div class="card-header bg-light">
+                        <h3 class="h6 mb-0 text-center"><i class="bi bi-clock-history"></i> Minuto a Minuto</h3>
+                    </div>
+                    <div class="card-body p-0">
+                        <ul class="list-group list-group-flush" id="timeline-eventos">
+                            <li th:each="ev : ${acta != null ? acta.eventos : {}}" 
+                                class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <span class="badge bg-secondary me-2" th:text="${ev.minuto} + '\''">15'</span>
+                                    <strong th:text="${ev.usuario.firstName != null ? ev.usuario.firstName + ' ' + ev.usuario.lastName : ev.usuario.username}">Jugador</strong>
+                                    <span class="text-muted small ms-2" th:text="${ev.equipo.nombre}">Equipo</span>
+                                    <div th:if="${ev.descripcion != null and !ev.descripcion.isEmpty()}" class="text-muted small mt-1 ms-4">
+                                        <em th:text="'&quot;' + ${ev.descripcion} + '&quot;'">"Descripción del evento"</em>
+                                    </div>
+                                </div>
+                                <span class="badge" 
+                                    th:classappend="${ev.tipo.name() == 'GOL' ? 'bg-success' : (ev.tipo.name() == 'TARJETA_AMARILLA' ? 'bg-warning text-dark' : (ev.tipo.name() == 'TARJETA_ROJA' ? 'bg-danger' : 'bg-info'))}"
+                                    th:text="${ev.tipo}">GOL</span>
+                            </li>
+                        </ul>
+                        <div th:if="${partido.estado.name() == 'PENDIENTE'}" class="text-center py-3">
+                            <span class="text-muted">El partido aún no ha comenzado.</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="col-lg-3 col-md-12 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-header">
+                        <h2 class="h5 mb-0">Plantilla</h2>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table id="player-table" class="table table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Jugador</th>
+                                        <th class="text-end" style="width: 56px;"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="player-list">
+                                    <tr th:each="jugador : ${partido.local != null ? partido.visitante.jugadores : {}}">
+                                        <td>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <a th:href="@{/user/{id}(id=${jugador.id})}" class="d-flex align-items-center gap-2 link-primary" style="text-decoration:none;">
+                                                    <img th:src="@{'/img/' + ${jugador.avatar}}" 
+                                                            alt="Jugador" 
+                                                            class="rounded-circle" 
+                                                            width="28" 
+                                                            height="28"
+                                                            onerror="this.src='/img/default-avatar.png';">
+                                                    <span class="fw-semibold" th:text="${jugador.firstName} + ' ' + ${jugador.lastName}"></span>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>         
+            </div>
+
+        </div>
+
+
+    
+
+    </main>
+
+    <!-- Modal para registrar evento -->
+    <div class="modal fade" id="registrarEventoModal" tabindex="-1" aria-labelledby="registrarEventoModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="registrarEventoModalLabel">Registrar Evento</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="form-evento" th:action="@{/partido/{id}/evento(id=${partido.id})}" method="post">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="event-type" class="form-label">Tipo de evento</label>
+                            <select id="event-type" name="tipo" class="form-select" required>
+                                <option value="">Selecciona un evento</option>
+                                <option value="GOL">Gol</option>
+                                <option value="TARJETA_AMARILLA">Tarjeta Amarilla</option>
+                                <option value="TARJETA_ROJA">Tarjeta Roja</option>
+                                <option value="CAMBIO">Cambio de jugador</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="event-team" class="form-label">Equipo</label>
+                            <select id="event-team" name="equipoid" class="form-select" required>
+                                <option value="">Selecciona un equipo</option>
+                                <option th:value="${partido.local.id}" th:text="${partido.local.nombre}">Equipo local</option>
+                                <option th:value="${partido.visitante.id}" th:text="${partido.visitante.nombre}">Equipo visitante</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="event-player" class="form-label">Jugador</label>
+                            <select id="event-player" name="jugadorid" class="form-select" required disabled>
+                                    <option value="">Primero selecciona un equipo</option>
+                            </select>                        
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="event-minute" class="form-label">Minuto</label>
+                            <input id="event-minute" name="minuto" type="number" min="0" max="120" class="form-control" placeholder="45" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="event-description" class="form-label">Descripción (opcional)</label>
+                            <textarea id="event-description" name="descripcion" class="form-control" rows="3" placeholder="Detalles adicionales..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-brand-blue">Registrar Evento</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <th:block th:replace="~{fragments/footer.html :: footer}" />
+
+    <script>
+        // Manejador para el formulario de iniciar partido
+        const formIniciar = document.getElementById('form-iniciar');
+        if (formIniciar) {
+            formIniciar.addEventListener('submit', function(e) {
+                e.preventDefault();
+                fetch(this.action, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': config.csrf.value
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Partido iniciado:", data);
+                    // Esperar a que el websocket traiga el INICIO_PARTIDO
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 500);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error al iniciar el partido');
+                });
+            });
+        }
+
+        document.getElementById('event-team').addEventListener('change', function() {
+            const equipoId = this.value;
+            const playerSelect = document.getElementById('event-player');
+            
+            if (!equipoId) {
+                playerSelect.innerHTML = '<option value="">Primero selecciona un equipo</option>';
+                playerSelect.disabled = true;
+                return;
+            }
+            
+            // Fetch players from the API
+            fetch(`/api/equipo/${equipoId}/jugadores`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        alert(data.error);
+                        return;
+                    }
+                    
+                    playerSelect.innerHTML = '<option value="">Selecciona un jugador</option>';
+                    data.jugadores.forEach(jugador => {
+                        const option = document.createElement('option');
+                        option.value = jugador.id;
+                        option.textContent = jugador.firstName + ' ' + jugador.lastName;
+                        playerSelect.appendChild(option);
+                    });
+                    playerSelect.disabled = false;
+                })
+                .catch(error => {
+                    console.error('Error loading players:', error);
+                    alert('Error al cargar los jugadores');
+                });
+        });
+
+        const formFinalizar = document.getElementById('form-finalizar');
+        if (formFinalizar) {
+            formFinalizar.addEventListener('submit', function(e) {
+                e.preventDefault();
+                fetch(this.action, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': config.csrf.value
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Partido terminado:", data);
+                    // Esperar a que el websocket traiga el FIN_PARTIDO
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 500);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error al terminar el partido');
+                });
+            });
+        }
+    </script>
+
+    <script th:inline="javascript">
+
+        if (formIniciar) {
+            formIniciar.addEventListener('submit', (e) => {
+                e.preventDefault(); 
+                
+                
+                go(formIniciar.action, 'POST', {})
+                    .then(data => console.log("Señal de inicio enviada"))
+                    .catch(err => console.error("Error al iniciar", err));
+            });
+        }
+
+        if (formFinalizar) {
+            formFinalizar.addEventListener('submit', (e) => {
+                e.preventDefault(); 
+                
+                go(formFinalizar.action, 'POST', {})
+                    .then(data => console.log("Señal de fin enviada"))
+                    .catch(err => console.error("Error al finalizar", err));
+            });
+        }
+
+        const formEvento = document.getElementById('form-evento');
+        if (formEvento) {
+            formEvento.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                const formData = new FormData(this);
+
+                fetch(this.action, {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Respuesta del servidor:", data); // <-- Nos chiva todo en la consola
+                    
+                    if (data.status === 'ok') {
+                        const modalEl = document.getElementById('registrarEventoModal');
+                        const modalInstance = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+                        modalInstance.hide();
+                        this.reset();
+                        document.getElementById('event-player').disabled = true;
+                    } else {
+                        // ¡Ahora el alert te dirá exactamente el motivo del fallo!
+                        alert('Error: ' + (data.message || 'Fallo interno del servidor')); 
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            });
+        }
+
+        if (typeof ws !== 'undefined') {
+
+            const id_partido = /*[[${partido.id}]]*/ 0;
+            const topic = `/topic/partido/${id_partido}`;
+            const oldReceive = ws.receive;
+
+            const subscribeToTopic = () => {
+                if (ws.stompClient && ws.connected) {
+                    ws.subscribe(topic);
+                    return true;
+                }
+                return false;
+            };
+
+            if (!subscribeToTopic()) {
+                const subscribeRetry = setInterval(() => {
+                    if (subscribeToTopic()) {
+                        clearInterval(subscribeRetry);
+                    }
+                }, 300);
+            }
+
+            ws.receive = (data) => {
+                try {
+
+                    if((data.tipo == "INICIO_PARTIDO" || data.tipo == "FIN_PARTIDO")&& data.partidoId == id_partido){
+                        window.location.reload();
+                    }
+
+                    if (data.tipo === "NUEVO_EVENTO" && data.partidoId == id_partido) {
+                        const spanLocal = document.getElementById('goles-local');
+                        const spanVisitante = document.getElementById('goles-visitante');
+
+                        if (spanLocal && spanLocal.innerText != data.golesLocal) {
+                            spanLocal.innerText = data.golesLocal;
+                            spanLocal.style.color = 'green';
+                            setTimeout(() => spanLocal.style.color = '', 2000);
+                        }
+                        if (spanVisitante && spanVisitante.innerText != data.golesVisitante) {
+                            spanVisitante.innerText = data.golesVisitante;
+                            spanVisitante.style.color = 'green';
+                            setTimeout(() => spanVisitante.style.color = '', 2000);
+                        }
+
+
+                        const timeline = document.getElementById('timeline-eventos');
+                        if (timeline) {
+                            const li = document.createElement('li');
+                            li.className = "list-group-item d-flex justify-content-between align-items-center";
+                            
+                            let badgeClass = "bg-info";
+                            if (data.tipoEvento === "GOL") badgeClass = "bg-success";
+                            else if (data.tipoEvento === "TARJETA_AMARILLA") badgeClass = "bg-warning text-dark";
+                            else if (data.tipoEvento === "TARJETA_ROJA") badgeClass = "bg-danger";
+
+                            li.innerHTML = `
+                                <div class="d-flex flex-column">
+                                    <div>
+                                        <span class="badge bg-secondary me-2">${data.minuto}'</span>
+                                        <strong>${data.jugador}</strong>
+                                        <span class="text-muted small ms-2">${data.equipo}</span>
+                                    </div>
+                                    ${data.descripcion ? `<div class="text-muted small mt-1 ms-4"><em>"${data.descripcion}"</em></div>` : ''}
+                                </div>
+                                <span class="badge ${badgeClass}">${data.tipoEvento}</span>
+                            `;
+                            
+                            timeline.appendChild(li); 
+                        }
+                    }
+                } catch (e) {
+                    console.error("Error procesando mensaje websocket", e);
+                    if (typeof oldReceive === 'function') {
+                        oldReceive(data);
+                    }
+                }
+            };
+        }
+        
+    </script>
+
+</body>
+
+</html>

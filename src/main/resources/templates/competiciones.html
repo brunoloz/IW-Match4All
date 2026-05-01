@@ -182,51 +182,54 @@
                                     </div>
                                     <div class="mb-4">
                                         <div class="card shadow-sm h-100 border-0">
-                                            <div class="list-group list-group-flush">
+                                            <a th:href="@{/partido/{id}(id=${partido.id})}" class="d-block fw-bold text-decoration-none">
+                                            <div class="list-group list-group-flush" style="border: 1px solid var(--brand-blue)">
                                                 <div class="list-group-item py-3">
                                                     <div class="row mt-1">
                                                         <div class="col-12 text-center text-muted" style="font-size: 1rem;">
                                                             <span th:text="${partido.ubicacion}">Estadio</span>
                                                         </div>
                                                     </div>
-                                                    <div class="row mt-1">
-                                                        <div th:if="${partido.estado == 'PENDIENTE'}" class="badge bg-light text-dark border p-2 w-100" style="font-size: 0.85rem;">
+                                                    <div class="row mt-1 mx-auto" style="max-width: 200px">
+                                                        <div th:if="${partido.estado.name() == 'PENDIENTE'}" class="badge bg-light text-dark border p-2 w-100" style="font-size: 0.85rem;">
                                                             <span th:text="${#temporals.format(partido.fecha, 'dd/MM/yyyy')}">12/09/2020</span>
                                                         </div>
-                                                        <div th:unless="${partido.estado == 'PENDIENTE'}" class="badge bg-secondary p-2 w-100" style="font-size: 0.85rem;">
+                                                        <div th:if="${partido.estado.name() == 'EN_CURSO'}" class="badge bg-success text-white border p-2 w-100" style="font-size: 0.85rem;">
+                                                            <span th:text="${partido.estado}">EN_CURSO</span>
+                                                        </div>                                                        
+                                                        <div th:if="${partido.estado.name() == 'FINALIZADO'}" class="badge bg-danger text-white border p-2 w-100" style="font-size: 0.85rem;">
                                                             <span th:text="${partido.estado}">FINALIZADO</span>
                                                         </div>
                                                     </div> 
                                                     <br>                                               
-                                                    <div class="row align-items-center">
-                                                        <div class="col-4 text-end fw-bold text-truncate">
+                                                    <div class="d-flex align-items-center justify-content-center gap-3">
+                                                        <div class="d-flex align-items-center gap-1">
                                                             <img th:if="${partido.local != null}" 
                                                                 th:src="@{'/img/equipos/' + ${partido.local.escudo}}"
                                                                 src="/img/default-team.png" 
                                                                 alt="Escudo del equipo" 
                                                                 class="rounded" 
-                                                                width="37" 
-                                                                height="40"
+                                                                width="28" 
+                                                                height="32"
                                                                 onerror="this.src='/img/default-team.png';">
-                                                            <span th:text="${partido.local.nombre}">Local</span>
+                                                            <span th:text="${partido.local.nombre}" style="font-size: 0.8rem;">Local</span>
                                                         </div>
-                                                        <div class="col-4 text-center px-0">
-                                                            <span>VS</span>
-                                                        </div>
-                                                        <div class="col-4 text-start fw-bold text-truncate">
-                                                            <img th:if="${partido.visitante != null}" 
+                                                        <span style="font-size: 0.85rem;"><strong>VS</strong></span>
+                                                        <div class="d-flex align-items-center gap-1">                                                        
+                                                            <span th:text="${partido.visitante.nombre}" style="font-size: 0.8rem;">Visitante</span>
+                                                                <img th:if="${partido.visitante != null}" 
                                                                 th:src="@{'/img/equipos/' + ${partido.visitante.escudo}}"
                                                                 src="/img/default-team.png" 
                                                                 alt="Escudo del equipo" 
                                                                 class="rounded" 
-                                                                width="37" 
-                                                                height="40"
-                                                                onerror="this.src='/img/default-team.png';">                                                        
-                                                            <span th:text="${partido.visitante.nombre}">Visitante</span>
+                                                                width="28" 
+                                                                height="32"
+                                                                onerror="this.src='/img/default-team.png';">
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
+                                            </a>
                                         </div>
                                     </div>
                                 </th:block>

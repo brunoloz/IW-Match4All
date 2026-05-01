@@ -62,7 +62,7 @@
                                     </tr>
                                     <tr th:each="competition : ${competiciones}" class="admin-search-row">
                                         <td>
-                                            <a th:href="@{/competiciones/{id}(id=${competition.id})}" class="text-decoration-none fw-semibold" th:text="${competition.nombre}">Nombre</a>
+                                            <a th:href="@{/competicion/{id}(id=${competition.id})}" class="text-decoration-none fw-semibold" th:text="${competition.nombre}">Nombre</a>
                                         </td>
                                         <td th:text="${competition.tipo}">Tipo</td>
                                         <td th:text="|${#lists.size(competition.equipos)}/${competition.capacidad}|">0/0</td>
@@ -96,7 +96,14 @@
                                             </div>
                                         </td>
                                         <td>
-                                            <div class="d-flex gap-2">
+                                            <div class="d-flex gap-2 text-end">
+                                                <form th:if="${#lists.size(competition.equipos)} == ${competition.capacidad} and ${#lists.isEmpty(competition.partidos)}"
+                                                    th:action="@{/competicion/generar-calendario}" method="post" class="m-0">
+                                                    <input type="hidden" name="idCompeticion" th:value="${competition.id}">
+                                                    <button type="submit" class="btn btn-sm btn-outline-primary open-action-modal" title="Generar Calendario">
+                                                        Generar Calendario
+                                                    </button>
+                                                </form>
                                                 <button type="button" class="btn btn-sm btn-outline-danger open-action-modal"
                                                     data-action-url=""
                                                     th:attr="data-action-url=@{/admin/eliminar-competicion/{id}(id=${competition.id})}"
@@ -105,13 +112,6 @@
                                                     th:attrappend="data-item-name=${competition.nombre}">
                                                     Eliminar
                                                 </button>
-                                                <form th:if="${#lists.size(competition.equipos)} == ${competition.capacidad} and ${#lists.isEmpty(competition.partidos)}"
-                                                    th:action="@{/competicion/generar-calendario}" method="post" class="m-0">
-                                                    <input type="hidden" name="idCompeticion" th:value="${competition.id}">
-                                                    <button type="submit" class="btn btn-sm btn-outline-primary open-action-modal" title="Generar Calendario">
-                                                        Generar Calendario
-                                                    </button>
-                                                </form>
                                             </div>
                                         </td>
                                     </tr>
@@ -299,6 +299,13 @@
             const searchInput = document.getElementById('global-search');
             const allRows = Array.from(document.querySelectorAll('.admin-search-row'));
             const actionButtons = Array.from(document.querySelectorAll('.open-action-modal'));
+
+            const actionModalElement = document.getElementById('actionReasonModal');
+            const actionForm = document.getElementById('actionReasonForm');
+            const actionTitle = document.getElementById('actionReasonModalLabel');
+            const actionDescription = document.getElementById('actionReasonDescription');
+            const actionReason = document.getElementById('action-reason');
+            const actionSubmit = document.getElementById('actionReasonSubmit');
 
             // Mostrar campos extra solo si corresponde
             const typeSelect = document.getElementById('competition-type');

@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,11 +20,17 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import es.ucm.fdi.iw.model.Acta;
 import es.ucm.fdi.iw.model.Clasificacion;
 import es.ucm.fdi.iw.model.Competicion;
 import es.ucm.fdi.iw.model.Equipo;
+import es.ucm.fdi.iw.model.Evento;
 import es.ucm.fdi.iw.model.Partido;
 import es.ucm.fdi.iw.model.User;
 import jakarta.persistence.EntityManager;
@@ -38,6 +46,8 @@ import jakarta.transaction.Transactional;
 public class RootController {
 
     //private static final Logger log = LogManager.getLogger(RootController.class);
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -61,107 +71,23 @@ public class RootController {
         return "fragments/index";
     }
 
+    @GetMapping("/perfil")
+    public String perfil(Model model) {
+        return "perfil";
+    }
+
+    @GetMapping("/perfil/{id}")
+    public String perfil(@PathVariable("id") long id, Model model) {
+
+        User u = entityManager.find(User.class, id);
+        model.addAttribute("user",u);
+
+        return "perfil";
+    }
+
     @GetMapping("/competiciones")      //ruta
     public String competiciones(Model model) { //nombre da igual
         return "competiciones";            //nombre de 
-    }
-
-    @GetMapping("/competiciones/{id}")
-    public String competicion(@PathVariable("id") long id, Model model) {
-        Competicion competicion = entityManager.find(Competicion.class, id);
-        List<Clasificacion> clasificacion = entityManager.createQuery("SELECT c FROM Clasificacion c WHERE c.competicion.id = :id ORDER BY c.puntos DESC", Clasificacion.class)
-        .setParameter("id", id)
-        .getResultList()
-        ;
-        model.addAttribute("clasificacion", clasificacion);
-        model.addAttribute("competicionSeleccionada", competicion);
-
-        List<Partido> partidos = entityManager.createQuery("SELECT p FROM Partido p WHERE p.competicion.id = :idCompeticion ORDER BY p.fecha ASC", Partido.class)
-        .setParameter("idCompeticion", id)
-        .getResultList();
-        model.addAttribute("partidos", partidos);
-
-        List<Partido> partidosRoundRobin = new ArrayList<>();
-        Map<String, List<Partido>> partidosRoundRobinPorGrupo = new LinkedHashMap<>();
-        Map<String, Map<Long, Equipo>> equiposRoundRobinTemp = new LinkedHashMap<>();
-        Map<String, List<Partido>> bracketPartidosPorFase = new LinkedHashMap<>();
-
-        if (competicion != null) {
-            for (Partido partido : partidos) {
-                boolean faseRoundRobin = esFaseRoundRobin(partido.getFase());
-                if (competicion.getTipo() == Competicion.Tipo.ROUND_ROBIN_ARBOL && faseRoundRobin) {
-                    partidosRoundRobin.add(partido);
-
-                    String grupo = extraerNombreGrupo(partido.getFase());
-                    if (grupo != null) {
-                        partidosRoundRobinPorGrupo.computeIfAbsent(grupo, k -> new ArrayList<>()).add(partido);
-
-                        equiposRoundRobinTemp.computeIfAbsent(grupo, k -> new LinkedHashMap<>());
-                        Map<Long, Equipo> equiposGrupo = equiposRoundRobinTemp.get(grupo);
-                        equiposGrupo.put(partido.getLocal().getId(), partido.getLocal());
-                        equiposGrupo.put(partido.getVisitante().getId(), partido.getVisitante());
-                    }
-                } else if (competicion.getTipo() == Competicion.Tipo.ROUND_ROBIN_ARBOL
-                        || competicion.getTipo() == Competicion.Tipo.TORNEO) {
-                    bracketPartidosPorFase.computeIfAbsent(partido.getFase(), k -> new ArrayList<>()).add(partido);
-                }
-            }
-        }
-
-        Map<String, List<Equipo>> equiposRoundRobinPorGrupo = new LinkedHashMap<>();
-        for (Map.Entry<String, Map<Long, Equipo>> entry : equiposRoundRobinTemp.entrySet()) {
-            List<Equipo> equiposGrupo = new ArrayList<>(entry.getValue().values());
-            equiposGrupo.sort(Comparator.comparingLong(Equipo::getId));
-            equiposRoundRobinPorGrupo.put(entry.getKey(), equiposGrupo);
-        }
-
-        Map<String, Map<Long, Map<Long, Partido>>> matrizRoundRobinPorGrupo = new LinkedHashMap<>();
-        for (Map.Entry<String, List<Equipo>> entry : equiposRoundRobinPorGrupo.entrySet()) {
-            String grupo = entry.getKey();
-            List<Equipo> equiposGrupo = entry.getValue();
-
-            Map<Long, Map<Long, Partido>> matrizGrupo = new LinkedHashMap<>();
-            for (Equipo equipo : equiposGrupo) {
-                matrizGrupo.put(equipo.getId(), new LinkedHashMap<>());
-            }
-
-            List<Partido> partidosGrupo = partidosRoundRobinPorGrupo.getOrDefault(grupo, new ArrayList<>());
-            for (Partido partido : partidosGrupo) {
-                long idA = Math.min(partido.getLocal().getId(), partido.getVisitante().getId());
-                long idB = Math.max(partido.getLocal().getId(), partido.getVisitante().getId());
-
-                matrizGrupo.computeIfAbsent(idA, k -> new LinkedHashMap<>()).put(idB, partido);
-            }
-
-            matrizRoundRobinPorGrupo.put(grupo, matrizGrupo);
-        }
-
-        model.addAttribute("partidosRoundRobin", partidosRoundRobin);
-        model.addAttribute("partidosRoundRobinPorGrupo", partidosRoundRobinPorGrupo);
-        model.addAttribute("equiposRoundRobinPorGrupo", equiposRoundRobinPorGrupo);
-        model.addAttribute("matrizRoundRobinPorGrupo", matrizRoundRobinPorGrupo);
-        model.addAttribute("bracketPartidosPorFase", bracketPartidosPorFase);
-
-
-        return "competiciones";
-    }
-
-    private boolean esFaseRoundRobin(String fase) {
-        return fase != null && fase.toUpperCase(Locale.ROOT).startsWith("ROUND ROBIN");
-    }
-
-    private String extraerNombreGrupo(String fase) {
-        if (fase == null || !fase.startsWith("ROUND ROBIN - GRUPO ")) {
-            return null;
-        }
-
-        int inicio = "ROUND ROBIN - GRUPO ".length();
-        int fin = fase.indexOf(" - JORNADA", inicio);
-        if (fin <= inicio) {
-            return null;
-        }
-
-        return fase.substring(inicio, fin).trim();
     }
 
     @GetMapping("/listacompeticiones")      //ruta
@@ -174,6 +100,11 @@ public class RootController {
     @GetMapping("/actapartido")      //ruta
     public String actapartido(Model model) { //nombre da igual
         return "actapartido";            //nombre de 
+    }
+
+    @GetMapping("/partido")
+    public String partido(Model model) {
+        return "partido";
     }
 
     @GetMapping("/paneladmin")      //ruta
@@ -207,26 +138,6 @@ public class RootController {
     @GetMapping("/autores")      //ruta
     public String autores(Model model) { //nombre da igual
         return "autores";            //nombre de 
-    }
-
-
-    @GetMapping("/equipo/{id}")
-    @Transactional
-    public String equipoById(@PathVariable("id") long id, Model model) {
-        Equipo equipo = entityManager.find(Equipo.class, id);
-        if (equipo != null) {
-            org.hibernate.Hibernate.initialize(equipo.getJugadores());
-            List<Competicion> competicionesEquipo = entityManager
-                    .createQuery("SELECT c FROM Competicion c JOIN c.equipos e WHERE e.id = :id", Competicion.class)
-                    .setParameter("id", equipo.getId())
-                    .getResultList();
-            model.addAttribute("equipo", equipo);
-            model.addAttribute("competicionesEquipo", competicionesEquipo);
-        } else {
-            model.addAttribute("equipo", null);
-            model.addAttribute("competicionesEquipo", java.util.Collections.emptyList());
-        }
-        return "equipo";
     }
 
     @GetMapping("/listaequipos")
@@ -317,6 +228,29 @@ public class RootController {
             model.addAttribute("error", "Error al crear el equipo. Inténtalo de nuevo.");
             return "crearequipo";
         }
+    }
+
+    @GetMapping("/panelarbitro")      //ruta
+    @Transactional
+    public String panelarbitro(Model model) { //nombre da igual
+        List<Competicion> competiciones = entityManager
+            .createQuery("SELECT DISTINCT c FROM Competicion c " +
+                         "LEFT JOIN FETCH c.partidos p " +
+                         "LEFT JOIN FETCH p.local " +
+                         "LEFT JOIN FETCH p.visitante " +
+                         "ORDER BY c.id DESC", Competicion.class)
+            .getResultList();
+
+        // Ordenar partidos por fecha ascendente (más actual primero)
+        for (Competicion comp : competiciones) {
+            if (comp.getPartidos() != null) {
+                comp.getPartidos().sort((p1, p2) -> p1.getFecha().compareTo(p2.getFecha()));
+            }
+        }
+
+        model.addAttribute("competiciones", competiciones);
+
+        return "panelarbitro";   
     }
 
 }

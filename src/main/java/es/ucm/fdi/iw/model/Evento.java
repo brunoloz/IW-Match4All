@@ -23,7 +23,8 @@ public class Evento {
     public enum Tipo {
         GOL, 
         TARJETA_AMARILLA,
-        TARJETA_ROJA
+        TARJETA_ROJA,
+        CAMBIO
     }
 
     @Id
@@ -42,5 +43,12 @@ public class Evento {
     @JoinColumn(name = "id_equipo")
     private Equipo equipo;
 
-    private java.time.LocalDateTime fecha;
+    private int minuto;
+
+    private String descripcion;
+
+    private java.time.LocalDateTime timestamp;
+
+    @ManyToOne
+    private Acta acta;
 }

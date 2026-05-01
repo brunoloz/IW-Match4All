@@ -67,11 +67,13 @@ public class SecurityConfig {
 				.requestMatchers("/listaequipos").permitAll()
 				.requestMatchers("/actapartido").permitAll()
 				.requestMatchers("/paneladmin").hasRole("ADMIN")
+				.requestMatchers("/panelarbitro").hasRole("ARBITRO")
 				.requestMatchers("/autores").permitAll()
 				.requestMatchers("/api/**").permitAll()            // <-- public api access
 				.requestMatchers("/admin/**").hasRole("ADMIN")	   // <-- administration
 				.requestMatchers("/user/**").permitAll()	     // <-- logged-in users
 				.requestMatchers("/crearequipo").hasRole("USER")
+				.requestMatchers("/partido").permitAll()
 				.anyRequest().authenticated()
             )
             .formLogin(formLogin -> formLogin

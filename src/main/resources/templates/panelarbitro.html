@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html class="h-100" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <th:block th:replace="~{fragments/head :: header}" />
+    <title>IW: Match4All - Panel de Árbitro</title>
+    <style>
+        .matches-table-container {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+
+<body class="d-flex flex-column h-100 bg-light">
+    <header th:replace="~{fragments/nav.html :: nav}"></header>
+
+    <main class="flex-shrink-0">
+        <br>
+        <div class="container mb-5">
+            <div class="row align-items-end mb-4">
+                <div class="col-md-7">
+                    <h1 class="display-5 fw-bold mb-2" style="color: var(--brand-blue);">Panel de Árbitro</h1>
+                    <p class="text-muted mb-0">Consulta partidos pendientes por competición y abre el acta para arbitrar.</p>
+                </div>
+            </div>
+
+            <div th:if="${error}" class="alert alert-danger" role="alert">
+                <span th:text="${error}"></span>
+            </div>
+
+            <div th:if="${success}" class="alert alert-success" role="alert">
+                <span th:text="${success}"></span>
+            </div>
+
+            <div class="mt-4 d-grid gap-4">
+                <div th:if="${#lists.isEmpty(competiciones)}" class="alert alert-secondary">
+                    No hay competiciones disponibles.
+                </div>
+
+                <section th:each="competition : ${competiciones}" class="card shadow-sm hover-lift">
+                    <div class="card-header admin-card-header d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-2">
+                        <div>
+                            <h3 class="h5 admin-card-title mb-1" th:text="${competition.nombre}">Competición</h3>
+                            <span class="admin-card-subtitle" th:text="${competition.tipo}">Tipo</span>
+                        </div>
+                        <div class="text-muted small"><strong>Estado:</strong> <span th:text="${competition.estado}">EN_CURSO</span></div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive matches-table-container">
+                            <table class="table table-bordered table-hover mb-0 align-middle">
+                                <thead class="admin-table-header">
+                                    <tr>
+                                        <th>Partido</th>
+                                        <th>Estado</th>
+                                        <th>Fecha</th>
+                                        <th>Ubicación</th>
+                                        <th>Acción</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:if="${#lists.isEmpty(competition.partidos.?[estado != null and estado.name() == 'PENDIENTE'])}">
+                                        <td colspan="4" class="text-muted">No hay partidos pendientes en esta competición.</td>
+                                    </tr>
+                                    <tr th:each="partido : ${competition.partidos}" th:if="${partido.estado != null and partido.estado.name() != 'FINALIZADO'}">
+                                        <td th:text="${partido.local.nombre + ' - ' + partido.visitante.nombre}" style="font-weight: bold;" class="text-decoration-none fw-semibold">Real Madrid vs FC Barcelona</td>
+                                        <td>
+                                            <span th:if="${partido.estado.name() == 'EN_CURSO'}" class="badge text-bg-success text-center" th:text="${partido.estado}"></span>
+                                            <span th:if="${partido.estado.name() == 'PENDIENTE'}" class="badge text-bg-secondary text-center" th:text="${partido.estado}"></span>
+
+                                        </td> 
+                                        <td th:text="${#temporals.format(partido.fecha, 'dd/MM/yyyy')}">01/01/2026</td>
+                                        <td th:text="${partido.ubicacion}">Estadio</td>
+                                        <td>
+                                            <a th:href="@{/partido/{id}(id=${partido.id})}" class="btn btn-sm btn-outline-primary">Arbitrar</a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <th:block th:replace="~{fragments/footer.html :: footer}" />
+
+</body>
+
+</html>

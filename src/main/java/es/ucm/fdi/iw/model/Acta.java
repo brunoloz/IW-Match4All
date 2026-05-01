@@ -20,7 +20,7 @@ public class Acta {
 
     @OneToOne
     @JoinColumn(name = "id_partido")
-    private Partido id_partido;
+    private Partido partido;
     
     private long goles_local;
     private long goles_visitante;

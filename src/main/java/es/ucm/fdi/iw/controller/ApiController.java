@@ -31,6 +31,7 @@ import es.ucm.fdi.iw.model.Topic;
 import es.ucm.fdi.iw.model.Message;
 import es.ucm.fdi.iw.model.User;
 import es.ucm.fdi.iw.model.User.Role;
+import es.ucm.fdi.iw.model.Equipo;
 import io.karatelabs.js.Context;
 import io.karatelabs.js.Interpreter;
 import io.karatelabs.js.Node;
@@ -205,5 +206,18 @@ public class ApiController {
         target.getMessages().stream()
           .map(Message::toTransfer).toArray()
       ));
+  }
+
+  @GetMapping("/equipo/{id}/jugadores")
+  @ResponseBody
+  public Map<String, Object> getJugadoresEquipo(@PathVariable("id") long id) {
+    Equipo equipo = entityManager.find(Equipo.class, id);
+    if (equipo == null) {
+      return Map.of("error", "Equipo no encontrado");
+    }
+    org.hibernate.Hibernate.initialize(equipo.getJugadores());
+    return Map.of("jugadores", equipo.getJugadores().stream()
+      .map(u -> Map.of("id", u.getId(), "firstName", u.getFirstName(), "lastName", u.getLastName()))
+      .toArray());
   }
 }

@@ -4,11 +4,14 @@ import java.time.LocalDate;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.Data;
@@ -19,6 +22,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Table(name = "Partidos")
 public class Partido {
+
+    public enum State{
+
+        PENDIENTE,
+        EN_CURSO,
+        FINALIZADO
+
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "gen")
@@ -47,9 +58,12 @@ public class Partido {
     private Competicion competicion;
 
     @Column(name = "estado", nullable = false, length = 225)
-    private String estado;
+    private State estado;
 
     @ManyToOne
     @JoinColumn(name = "id_arbitro")
     private User arbitro;
+
+    @OneToOne
+    private Acta acta;
 }

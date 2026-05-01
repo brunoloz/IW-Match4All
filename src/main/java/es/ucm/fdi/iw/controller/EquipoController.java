@@ -1,14 +1,20 @@
 package es.ucm.fdi.iw.controller;
 
+import java.util.List;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import es.ucm.fdi.iw.model.Competicion;
 import es.ucm.fdi.iw.model.Equipo;
+import es.ucm.fdi.iw.model.Partido;
 import es.ucm.fdi.iw.model.User;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -27,6 +33,42 @@ public class EquipoController {
         for (String name : new String[] { "u", "url", "ws", "topics" }) {
             model.addAttribute(name, session.getAttribute(name));
         }
+    }
+
+    @GetMapping("/{id}")
+    @Transactional
+    public String equipoById(@PathVariable("id") long id, Model model) {
+        Equipo equipo = entityManager.find(Equipo.class, id);
+        if (equipo != null) {
+            org.hibernate.Hibernate.initialize(equipo.getJugadores());
+            List<Competicion> competicionesEquipo = entityManager
+                    .createQuery("SELECT c FROM Competicion c JOIN c.equipos e WHERE e.id = :id", Competicion.class)
+                    .setParameter("id", equipo.getId())
+                    .getResultList();
+            
+            List<Partido> partidosJugados = entityManager
+                    .createQuery("SELECT p FROM Partido p WHERE (p.local.id = :id OR p.visitante.id = :id) AND p.estado != :estadoPendiente ORDER BY p.fecha DESC", Partido.class)
+                    .setParameter("id", equipo.getId())
+                    .setParameter("estadoPendiente", Partido.State.PENDIENTE)
+                    .getResultList();
+
+            List<Partido> proximosPartidos = entityManager
+                    .createQuery("SELECT p FROM Partido p WHERE (p.local.id = :id OR p.visitante.id = :id) AND p.estado = :estadoPendiente ORDER BY p.fecha ASC", Partido.class)
+                    .setParameter("id", equipo.getId())
+                    .setParameter("estadoPendiente", Partido.State.PENDIENTE)
+                    .getResultList();
+
+            model.addAttribute("equipo", equipo);
+            model.addAttribute("competicionesEquipo", competicionesEquipo);
+            model.addAttribute("partidosJugados", partidosJugados);
+            model.addAttribute("proximosPartidos", proximosPartidos);
+        } else {
+            model.addAttribute("equipo", null);
+            model.addAttribute("competicionesEquipo", java.util.Collections.emptyList());
+            model.addAttribute("partidosJugados", java.util.Collections.emptyList());
+            model.addAttribute("proximosPartidos", java.util.Collections.emptyList());
+        }
+        return "equipo";
     }
 
     @PostMapping("/solicitar")

@@ -191,6 +191,7 @@ public class AdminController {
       competicion.setNombre(nombre.trim());
       competicion.setTipo(tipoCompeticion);
       competicion.setCapacidad(capacidad);
+      competicion.setEstado(Competicion.Estado.INSCRIPCION);
 
       if (tipoCompeticion == Competicion.Tipo.ROUND_ROBIN_ARBOL) {
           competicion.setEquiposPorGrupo(equiposPorGrupo);

@@ -5,11 +5,14 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -38,6 +41,91 @@ public class CompeticionController {
         for (String name : new String[] { "u", "url", "ws", "topics" }) {
             model.addAttribute(name, session.getAttribute(name));
         }
+    }
+
+    @GetMapping("/{id}")
+    @Transactional
+    public String competicion(@PathVariable("id") long id, Model model) {
+        Competicion competicion = entityManager.find(Competicion.class, id);
+        List<Clasificacion> clasificacion = entityManager.createQuery("SELECT c FROM Clasificacion c WHERE c.competicion.id = :id ORDER BY c.puntos DESC", Clasificacion.class)
+        .setParameter("id", id)
+        .getResultList()
+        ;
+        model.addAttribute("clasificacion", clasificacion);
+        model.addAttribute("competicionSeleccionada", competicion);
+
+        List<Partido> partidos = entityManager.createQuery("SELECT p FROM Partido p WHERE p.competicion.id = :idCompeticion ORDER BY p.fecha ASC", Partido.class)
+        .setParameter("idCompeticion", id)
+        .getResultList();
+        model.addAttribute("partidos", partidos);
+
+        List<Partido> partidosRoundRobin = new ArrayList<>();
+        Map<String, List<Partido>> partidosRoundRobinPorGrupo = new LinkedHashMap<>();
+        Map<String, Map<Long, Equipo>> equiposRoundRobinTemp = new LinkedHashMap<>();
+        Map<String, List<Partido>> bracketPartidosPorFase = new LinkedHashMap<>();
+
+        if (competicion != null) {
+            for (Partido partido : partidos) {
+                boolean faseRoundRobin = esFaseRoundRobin(partido.getFase());
+                if (competicion.getTipo() == Competicion.Tipo.ROUND_ROBIN_ARBOL && faseRoundRobin) {
+                    partidosRoundRobin.add(partido);
+
+                    String grupo = extraerNombreGrupo(partido.getFase());
+                    if (grupo != null) {
+                        partidosRoundRobinPorGrupo.computeIfAbsent(grupo, k -> new ArrayList<>()).add(partido);
+
+                        equiposRoundRobinTemp.computeIfAbsent(grupo, k -> new LinkedHashMap<>());
+                        Map<Long, Equipo> equiposGrupo = equiposRoundRobinTemp.get(grupo);
+                        equiposGrupo.put(partido.getLocal().getId(), partido.getLocal());
+                        equiposGrupo.put(partido.getVisitante().getId(), partido.getVisitante());
+                    }
+                } else if (competicion.getTipo() == Competicion.Tipo.ROUND_ROBIN_ARBOL
+                        || competicion.getTipo() == Competicion.Tipo.TORNEO) {
+                    bracketPartidosPorFase.computeIfAbsent(partido.getFase(), k -> new ArrayList<>()).add(partido);
+                }
+            }
+        }
+
+        Map<String, List<Equipo>> equiposRoundRobinPorGrupo = new LinkedHashMap<>();
+        for (Map.Entry<String, Map<Long, Equipo>> entry : equiposRoundRobinTemp.entrySet()) {
+            List<Equipo> equiposGrupo = new ArrayList<>(entry.getValue().values());
+            equiposGrupo.sort(Comparator.comparingLong(Equipo::getId));
+            equiposRoundRobinPorGrupo.put(entry.getKey(), equiposGrupo);
+        }
+
+        Map<String, Map<Long, Map<Long, Partido>>> matrizRoundRobinPorGrupo = new LinkedHashMap<>();
+        for (Map.Entry<String, List<Equipo>> entry : equiposRoundRobinPorGrupo.entrySet()) {
+            String grupo = entry.getKey();
+            List<Equipo> equiposGrupo = entry.getValue();
+
+            Map<Long, Map<Long, Partido>> matrizGrupo = new LinkedHashMap<>();
+            for (Equipo equipo : equiposGrupo) {
+                matrizGrupo.put(equipo.getId(), new LinkedHashMap<>());
+            }
+
+            List<Partido> partidosGrupo = partidosRoundRobinPorGrupo.getOrDefault(grupo, new ArrayList<>());
+            for (Partido partido : partidosGrupo) {
+                long idA = Math.min(partido.getLocal().getId(), partido.getVisitante().getId());
+                long idB = Math.max(partido.getLocal().getId(), partido.getVisitante().getId());
+
+                matrizGrupo.computeIfAbsent(idA, k -> new LinkedHashMap<>()).put(idB, partido);
+            }
+
+            matrizRoundRobinPorGrupo.put(grupo, matrizGrupo);
+        }
+
+        model.addAttribute("partidosRoundRobin", partidosRoundRobin);
+        model.addAttribute("partidosRoundRobinPorGrupo", partidosRoundRobinPorGrupo);
+        model.addAttribute("equiposRoundRobinPorGrupo", equiposRoundRobinPorGrupo);
+        model.addAttribute("matrizRoundRobinPorGrupo", matrizRoundRobinPorGrupo);
+        model.addAttribute("bracketPartidosPorFase", bracketPartidosPorFase);
+
+
+        return "competiciones";
+    }
+
+    private boolean esFaseRoundRobin(String fase) {
+        return fase != null && fase.toUpperCase(Locale.ROOT).startsWith("ROUND ROBIN");
     }
 
     @PostMapping("/solicitar")
@@ -236,7 +324,7 @@ public class CompeticionController {
         }
 
         for (Partido partido : partidosRoundRobin) {
-            partido.setEstado("FINALIZADO");
+            partido.setEstado(Partido.State.FINALIZADO);
         }
 
         Long bracketExistente = entityManager
@@ -321,7 +409,7 @@ public class CompeticionController {
         partido.setCompeticion(comp);
         partido.setFase(fase);
         partido.setFecha(fecha);
-        partido.setEstado("PENDIENTE");
+        partido.setEstado(Partido.State.PENDIENTE);
         partido.setLocal(local);
         partido.setVisitante(visitante);
 
