@@ -47,7 +47,7 @@ public class CompeticionController {
     @Transactional
     public String competicion(@PathVariable("id") long id, Model model) {
         Competicion competicion = entityManager.find(Competicion.class, id);
-        List<Clasificacion> clasificacion = entityManager.createQuery("SELECT c FROM Clasificacion c WHERE c.competicion.id = :id ORDER BY c.puntos DESC", Clasificacion.class)
+        List<Clasificacion> clasificacion = entityManager.createQuery("SELECT c FROM Clasificacion c WHERE c.competicion.id = :id ORDER BY c.puntos DESC, (c.goles_a_favor - c.goles_en_contra) DESC, c.goles_a_favor DESC", Clasificacion.class)
         .setParameter("id", id)
         .getResultList()
         ;
@@ -57,6 +57,7 @@ public class CompeticionController {
         List<Partido> partidos = entityManager.createQuery("SELECT p FROM Partido p WHERE p.competicion.id = :idCompeticion ORDER BY p.fecha ASC", Partido.class)
         .setParameter("idCompeticion", id)
         .getResultList();
+
         model.addAttribute("partidos", partidos);
 
         List<Partido> partidosRoundRobin = new ArrayList<>();
@@ -305,11 +306,11 @@ public class CompeticionController {
         Competicion comp = entityManager.find(Competicion.class, idCompeticion);
         if (comp == null) {
             redir.addFlashAttribute("error", "No se ha encontrado la competición.");
-            return "redirect:/competiciones/" + idCompeticion;
+            return "redirect:/competicion/" + idCompeticion;
         }
         if (comp.getTipo() != Competicion.Tipo.ROUND_ROBIN_ARBOL) {
             redir.addFlashAttribute("error", "Este botón debug solo aplica a Round Robin + Árbol.");
-            return "redirect:/competiciones/" + idCompeticion;
+            return "redirect:/competicion/" + idCompeticion;
         }
 
         List<Partido> partidosRoundRobin = entityManager
@@ -320,7 +321,7 @@ public class CompeticionController {
 
         if (partidosRoundRobin.isEmpty()) {
             redir.addFlashAttribute("error", "No hay partidos de Round Robin para finalizar.");
-            return "redirect:/competiciones/" + idCompeticion;
+            return "redirect:/competicion/" + idCompeticion;
         }
 
         for (Partido partido : partidosRoundRobin) {
@@ -337,13 +338,13 @@ public class CompeticionController {
             Integer equiposClasificanArbol = comp.getEquiposClasificanArbol();
             if (equiposClasificanArbol == null || equiposClasificanArbol < 1) {
                 redir.addFlashAttribute("error", "La competición no tiene configurados equiposClasificanArbol válidos.");
-                return "redirect:/competiciones/" + idCompeticion;
+                return "redirect:/competicion/" + idCompeticion;
             }
 
             List<Equipo> clasificados = obtenerClasificadosDebug(partidosRoundRobin, equiposClasificanArbol);
             if (clasificados.size() < 2 || !esPotenciaDeDos(clasificados.size())) {
                 redir.addFlashAttribute("error", "No se puede generar el árbol: número de clasificados inválido.");
-                return "redirect:/competiciones/" + idCompeticion;
+                return "redirect:/competicion/" + idCompeticion;
             }
 
             LocalDate fechaArbol = partidosRoundRobin.stream()
@@ -356,7 +357,7 @@ public class CompeticionController {
         }
 
         redir.addFlashAttribute("success", "Debug aplicado: Round Robin finalizado y fase de árbol disponible.");
-        return "redirect:/competiciones/" + idCompeticion;
+        return "redirect:/competicion/" + idCompeticion;
     }
 
     private void generarRoundRobin(Competicion comp, List<Equipo> equipos, LocalDate fechaInicio, String fasePrefix, boolean idaYVuelta) {

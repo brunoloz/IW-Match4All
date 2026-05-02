@@ -220,7 +220,7 @@ public class RootController {
             currentUser.setEquipo(nuevoEquipo);
             User usuarioActualizado = entityManager.merge(currentUser);
             session.setAttribute("u", usuarioActualizado);
-            return "redirect:/gestionequipo";
+            return "redirect:/user/" + usuarioActualizado.getId();
         } catch (IOException e) {
             model.addAttribute("error", "Error al procesar la imagen del escudo. Inténtalo de nuevo.");
             return "crearequipo";
