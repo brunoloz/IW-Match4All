@@ -20,6 +20,26 @@
             <section th:if="${competicionSeleccionada.tipo.name() == 'LIGA' or competicionSeleccionada.tipo.name() == 'ROUND_ROBIN_ARBOL'}"
                 class="col-12"
                 th:classappend="${competicionSeleccionada.tipo.name() == 'LIGA' ? ' col-lg-8' : (#maps.isEmpty(bracketPartidosPorFase) ? ' col-xl-8' : ' col-xl-4')}">
+                <div th:if="${competicionSeleccionada.estado.name() == 'FINALIZADA' and not #lists.isEmpty(clasificacion)}" 
+                    class="card shadow-lg border-0 mb-4 text-center" style="background: linear-gradient(135deg, #fff9e6 0%, #ffffff 100%);">
+                    
+                    <div class="card-body py-5">
+                        <img src="/img/trofeo.png" alt="Trofeo" class="mb-3" style="max-width: 150px;">
+                        
+                        <div class="d-flex justify-content-center align-items-center gap-3 mb-3">
+                            <img th:src="@{'/img/equipos/' + ${clasificacion[0].equipo.escudo}}" 
+                                 width="60" height="75"
+                                onerror="this.src='/img/default-team.png';">
+                            
+                            <h2 class="display-6 fw-bold mb-0" style="color: #b8860b;">¡CAMPEÓN!</h2>
+                        </div>
+
+                        <h3 class="h4">
+                            ¡El <strong th:text="${clasificacion[0].equipo.nombre}">Real Madrid</strong> 
+                            ha sido el campeón de <span th:text="${competicionSeleccionada.nombre}">la Liga</span>!
+                        </h3>
+                    </div>
+                </div>
                 <div class="card shadow-sm">
                     <div class="card-header d-flex align-items-center justify-content-between gap-2 flex-wrap">
                         <h2 class="h5 mb-0" th:text="${competicionSeleccionada.tipo.name() == 'LIGA' ? 'Tabla de Clasificación' : 'Grupos Round Robin'}">Tabla de Clasificación</h2>
@@ -43,8 +63,8 @@
                                         <th class="text-center">PG</th>
                                         <th class="text-center">PE</th>
                                         <th class="text-center">PP</th>
-                                        <th class="text-center">GC</th>
                                         <th class="text-center">GF</th>
+                                        <th class="text-center">GC</th>
                                         <th class="text-center">DG</th>
                                         <th class="text-center">PTS</th>
                                     </tr>
@@ -53,12 +73,9 @@
                                     <tr th:if="${#lists.isEmpty(clasificacion)}">
                                         <td colspan="10" class="text-muted">No hay equipos en la competición</td>
                                     </tr>
-                                    <tr th:each="fila, iterStat : ${clasificacion}"
-                                        th:classappend="${iterStat.count <= 4} ? 'table-success' : 
-                                        (${iterStat.count == 5 or iterStat.count == 6} ? 'table-warning' : 
-                                        (${iterStat.count > iterStat.size - 3} ? 'table-danger' : ''))">
+                                    <tr th:each="fila, iterStat : ${clasificacion}" th:id="'fila-equipo-' + ${fila.equipo.id}">
                                         <td th:text="${iterStat.count}">1</td>
-                                        <td>
+                                        <td class="celda-eq">
                                             <img th:if="${fila.equipo != null}" 
                                                 th:src="@{'/img/equipos/' + ${fila.equipo.escudo}}"
                                                 src="/img/default-team.png" 
@@ -70,14 +87,14 @@
                                             <a th:href="@{/equipo/{id}(id=${fila.equipo.id})}"
                                                 th:text="${fila.equipo.nombre}">Nombre del Equipo </a>
                                         </td>
-                                        <td th:text="${fila.partidos_jugados}" class="text-center">0</td>
-                                        <td th:text="${fila.victorias}" class="text-center">0</td>
-                                        <td th:text="${fila.empates}" class="text-center">0</td>
-                                        <td th:text="${fila.derrotas}" class="text-center">0</td>
-                                        <td th:text="${fila.goles_a_favor}" class="text-center">0</td>
-                                        <td th:text="${fila.goles_en_contra}" class="text-center">0</td>
-                                        <td th:text="${fila.goles_a_favor - fila.goles_en_contra}" class="text-center">0</td>
-                                        <td th:text="${fila.puntos}" class="text-center fw-bold bs-black"></td>
+                                        <td th:text="${fila.partidos_jugados}" class="celda-pj text-center">0</td>
+                                        <td th:text="${fila.victorias}" class="celda-pg text-center">0</td>
+                                        <td th:text="${fila.empates}" class="celda-pe text-center">0</td>
+                                        <td th:text="${fila.derrotas}" class="celda-pp text-center">0</td>
+                                        <td th:text="${fila.goles_a_favor}" class="celda-gf text-center">0</td>
+                                        <td th:text="${fila.goles_en_contra}" class="celda-gc text-center">0</td>
+                                        <td th:text="${fila.goles_a_favor - fila.goles_en_contra}" class="celda-dg text-center">0</td>
+                                        <td th:text="${fila.puntos}" class="celda-pts text-center fw-bold bs-black"></td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -280,6 +297,106 @@
     </main>
 
     <th:block th:replace="~{fragments/footer.html :: footer}" />
+
+    <script th:inline="javascript">
+
+        if (typeof ws !== 'undefined') {
+
+            const id_competicion = /*[[${competicionSeleccionada.id}]]*/ 0;
+            const topic = `/topic/competicion/${id_competicion}`;
+            const oldReceive = ws.receive;
+
+            const subscribeToTopic = () => {
+                if (ws.stompClient && ws.connected) {
+                    ws.subscribe(topic);
+                    return true;
+                }
+                return false;
+            };
+
+            if (!subscribeToTopic()) {
+                const subscribeRetry = setInterval(() => {
+                    if (subscribeToTopic()) {
+                        clearInterval(subscribeRetry);
+                    }
+                }, 300);
+            }
+
+            ws.receive = (data) => {
+                try {
+
+                    if((data.tipo == "INICIO_PARTIDO" || data.tipo == "FIN_PARTIDO")){
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 100);
+                    }
+
+                    if (data.tipo === "UPDATE_CLASIFICACION") {
+                        
+                        const actualizarFila = (equipoId, pj, pts, gf, gc, pg, pe, pp) => {
+                            let fila = document.getElementById("fila-equipo-" + equipoId);
+                            if (fila) {
+                                let celdaEQ = fila.querySelector(".celda-eq")
+                                let celdaPJ = fila.querySelector(".celda-pj");
+                                let celdaPTS = fila.querySelector(".celda-pts");
+                                let celdaGF = fila.querySelector(".celda-gf");
+                                let celdaGC = fila.querySelector(".celda-gc");
+                                let celdaDG = fila.querySelector(".celda-dg");
+                                let celdaPG = fila.querySelector(".celda-pg");
+                                let celdaPE = fila.querySelector(".celda-pe");
+                                let celdaPP = fila.querySelector(".celda-pp");
+
+                                if (celdaEQ && celdaPJ && celdaPTS && celdaGF && celdaGC && celdaDG && celdaPG && celdaPE && celdaPP) {
+
+                                    celdaPJ.innerText = pj;
+                                    celdaPTS.innerText = pts;
+                                    celdaGF.innerText = gf;
+                                    celdaGC.innerText = gc;
+                                    celdaDG.innerText = gf - gc;
+                                    celdaPG.innerText = pg;
+                                    celdaPE.innerText = pe;
+                                    celdaPP.innerText = pp;
+                                    
+                                    celdaEQ.style.backgroundColor = "#d4edda";
+                                    celdaPJ.style.backgroundColor = "#d4edda";
+                                    setTimeout(() => celdaPJ.style.backgroundColor = "", 2000);
+                                    celdaPTS.style.backgroundColor = "#d4edda";
+                                    setTimeout(() => celdaPTS.style.backgroundColor = "", 2000);
+                                    celdaGF.style.backgroundColor = "#d4edda";
+                                    setTimeout(() => celdaGF.style.backgroundColor = "", 2000);
+                                    celdaGC.style.backgroundColor = "#d4edda";
+                                    setTimeout(() => celdaGC.style.backgroundColor = "", 2000);
+                                    celdaDG.style.backgroundColor = "#d4edda";
+                                    setTimeout(() => celdaDG.style.backgroundColor = "", 2000);
+                                    celdaPG.style.backgroundColor = "#d4edda";
+                                    setTimeout(() => celdaPG.style.backgroundColor = "", 2000);
+                                    celdaPE.style.backgroundColor = "#d4edda";
+                                    setTimeout(() => celdaPE.style.backgroundColor = "", 2000);
+                                    celdaPP.style.backgroundColor = "#d4edda";
+                                    setTimeout(() => celdaPP.style.backgroundColor = "", 2000); 
+
+                                }
+                            }
+                        }
+
+                        actualizarFila(data.id_local, data.pj_local, data.pts_local, data.gf_local, data.gc_local, data.pg_local, data.pe_local, data.pp_local);
+                        actualizarFila(data.id_visitante, data.pj_visitante, data.pts_visitante, data.gf_visitante, data.gc_visitante, data.pg_visitante, data.pe_visitante, data.pp_visitante);
+
+                    }
+                    
+                    
+                } catch (e) {
+                    console.error("Error procesando mensaje websocket", e);
+                    if (typeof oldReceive === 'function') {
+                        oldReceive(data);
+                    }
+                }
+            };
+        }
+
+    </script>
+
+
 </body>
 
 </html>

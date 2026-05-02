@@ -20,6 +20,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import es.ucm.fdi.iw.model.Acta;
+import es.ucm.fdi.iw.model.Clasificacion;
+import es.ucm.fdi.iw.model.Competicion;
 import es.ucm.fdi.iw.model.Equipo;
 import es.ucm.fdi.iw.model.Evento;
 import es.ucm.fdi.iw.model.Partido;
@@ -78,6 +80,10 @@ public class PartidoController {
 
         partido.setEstado(Partido.State.EN_CURSO);
 
+
+        if(partido.getCompeticion().getTipo() == Competicion.Tipo.LIGA)
+            updateClasificacion(partido, null, 0, 0);
+
         Acta acta = new Acta();
         acta.setPartido(partido);
         acta.setGoles_local(0);
@@ -95,6 +101,7 @@ public class PartidoController {
             mensaje.put("partidoId", id);
             
             messagingTemplate.convertAndSend("/topic/partido/" + id, mapper.writeValueAsString(mensaje));
+            messagingTemplate.convertAndSend("/topic/competicion/" + partido.getCompeticion().getId(), mapper.writeValueAsString(mensaje));
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -121,14 +128,18 @@ public class PartidoController {
 
         partido.setEstado(Partido.State.FINALIZADO);
 
-        /*Acta acta = new Acta();
-        acta.setPartido(partido);
-        acta.setGoles_local(0);
-        acta.setGoles_visitante(0);
-        List<Evento> eventos = new ArrayList<>();
-        acta.setEventos(eventos);
+        Competicion comp = partido.getCompeticion();
+        Long partidosPendientes = entityManager.createQuery(
+            "SELECT COUNT(p) FROM Partido p " +
+            "WHERE p.competicion.id = :compId " +
+            "AND p.estado != :estadoFinalizado", Long.class)
+            .setParameter("compId", comp.getId())
+            .setParameter("estadoFinalizado", Partido.State.FINALIZADO)
+            .getSingleResult();
 
-        entityManager.persist(acta);*/
+            if (partidosPendientes == 0) {
+                comp.setEstado(Competicion.Estado.FINALIZADA);
+            }
 
         try {
             ObjectMapper mapper = new ObjectMapper();
@@ -138,6 +149,7 @@ public class PartidoController {
             mensaje.put("partidoId", id);
             
             messagingTemplate.convertAndSend("/topic/partido/" + id, mapper.writeValueAsString(mensaje));
+            messagingTemplate.convertAndSend("/topic/competicion/" + partido.getCompeticion().getId(), mapper.writeValueAsString(mensaje));
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -146,7 +158,7 @@ public class PartidoController {
         return Map.of("status", "ok");
     }
 
-       @PostMapping("/{id}/evento")
+    @PostMapping("/{id}/evento")
     @Transactional
     @ResponseBody 
     public Map<String, String> registrarEvento(@PathVariable long id, @RequestParam String tipo, @RequestParam long equipoid,
@@ -185,7 +197,13 @@ public class PartidoController {
         acta.getEventos().add(evento);
         entityManager.persist(evento);
 
+        
+
         if (evento.getTipo() == Evento.Tipo.GOL) {
+
+            long golesLocalAntes = acta.getGoles_local();
+            long golesVisitAntes = acta.getGoles_visitante();
+
             if (equipoid == partido.getLocal().getId()) {
                 acta.setGoles_local(acta.getGoles_local() + 1);
             } else if (equipoid == partido.getVisitante().getId()) {
@@ -194,6 +212,8 @@ public class PartidoController {
 
             int goles = jugador.getGoles();
             jugador.setGoles(goles + 1);
+            if(partido.getCompeticion().getTipo() == Competicion.Tipo.LIGA)
+                updateClasificacion(partido, acta, golesLocalAntes, golesVisitAntes);
 
         }
 
@@ -204,7 +224,7 @@ public class PartidoController {
 
         if(evento.getTipo() == Evento.Tipo.TARJETA_ROJA) {
             int n_tarjetas = jugador.getTarjetasRojas();
-            jugador.setTarjetasAmarillas(n_tarjetas + 1);
+            jugador.setTarjetasRojas(n_tarjetas + 1);
         }
 
         entityManager.merge(jugador);
@@ -234,6 +254,134 @@ public class PartidoController {
        // }
 
         return Map.of("status", "ok");
+    }
+
+    private void updateClasificacion(Partido partido, Acta acta, long golesLocalAntes, long golesVisitAntes){
+
+
+        long id_comp = partido.getCompeticion().getId();
+
+        Clasificacion fila_local = entityManager.createQuery(
+            "SELECT c FROM Clasificacion c WHERE c.competicion.id = :cId AND c.equipo.id = :eId", Clasificacion.class)
+            .setParameter("cId", id_comp)
+            .setParameter("eId", partido.getLocal().getId())
+            .getSingleResult();
+
+        Clasificacion fila_visitante = entityManager.createQuery(
+            "SELECT c FROM Clasificacion c WHERE c.competicion.id = :cId AND c.equipo.id = :eId", Clasificacion.class)
+            .setParameter("cId", id_comp)
+            .setParameter("eId", partido.getVisitante().getId())
+            .getSingleResult();
+
+        if(acta == null) {
+
+            int pj_local = fila_local.getPartidos_jugados();
+            fila_local.setPartidos_jugados(pj_local + 1);
+            fila_local.setEmpates(fila_local.getEmpates() + 1);
+            fila_local.setPuntos(fila_local.getPuntos() + 1);
+
+            int pj_visitante = fila_visitante.getPartidos_jugados();
+            fila_visitante.setPartidos_jugados(pj_visitante + 1);
+            fila_visitante.setEmpates(fila_visitante.getEmpates() + 1);
+            fila_visitante.setPuntos(fila_visitante.getPuntos() + 1);
+
+        }
+        else {
+
+            int pgL_ant = (golesLocalAntes > golesVisitAntes) ? 1 : 0;
+            int peL_ant = (golesLocalAntes == golesVisitAntes) ? 1 : 0;
+            int ppL_ant = (golesLocalAntes < golesVisitAntes) ? 1 : 0;
+
+            int pgV_ant = (golesVisitAntes > golesLocalAntes) ? 1 : 0;
+            int peV_ant = (golesVisitAntes == golesLocalAntes) ? 1 : 0;
+            int ppV_ant = (golesVisitAntes < golesLocalAntes) ? 1 : 0;
+
+            int pgL_ahora = (acta.getGoles_local() > acta.getGoles_visitante()) ? 1 : 0;
+            int peL_ahora = (acta.getGoles_local() == acta.getGoles_visitante()) ? 1 : 0;
+            int ppL_ahora = (acta.getGoles_local() < acta.getGoles_visitante()) ? 1 : 0;
+
+            int pgV_ahora = (acta.getGoles_visitante() > acta.getGoles_local()) ? 1 : 0;
+            int peV_ahora = (acta.getGoles_visitante() == acta.getGoles_local()) ? 1 : 0;
+            int ppV_ahora = (acta.getGoles_visitante() < acta.getGoles_local()) ? 1 : 0;
+
+            fila_local.setVictorias(fila_local.getVictorias() - pgL_ant + pgL_ahora);
+            fila_local.setEmpates(fila_local.getEmpates() - peL_ant + peL_ahora);
+            fila_local.setDerrotas(fila_local.getDerrotas() - ppL_ant + ppL_ahora);
+
+            fila_visitante.setVictorias(fila_visitante.getVictorias() - pgV_ant + pgV_ahora);
+            fila_visitante.setEmpates(fila_visitante.getEmpates() - peV_ant + peV_ahora);
+            fila_visitante.setDerrotas(fila_visitante.getDerrotas() - ppV_ant + ppV_ahora);
+
+            if(golesLocalAntes < acta.getGoles_local()){
+                
+                fila_local.setGoles_a_favor(fila_local.getGoles_a_favor() + 1);
+                fila_visitante.setGoles_en_contra(fila_visitante.getGoles_en_contra() + 1);
+
+            }
+
+            if(golesVisitAntes < acta.getGoles_visitante()){
+
+                fila_visitante.setGoles_a_favor(fila_visitante.getGoles_a_favor() + 1);
+                fila_local.setGoles_en_contra(fila_local.getGoles_en_contra() + 1);
+
+            }
+
+            int pts_local_antes;
+            if(golesLocalAntes > golesVisitAntes) pts_local_antes = 3;
+            else if(golesLocalAntes == golesVisitAntes) pts_local_antes = 1;
+            else pts_local_antes = 0;
+
+            int pts_visitante_antes;
+            if(golesLocalAntes < golesVisitAntes) pts_visitante_antes = 3;
+            else if(golesLocalAntes == golesVisitAntes) pts_visitante_antes = 1;
+            else pts_visitante_antes = 0;
+
+            int pts_local;
+            if(acta.getGoles_local() > acta.getGoles_visitante()) pts_local = 3;
+            else if(acta.getGoles_local() == acta.getGoles_visitante()) pts_local = 1;
+            else pts_local = 0;
+
+            int pts_visitante;
+            if(acta.getGoles_local() < acta.getGoles_visitante()) pts_visitante = 3;
+            else if(acta.getGoles_local() == acta.getGoles_visitante()) pts_visitante = 1;
+            else pts_visitante = 0;
+
+            fila_local.setPuntos(fila_local.getPuntos() - pts_local_antes + pts_local);
+            fila_visitante.setPuntos(fila_visitante.getPuntos() - pts_visitante_antes + pts_visitante);
+
+        } 
+
+        try {
+
+            ObjectMapper mapper = new ObjectMapper();
+            ObjectNode mensaje = mapper.createObjectNode(); 
+
+            mensaje.put("tipo", "UPDATE_CLASIFICACION");
+            mensaje.put("id_local", fila_local.getEquipo().getId());
+            mensaje.put("pj_local", fila_local.getPartidos_jugados());
+            mensaje.put("pts_local", fila_local.getPuntos());
+            mensaje.put("gf_local", fila_local.getGoles_a_favor());
+            mensaje.put("gc_local", fila_local.getGoles_en_contra());
+            mensaje.put("id_visitante", fila_visitante.getEquipo().getId());
+            mensaje.put("pj_visitante", fila_visitante.getPartidos_jugados());
+            mensaje.put("pts_visitante", fila_visitante.getPuntos());
+            mensaje.put("gf_visitante", fila_visitante.getGoles_a_favor());
+            mensaje.put("gc_visitante", fila_visitante.getGoles_en_contra());
+            mensaje.put("pg_local", fila_local.getVictorias());
+            mensaje.put("pg_visitante", fila_visitante.getVictorias());
+            mensaje.put("pe_local", fila_local.getEmpates());
+            mensaje.put("pe_visitante", fila_visitante.getEmpates());
+            mensaje.put("pp_local", fila_local.getDerrotas());
+            mensaje.put("pp_visitante", fila_visitante.getDerrotas());
+            
+            messagingTemplate.convertAndSend("/topic/competicion/" + id_comp, mapper.writeValueAsString(mensaje));
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
     }
 
 }

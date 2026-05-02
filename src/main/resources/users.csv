@@ -221,3 +221,4 @@ id,username,password,first_name,last_name,age,avatar,descripcion,posicion,goles,
 220,ocampos,{noop}pass,Lucas,Ocampos,26,user.jpg,Plantilla,Delantero,5,4,2,0,10,0,false,true,USER,20
 221,suso,{noop}pass,Suso,Fernandez,27,user.jpg,Plantilla,Delantero,3,4,1,0,10,0,false,true,USER,20
 222,ennesyri,{noop}pass,Youssef,En-Nesyri,24,user.jpg,Plantilla,Delantero,18,0,1,0,10,0,false,true,USER,20
+223,jugador1,{noop}pass,Bruno,Lozano,21,user.jpg,Plantilla,Delantero,18,0,1,0,10,0,false,true,USER

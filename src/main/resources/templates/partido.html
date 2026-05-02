@@ -94,7 +94,7 @@
 
                             </div>
                                 <br>
-                                <a th:href="@{/competiciones/{id}(id=${partido.competicion.id})}"
+                                <a th:href="@{/competicion/{id}(id=${partido.competicion.id})}"
                                     class="d-block fw-bold text-decoration-none text-dark">
                                     <div>
                                         <small th:text="${partido.competicion.nombre}"class="text-muted fs-6">Competicion</small>
@@ -195,7 +195,7 @@
                                     <tr th:each="jugador : ${partido.local != null ? partido.visitante.jugadores : {}}">
                                         <td>
                                             <div class="d-flex align-items-center gap-2">
-                                                <a th:href="@{/user/{id}(id=${jugador.id})}" class="d-flex align-items-center gap-2 link-primary" style="text-decoration:none;">
+                                                <a th:href="@{/perfil/{id}(id=${jugador.id})}" class="d-flex align-items-center gap-2 link-primary" style="text-decoration:none;">
                                                     <img th:src="@{'/img/' + ${jugador.avatar}}" 
                                                             alt="Jugador" 
                                                             class="rounded-circle" 
@@ -280,31 +280,6 @@
     <th:block th:replace="~{fragments/footer.html :: footer}" />
 
     <script>
-        // Manejador para el formulario de iniciar partido
-        const formIniciar = document.getElementById('form-iniciar');
-        if (formIniciar) {
-            formIniciar.addEventListener('submit', function(e) {
-                e.preventDefault();
-                fetch(this.action, {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': config.csrf.value
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    console.log("Partido iniciado:", data);
-                    // Esperar a que el websocket traiga el INICIO_PARTIDO
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 500);
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Error al iniciar el partido');
-                });
-            });
-        }
 
         document.getElementById('event-team').addEventListener('change', function() {
             const equipoId = this.value;
@@ -340,27 +315,63 @@
                 });
         });
 
+    </script>
+
+    <script>
+        // Manejador UNIFICADO para iniciar partido
+        const formIniciar = document.getElementById('form-iniciar');
+        if (formIniciar) {
+            formIniciar.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Protección por si 'config' no está definido
+                const csrfToken = (typeof config !== 'undefined' && config.csrf) ? config.csrf.value : '';
+
+                fetch(this.action, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error("Error en el servidor al procesar la petición.");
+                    return response.json();
+                })
+                .then(data => {
+                    console.log("Partido iniciado:", data);
+                    setTimeout(() => window.location.reload(), 500);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('No se pudo iniciar el partido. Revisa la consola del navegador (F12) y los logs del servidor.');
+                });
+            });
+        }
+
+        // Manejador UNIFICADO para finalizar partido
         const formFinalizar = document.getElementById('form-finalizar');
         if (formFinalizar) {
             formFinalizar.addEventListener('submit', function(e) {
                 e.preventDefault();
+                const csrfToken = (typeof config !== 'undefined' && config.csrf) ? config.csrf.value : '';
+
                 fetch(this.action, {
                     method: 'POST',
                     headers: {
-                        'X-CSRF-TOKEN': config.csrf.value
+                        'X-CSRF-TOKEN': csrfToken
                     }
                 })
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) throw new Error("Error en el servidor al procesar la petición.");
+                    return response.json();
+                })
                 .then(data => {
                     console.log("Partido terminado:", data);
-                    // Esperar a que el websocket traiga el FIN_PARTIDO
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 500);
+                    setTimeout(() => window.location.reload(), 500);
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert('Error al terminar el partido');
+                    alert('No se pudo finalizar el partido.');
                 });
             });
         }
@@ -372,10 +383,22 @@
             formIniciar.addEventListener('submit', (e) => {
                 e.preventDefault(); 
                 
-                
-                go(formIniciar.action, 'POST', {})
-                    .then(data => console.log("Señal de inicio enviada"))
-                    .catch(err => console.error("Error al iniciar", err));
+            const btn = document.querySelector("button[onclick='iniciarPartido()']");
+                if (btn) btn.disabled = true;
+
+            go(config.rootUrl + "/partido/iniciar/" + id_partido, 'POST')
+                .then(d => {
+                    console.log("Petición procesada");
+                })
+                .catch(e => {
+                    if (e.name === 'AbortError' || !e.message || e.message.includes('fetch')) {
+                        console.log("Conexión abortada por recarga de página: ignorando error.");
+                    } else {
+                        console.error("Error real:", e);
+                        alert("Error al iniciar el partido");
+                        if (btn) btn.disabled = false;
+                    }
+                });
             });
         }
 
@@ -445,7 +468,9 @@
                 try {
 
                     if((data.tipo == "INICIO_PARTIDO" || data.tipo == "FIN_PARTIDO")&& data.partidoId == id_partido){
-                        window.location.reload();
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 100);
                     }
 
                     if (data.tipo === "NUEVO_EVENTO" && data.partidoId == id_partido) {

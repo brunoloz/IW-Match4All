@@ -67,9 +67,10 @@
                                         <td th:text="${competition.tipo}">Tipo</td>
                                         <td th:text="|${#lists.size(competition.equipos)}/${competition.capacidad}|">0/0</td>
                                         <td>
-                                            <span th:if="${#lists.size(competition.equipos)} == ${competition.capacidad} and ${#lists.isEmpty(competition.partidos)}" class=" badge text-bg-danger">Inscripción cerrada</span>
-                                            <span th:if="${#lists.isEmpty(competition.partidos)} and ${#lists.size(competition.equipos)} != ${competition.capacidad}" class="badge text-bg-primary">Inscripción</span>
-                                            <span th:unless="${#lists.isEmpty(competition.partidos)}" class="badge text-bg-success">En curso</span>
+                                            <span th:if="${competition.estado.name() == 'FINALIZADA'}" class="badge text-bg-secondary">FINALIZADA</span>
+                                            <span th:if="${#lists.size(competition.equipos)} == ${competition.capacidad} and ${#lists.isEmpty(competition.partidos)} and ${competition.estado.name() == 'INSCRIPCION'}" class=" badge text-bg-danger">INSCRIPCIÓN CERRADA</span>
+                                            <span th:if="${#lists.isEmpty(competition.partidos)} and ${#lists.size(competition.equipos)} != ${competition.capacidad} and ${competition.estado.name() == 'INSCRIPCION'}" class="badge text-bg-primary">INSCRIPCIÓN</span>
+                                            <span th:if="${competition.estado.name() == 'EN_CURSO'}" class="badge text-bg-success">EN CURSO</span>
                                         </td>
                                         <td>
                                             <div th:if="${competition.equiposSolicitantes == null or #lists.isEmpty(competition.equiposSolicitantes)}" class="text-muted small">
