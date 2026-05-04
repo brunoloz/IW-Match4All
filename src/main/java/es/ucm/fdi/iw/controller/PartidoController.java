@@ -26,6 +26,7 @@ import es.ucm.fdi.iw.model.Equipo;
 import es.ucm.fdi.iw.model.Evento;
 import es.ucm.fdi.iw.model.Partido;
 import es.ucm.fdi.iw.model.User;
+import es.ucm.fdi.iw.model.EstadisticasJugador;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.servlet.http.HttpSession;
@@ -161,7 +162,9 @@ public class PartidoController {
     @Transactional
     @ResponseBody 
     public Map<String, String> registrarEvento(@PathVariable long id, @RequestParam String tipo, @RequestParam long equipoid,
-            @RequestParam long jugadorid, @RequestParam int minuto, @RequestParam(required = false) String descripcion, HttpSession session) {
+            @RequestParam long jugadorid, @RequestParam int minuto, @RequestParam(required = false) String descripcion, 
+            @RequestParam(required = false) Long asistenteid,
+            HttpSession session) {
 
         User u = (User) session.getAttribute("u");
         if (u == null || !u.hasRole(User.Role.ARBITRO)) {
@@ -184,6 +187,11 @@ public class PartidoController {
             return Map.of("status", "error", "message", "Datos inválidos");
         }
 
+        User asistente = null;
+        if (asistenteid != null) {
+            asistente = entityManager.find(User.class, asistenteid);
+        }
+
         Acta acta = entityManager.createQuery("SELECT a FROM Acta a WHERE a.partido.id = :id", Acta.class)
             .setParameter("id", id)
             .getSingleResult();
@@ -192,6 +200,7 @@ public class PartidoController {
         evento.setTipo(Evento.Tipo.valueOf(tipo));
         evento.setEquipo(equipo);
         evento.setUsuario(jugador);
+        evento.setAsistente(asistente);
         evento.setMinuto(minuto);
         evento.setDescripcion(descripcion);
         evento.setTimestamp(java.time.LocalDateTime.now());
@@ -200,10 +209,10 @@ public class PartidoController {
         acta.getEventos().add(evento);
         entityManager.persist(evento);
 
-        
+        Competicion comp = partido.getCompeticion();
+        EstadisticasJugador statsJugador = getOrCreateEstadisticas(comp, jugador);
 
         if (evento.getTipo() == Evento.Tipo.GOL) {
-
             long golesLocalAntes = acta.getGoles_local();
             long golesVisitAntes = acta.getGoles_visitante();
 
@@ -213,48 +222,63 @@ public class PartidoController {
                 acta.setGoles_visitante(acta.getGoles_visitante() + 1);
             }
 
-            int goles = jugador.getGoles();
-            jugador.setGoles(goles + 1);
-            if(partido.getCompeticion().getTipo() == Competicion.Tipo.LIGA)
+            // Goles Globales
+            jugador.setGoles(jugador.getGoles() + 1);
+            // Goles en la Competición
+            statsJugador.setGoles(statsJugador.getGoles() + 1);
+
+            // Asistencias
+            if (asistente != null) {
+                asistente.setAsistencias(asistente.getAsistencias() + 1); // Global
+                EstadisticasJugador statsAsistente = getOrCreateEstadisticas(comp, asistente);
+                statsAsistente.setAsistencias(statsAsistente.getAsistencias() + 1); // En competición
+                entityManager.merge(statsAsistente);
+                entityManager.merge(asistente);
+            }
+
+            if(comp.getTipo() == Competicion.Tipo.LIGA) {
                 updateClasificacion(partido, acta, golesLocalAntes, golesVisitAntes);
-
+            }
         }
-
-        if(evento.getTipo() == Evento.Tipo.TARJETA_AMARILLA) {
-            int n_tarjetas = jugador.getTarjetasAmarillas();
-            jugador.setTarjetasAmarillas(n_tarjetas + 1);
+        else if(evento.getTipo() == Evento.Tipo.TARJETA_AMARILLA) {
+            jugador.setTarjetasAmarillas(jugador.getTarjetasAmarillas() + 1); // Global
+            statsJugador.setTarjetasAmarillas(statsJugador.getTarjetasAmarillas() + 1);
         }
-
-        if(evento.getTipo() == Evento.Tipo.TARJETA_ROJA) {
-            int n_tarjetas = jugador.getTarjetasRojas();
-            jugador.setTarjetasRojas(n_tarjetas + 1);
+        else if(evento.getTipo() == Evento.Tipo.TARJETA_ROJA) {
+            jugador.setTarjetasRojas(jugador.getTarjetasRojas() + 1); // Global
+            statsJugador.setTarjetasRojas(statsJugador.getTarjetasRojas() + 1);
         }
 
         entityManager.merge(jugador);
+        entityManager.merge(statsJugador);
         entityManager.merge(acta);   
 
-            // Websocket live score update
-            try {
-                ObjectMapper mapper = new ObjectMapper();
-                ObjectNode mensaje = mapper.createObjectNode();
+        // Websocket live score update
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            ObjectNode mensaje = mapper.createObjectNode();
 
-                String nombre_jug = jugador.getFirstName() + ' ' + jugador.getLastName();
+            String nombre_jug = jugador.getFirstName() + ' ' + jugador.getLastName();
 
-                mensaje.put("tipo", "NUEVO_EVENTO");
-                mensaje.put("partidoId", id);
-                mensaje.put("golesLocal", acta.getGoles_local());
-                mensaje.put("golesVisitante", acta.getGoles_visitante());
-                mensaje.put("minuto", minuto);
-                mensaje.put("tipoEvento", tipo);
-                mensaje.put("jugador", nombre_jug);
-                mensaje.put("equipo", equipo.getNombre());
-                mensaje.put("descripcion", descripcion);
+            mensaje.put("tipo", "NUEVO_EVENTO");
+            mensaje.put("partidoId", id);
+            mensaje.put("golesLocal", acta.getGoles_local());
+            mensaje.put("golesVisitante", acta.getGoles_visitante());
+            mensaje.put("minuto", minuto);
+            mensaje.put("tipoEvento", tipo);
+            mensaje.put("jugador", nombre_jug);
+            mensaje.put("equipo", equipo.getNombre());
+            mensaje.put("descripcion", descripcion);
 
-                messagingTemplate.convertAndSend("/topic/partido/" + id, mapper.writeValueAsString(mensaje));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-       // }
+            messagingTemplate.convertAndSend("/topic/partido/" + id, mapper.writeValueAsString(mensaje));
+
+            ObjectNode mensajeStats = mapper.createObjectNode();
+            mensajeStats.put("tipo", "UPDATE_ESTADISTICAS");
+            messagingTemplate.convertAndSend("/topic/competicion/" + comp.getId(), mapper.writeValueAsString(mensajeStats));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         return Map.of("status", "ok");
     }
@@ -384,7 +408,23 @@ public class PartidoController {
             e.printStackTrace();
         }
 
+    }
 
+    private EstadisticasJugador getOrCreateEstadisticas(Competicion comp, User jugador) {
+        List<EstadisticasJugador> stats = entityManager.createQuery(
+            "SELECT e FROM EstadisticasJugador e WHERE e.competicion.id = :cId AND e.jugador.id = :jId", EstadisticasJugador.class)
+            .setParameter("cId", comp.getId())
+            .setParameter("jId", jugador.getId())
+            .getResultList();
+
+        if (stats.isEmpty()) {
+            EstadisticasJugador stat = new EstadisticasJugador();
+            stat.setCompeticion(comp);
+            stat.setJugador(jugador);
+            entityManager.persist(stat);
+            return stat;
+        }
+        return stats.get(0);
     }
 
 }

@@ -54,6 +54,47 @@ public class CompeticionController {
         model.addAttribute("clasificacion", clasificacion);
         model.addAttribute("competicionSeleccionada", competicion);
 
+        // Top Goleadores
+        List<Object[]> topGoleadores = entityManager.createQuery(
+            "SELECT e.jugador, e.goles FROM EstadisticasJugador e " +
+            "WHERE e.competicion.id = :id AND e.goles > 0 " +
+            "ORDER BY e.goles DESC", Object[].class)
+            .setParameter("id", id)
+            .setMaxResults(3)
+            .getResultList();
+            
+        // Top Asistentes
+        List<Object[]> topAsistentes = entityManager.createQuery(
+            "SELECT e.jugador, e.asistencias FROM EstadisticasJugador e " +
+            "WHERE e.competicion.id = :id AND e.asistencias > 0 " +
+            "ORDER BY e.asistencias DESC", Object[].class)
+            .setParameter("id", id)
+            .setMaxResults(3)
+            .getResultList();
+
+        // Top Amarillas
+        List<Object[]> topAmarillas = entityManager.createQuery(
+            "SELECT e.jugador, e.tarjetasAmarillas FROM EstadisticasJugador e " +
+            "WHERE e.competicion.id = :id AND e.tarjetasAmarillas > 0 " +
+            "ORDER BY e.tarjetasAmarillas DESC", Object[].class)
+            .setParameter("id", id)
+            .setMaxResults(3)
+            .getResultList();
+
+        // Top Rojas
+        List<Object[]> topRojas = entityManager.createQuery(
+            "SELECT e.jugador, e.tarjetasRojas FROM EstadisticasJugador e " +
+            "WHERE e.competicion.id = :id AND e.tarjetasRojas > 0 " +
+            "ORDER BY e.tarjetasRojas DESC", Object[].class)
+            .setParameter("id", id)
+            .setMaxResults(3)
+            .getResultList();
+
+        model.addAttribute("topGoleadores", topGoleadores);
+        model.addAttribute("topAsistentes", topAsistentes);
+        model.addAttribute("topAmarillas", topAmarillas);
+        model.addAttribute("topRojas", topRojas);
+
         List<Partido> partidos = entityManager.createQuery("SELECT p FROM Partido p WHERE p.competicion.id = :idCompeticion ORDER BY p.fecha ASC", Partido.class)
         .setParameter("idCompeticion", id)
         .getResultList();

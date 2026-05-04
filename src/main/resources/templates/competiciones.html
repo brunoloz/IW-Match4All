@@ -256,36 +256,91 @@
                 </div>
                 <div class="card shadow-sm">
                     <div class="card-header">
-                        <h3 class="h6 mb-0">Estadisticas</h3>
+                        <h3 class="h6 mb-0"><i class="bi bi-bar-chart-fill me-2"></i>Estadísticas del Torneo</h3>
                     </div>
                     <div class="card-body overflow-auto" style="max-height: calc(700px - 56px); overflow-y: auto;">
                         <div class="row g-4">
+                            
                             <div class="col-12">
-                                <div class="card shadow-sm h-100">
-                                    <div class="card-header bg-white border-bottom py-2">Máximos goleadores</div>
-                                    <div class="card-body d-flex align-items-center">
-                                        <div class="rounded-circle bg-light border" style="width: 80px; height: 80px;"></div>
-                                        <div class="ms-4">
-                                            <h5 class="mb-0">Álvaro González</h5>
-                                            <p class="text-muted mb-2">Informatica A</p>
-                                            <h6 class="fw-bold">15 Goles</h6>
+                                <div class="card shadow-sm h-100 border-0" style="border-left: 4px solid #198754 !important;">
+                                    <div class="card-header bg-white border-bottom py-2 fw-bold"><i class="bi bi-trophy text-success me-2"></i>Máximos Goleadores</div>
+                                    <div class="list-group list-group-flush">
+                                        <div class="list-group-item text-muted text-center py-3" th:if="${#lists.isEmpty(topGoleadores)}">Aún no hay goles registrados</div>
+                                        <div class="list-group-item d-flex align-items-center py-2" th:each="stat : ${topGoleadores}">
+                                            <img th:src="@{'/img/' + ${stat[0].avatar}}" class="rounded-circle border" style="width: 45px; height: 45px; object-fit: cover;" onerror="this.src='/img/default-avatar.png';">
+                                            <div class="ms-3 flex-grow-1">
+                                                <h6 class="mb-0 fw-bold" th:text="${stat[0].firstName + ' ' + stat[0].lastName}">Jugador</h6>
+                                                <small class="text-muted" th:text="${stat[0].equipo != null ? stat[0].equipo.nombre : 'Sin equipo'}">Equipo</small>
+                                            </div>
+                                            <div class="text-end">
+                                                <span class="fs-5 fw-bold text-success" th:text="${stat[1]}">0</span><br>
+                                                <small class="text-muted" style="font-size: 0.7rem;">GOLES</small>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+
                             <div class="col-12">
-                                <div class="card shadow-sm h-100">
-                                    <div class="card-header bg-white border-bottom py-2">Porteros Imbatidos</div>
-                                    <div class="card-body d-flex align-items-center">
-                                        <div class="rounded-circle bg-light border" style="width: 80px; height: 80px;"></div>
-                                        <div class="ms-4">
-                                            <h5 class="mb-0">Pablo Fernández <small class="text-muted" style="font-size: 10px;"></small></h5>
-                                            <p class="text-muted mb-2">Fisicas A</p>
-                                            <h6 class="fw-bold">8 Partidos sin encajar</h6>
+                                <div class="card shadow-sm h-100 border-0" style="border-left: 4px solid #0d6efd !important;">
+                                    <div class="card-header bg-white border-bottom py-2 fw-bold"><i class="bi bi-star text-primary me-2"></i>Máximos Asistentes</div>
+                                    <div class="list-group list-group-flush">
+                                        <div class="list-group-item text-muted text-center py-3" th:if="${#lists.isEmpty(topAsistentes)}">Aún no hay asistencias</div>
+                                        <div class="list-group-item d-flex align-items-center py-2" th:each="stat : ${topAsistentes}">
+                                            <img th:src="@{'/img/' + ${stat[0].avatar}}" class="rounded-circle border" style="width: 45px; height: 45px; object-fit: cover;" onerror="this.src='/img/default-avatar.png';">
+                                            <div class="ms-3 flex-grow-1">
+                                                <h6 class="mb-0 fw-bold" th:text="${stat[0].firstName + ' ' + stat[0].lastName}">Jugador</h6>
+                                                <small class="text-muted" th:text="${stat[0].equipo != null ? stat[0].equipo.nombre : 'Sin equipo'}">Equipo</small>
+                                            </div>
+                                            <div class="text-end">
+                                                <span class="fs-5 fw-bold text-primary" th:text="${stat[1]}">0</span><br>
+                                                <small class="text-muted" style="font-size: 0.7rem;">ASIST.</small>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+
+                            <div class="col-12">
+                                <div class="card shadow-sm h-100 border-0" style="border-left: 4px solid #ffc107 !important;">
+                                    <div class="card-header bg-white border-bottom py-2 fw-bold"><i class="bi bi-file-fill text-warning me-2"></i>Más Amarillas</div>
+                                    <div class="list-group list-group-flush">
+                                        <div class="list-group-item text-muted text-center py-3" th:if="${#lists.isEmpty(topAmarillas)}">Aún no hay amonestados</div>
+                                        <div class="list-group-item d-flex align-items-center py-2" th:each="stat : ${topAmarillas}">
+                                            <img th:src="@{'/img/' + ${stat[0].avatar}}" class="rounded-circle border" style="width: 45px; height: 45px; object-fit: cover;" onerror="this.src='/img/default-avatar.png';">
+                                            <div class="ms-3 flex-grow-1">
+                                                <h6 class="mb-0 fw-bold" th:text="${stat[0].firstName + ' ' + stat[0].lastName}">Jugador</h6>
+                                                <small class="text-muted" th:text="${stat[0].equipo != null ? stat[0].equipo.nombre : 'Sin equipo'}">Equipo</small>
+                                            </div>
+                                            <div class="text-end">
+                                                <span class="fs-5 fw-bold text-warning" th:text="${stat[1]}">0</span><br>
+                                                <small class="text-muted" style="font-size: 0.7rem;">AMAR.</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="card shadow-sm h-100 border-0" style="border-left: 4px solid #dc3545 !important;">
+                                    <div class="card-header bg-white border-bottom py-2 fw-bold"><i class="bi bi-file-fill text-danger me-2"></i>Más Rojas</div>
+                                    <div class="list-group list-group-flush">
+                                        <div class="list-group-item text-muted text-center py-3" th:if="${#lists.isEmpty(topRojas)}">Aún no hay expulsados</div>
+                                        <div class="list-group-item d-flex align-items-center py-2" th:each="stat : ${topRojas}">
+                                            <img th:src="@{'/img/' + ${stat[0].avatar}}" class="rounded-circle border" style="width: 45px; height: 45px; object-fit: cover;" onerror="this.src='/img/default-avatar.png';">
+                                            <div class="ms-3 flex-grow-1">
+                                                <h6 class="mb-0 fw-bold" th:text="${stat[0].firstName + ' ' + stat[0].lastName}">Jugador</h6>
+                                                <small class="text-muted" th:text="${stat[0].equipo != null ? stat[0].equipo.nombre : 'Sin equipo'}">Equipo</small>
+                                            </div>
+                                            <div class="text-end">
+                                                <span class="fs-5 fw-bold text-danger" th:text="${stat[1]}">0</span><br>
+                                                <small class="text-muted" style="font-size: 0.7rem;">ROJAS</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -324,6 +379,11 @@
 
             ws.receive = (data) => {
                 try {
+                    if (data.tipo === "UPDATE_ESTADISTICAS") {
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 500);
+                    }
 
                     if((data.tipo == "INICIO_PARTIDO" || data.tipo == "FIN_PARTIDO")){
                         setTimeout(() => {

@@ -258,6 +258,13 @@
                             </select>                        
                         </div>
 
+                        <div class="mb-3" id="event-assister-container" style="display: none;">
+                            <label for="event-assister" class="form-label">Asistente (Opcional)</label>
+                            <select id="event-assister" name="asistenteid" class="form-select" disabled>
+                                <option value="">Sin asistencia / Selecciona un jugador</option>
+                            </select>
+                        </div>
+
                         <div class="mb-3">
                             <label for="event-minute" class="form-label">Minuto</label>
                             <input id="event-minute" name="minuto" type="number" min="1" max="120" class="form-control" placeholder="45" required>
@@ -283,18 +290,33 @@
     <th:block th:replace="~{fragments/footer.html :: footer}" />
 
     <script>
+        // Mostrar/Ocultar Asistente según evento
+        document.getElementById('event-type').addEventListener('change', function() {
+            const container = document.getElementById('event-assister-container');
+            const assisterSelect = document.getElementById('event-assister');
+            
+            if (this.value === 'GOL') {
+                container.style.display = 'block';
+            } else {
+                container.style.display = 'none';
+                assisterSelect.value = '';
+            }
+        });
 
+        // Carga jugadores en selects (Autor y Asistente)
         document.getElementById('event-team').addEventListener('change', function() {
             const equipoId = this.value;
             const playerSelect = document.getElementById('event-player');
+            const assisterSelect = document.getElementById('event-assister');
             
             if (!equipoId) {
                 playerSelect.innerHTML = '<option value="">Primero selecciona un equipo</option>';
+                assisterSelect.innerHTML = '<option value="">Sin asistencia / Selecciona un jugador</option>';
                 playerSelect.disabled = true;
+                assisterSelect.disabled = true;
                 return;
             }
             
-            // Fetch players from the API
             fetch(`/api/equipo/${equipoId}/jugadores`)
                 .then(response => response.json())
                 .then(data => {
@@ -303,14 +325,20 @@
                         return;
                     }
                     
-                    playerSelect.innerHTML = '<option value="">Selecciona un jugador</option>';
+                    let optionsHtml = '<option value="">Selecciona un jugador</option>';
+                    let assisterHtml = '<option value="">Sin asistencia / Nadie</option>';
+                    
                     data.jugadores.forEach(jugador => {
-                        const option = document.createElement('option');
-                        option.value = jugador.id;
-                        option.textContent = jugador.firstName + ' ' + jugador.lastName;
-                        playerSelect.appendChild(option);
+                        const optionText = `<option value="${jugador.id}">${jugador.firstName} ${jugador.lastName}</option>`;
+                        optionsHtml += optionText;
+                        assisterHtml += optionText;
                     });
+                    
+                    playerSelect.innerHTML = optionsHtml;
+                    assisterSelect.innerHTML = assisterHtml;
+                    
                     playerSelect.disabled = false;
+                    assisterSelect.disabled = false;
                 })
                 .catch(error => {
                     console.error('Error loading players:', error);
@@ -318,6 +346,14 @@
                 });
         });
 
+        // Evita que autor del gol sea el mismo que el asistente
+        document.getElementById('event-assister').addEventListener('change', function() {
+            const playerSelect = document.getElementById('event-player');
+            if (this.value !== "" && this.value === playerSelect.value) {
+                alert("El asistente no puede ser el mismo jugador que marca el gol.");
+                this.value = "";
+            }
+        });
     </script>
 
     <script>

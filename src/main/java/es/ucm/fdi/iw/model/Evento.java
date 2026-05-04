@@ -40,6 +40,10 @@ public class Evento {
     private User usuario;
 
     @ManyToOne
+    @JoinColumn(name = "id_asistente")
+    private User asistente;
+
+    @ManyToOne
     @JoinColumn(name = "id_equipo")
     private Equipo equipo;
 
