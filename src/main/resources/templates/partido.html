@@ -15,7 +15,7 @@
             <div class="col-lg-3 col-md-12 mb-4">
                 <div class="card shadow-sm">
                     <div class="card-header">
-                        <h2 class="h5 mb-0">Plantilla</h2>
+                        <h2 class="h5 mb-0">Alineación</h2>
                     </div>
                     <div class="card-body p-0">
                         <div class="table-responsive">
@@ -28,7 +28,7 @@
                                 </thead>
                                 <tbody id="player-list">
                                     <tr th:each="jugador : ${partido.local != null ? partido.local.jugadores : {}}">
-                                        <td>
+                                        <td th:if="${jugador.titular}">
                                             <div class="d-flex align-items-center gap-2">
                                                 <a th:href="@{/perfil/{id}(id=${jugador.id})}" class="d-flex align-items-center gap-2 link-primary" style="text-decoration:none;">
                                                     <img th:src="@{'/img/' + ${jugador.avatar}}" 
@@ -47,6 +47,41 @@
                         </div>
                     </div>
                 </div>
+                <br>
+                <div class="card shadow-sm">
+                    <div class="card-header">
+                        <h2 class="h5 mb-0">Suplentes</h2>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table id="player-table" class="table table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Jugador</th>
+                                        <th class="text-end" style="width: 56px;"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="player-list">
+                                    <tr th:each="jugador : ${partido.local != null ? partido.local.jugadores : {}}">
+                                        <td th:unless="${jugador.titular}">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <a th:href="@{/perfil/{id}(id=${jugador.id})}" class="d-flex align-items-center gap-2 link-primary" style="text-decoration:none;">
+                                                    <img th:src="@{'/img/' + ${jugador.avatar}}" 
+                                                            alt="Jugador" 
+                                                            class="rounded-circle" 
+                                                            width="28" 
+                                                            height="28"
+                                                            onerror="this.src='/img/default-avatar.png';">
+                                                    <span class="fw-semibold" th:text="${jugador.firstName} + ' ' + ${jugador.lastName}"></span>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>                
             </div>
 
 
@@ -180,7 +215,7 @@
             <div class="col-lg-3 col-md-12 mb-4">
                 <div class="card shadow-sm">
                     <div class="card-header">
-                        <h2 class="h5 mb-0">Plantilla</h2>
+                        <h2 class="h5 mb-0">Alineación</h2>
                     </div>
                     <div class="card-body p-0">
                         <div class="table-responsive">
@@ -188,12 +223,12 @@
                                 <thead class="table-light">
                                     <tr>
                                         <th>Jugador</th>
-                                        <th class="text-end" style="width: 56px;"></th>
+                                        <th class="text-end" style="width: 20px;"></th>
                                     </tr>
                                 </thead>
                                 <tbody id="player-list">
                                     <tr th:each="jugador : ${partido.local != null ? partido.visitante.jugadores : {}}">
-                                        <td>
+                                        <td th:if="${jugador.titular}">
                                             <div class="d-flex align-items-center gap-2">
                                                 <a th:href="@{/perfil/{id}(id=${jugador.id})}" class="d-flex align-items-center gap-2 link-primary" style="text-decoration:none;">
                                                     <img th:src="@{'/img/' + ${jugador.avatar}}" 
@@ -211,7 +246,42 @@
                             </table>
                         </div>
                     </div>
-                </div>         
+                </div> 
+                <br>
+                <div class="card shadow-sm">
+                    <div class="card-header">
+                        <h2 class="h5 mb-0">Suplentes</h2>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table id="player-table" class="table table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Jugador</th>
+                                        <th class="text-end" style="width: 56px;"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="player-list">
+                                    <tr th:each="jugador : ${partido.local != null ? partido.visitante.jugadores : {}}">
+                                        <td th:unless="${jugador.titular}">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <a th:href="@{/perfil/{id}(id=${jugador.id})}" class="d-flex align-items-center gap-2 link-primary" style="text-decoration:none;">
+                                                    <img th:src="@{'/img/' + ${jugador.avatar}}" 
+                                                            alt="Jugador" 
+                                                            class="rounded-circle" 
+                                                            width="28" 
+                                                            height="28"
+                                                            onerror="this.src='/img/default-avatar.png';">
+                                                    <span class="fw-semibold" th:text="${jugador.firstName} + ' ' + ${jugador.lastName}"></span>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>        
             </div>
 
         </div>
@@ -328,10 +398,13 @@
                     let optionsHtml = '<option value="">Selecciona un jugador</option>';
                     let assisterHtml = '<option value="">Sin asistencia / Nadie</option>';
                     
+
                     data.jugadores.forEach(jugador => {
-                        const optionText = `<option value="${jugador.id}">${jugador.firstName} ${jugador.lastName}</option>`;
-                        optionsHtml += optionText;
-                        assisterHtml += optionText;
+                        if(jugador.titular){
+                            const optionText = `<option value="${jugador.id}">${jugador.firstName} ${jugador.lastName}</option>`;
+                            optionsHtml += optionText;
+                            assisterHtml += optionText;
+                        }
                     });
                     
                     playerSelect.innerHTML = optionsHtml;

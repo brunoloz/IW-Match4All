@@ -13,8 +13,8 @@ SELECT id, nombre, tipo, capacidad, estado, equiposPorGrupo, equiposClasificanAr
 INSERT INTO equipo (id, nom, descripcion, ubicacion, escudo, id_capitan) 
 SELECT id, nom, descripcion, ubicacion, escudo, id_capitan FROM CSVREAD('classpath:equipos.csv');
 
-INSERT INTO iwuser (id, username, password, first_name, last_name, age, avatar, descripcion, posicion, goles, asist, t_ama, t_roj, p_jug, porimb, lesion, enabled, roles, id_equipo) 
-SELECT id, username, password, first_name, last_name, age, avatar, descripcion, posicion, goles, asistencias, tarjetas_amarillas, tarjetas_rojas, partidos_jugados, porterias_imbatidas, lesionado, enabled, roles, id_equipo FROM CSVREAD('classpath:users.csv');
+INSERT INTO iwuser (id, username, password, first_name, last_name, age, avatar, descripcion, posicion, goles, asist, t_ama, t_roj, p_jug, porimb, titular, enabled, roles, id_equipo) 
+SELECT id, username, password, first_name, last_name, age, avatar, descripcion, posicion, goles, asistencias, tarjetas_amarillas, tarjetas_rojas, partidos_jugados, porterias_imbatidas, titular, enabled, roles, id_equipo FROM CSVREAD('classpath:users.csv');
 
 INSERT INTO competicion_equipos (competicion_id, equipo_id) 
 SELECT competicion_id, equipo_id FROM CSVREAD('classpath:competicion_equipos.csv');
@@ -29,12 +29,12 @@ SET REFERENTIAL_INTEGRITY TRUE;
 
 -- insert admin (username a, password aa)
 /*
-INSERT INTO IWUser (id, enabled, roles, username, password, age, goles, asist, t_ama, t_roj, p_jug, porimb, lesion)
+INSERT INTO IWUser (id, enabled, roles, username, password, age, goles, asist, t_ama, t_roj, p_jug, porimb, titular)
 VALUES (1, TRUE, 'ADMIN,USER', 'a', 
     '{bcrypt}$2a$10$2BpNTbrsarbHjNsUWgzfNubJqBRf.0Vz9924nRSHBqlbPKerkgX.W', 
     0, 0, 0, 0, 0, 0, 0, FALSE);
 
-INSERT INTO IWUser (id, enabled, roles, username, password, age, goles, asist, t_ama, t_roj, p_jug, porimb, lesion)
+INSERT INTO IWUser (id, enabled, roles, username, password, age, goles, asist, t_ama, t_roj, p_jug, porimb, titular)
 VALUES (2, TRUE, 'USER', 'b', 
     '{bcrypt}$2a$10$2BpNTbrsarbHjNsUWgzfNubJqBRf.0Vz9924nRSHBqlbPKerkgX.W', 
     0, 0, 0, 0, 0, 0, 0, FALSE);

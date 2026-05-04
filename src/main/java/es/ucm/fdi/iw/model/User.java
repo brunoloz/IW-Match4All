@@ -87,8 +87,8 @@ public class User implements Transferable<User.Transfer> {
   @Column(name = "porimb")
   private int porteriasImbatidas;
 
-  @Column(name = "lesion")
-  private boolean lesionado;
+  @Column(name = "titular")
+  private boolean titular;
 
   private boolean enabled;
   private String roles; // split by ',' to separate roles

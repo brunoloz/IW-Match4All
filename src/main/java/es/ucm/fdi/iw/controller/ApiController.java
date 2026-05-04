@@ -217,7 +217,7 @@ public class ApiController {
     }
     org.hibernate.Hibernate.initialize(equipo.getJugadores());
     return Map.of("jugadores", equipo.getJugadores().stream()
-      .map(u -> Map.of("id", u.getId(), "firstName", u.getFirstName(), "lastName", u.getLastName()))
+      .map(u -> Map.of("id", u.getId(), "firstName", u.getFirstName(), "lastName", u.getLastName(), "titular", u.isTitular()))
       .toArray());
   }
 }

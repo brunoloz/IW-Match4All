@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import es.ucm.fdi.iw.model.Competicion;
@@ -58,17 +59,75 @@ public class EquipoController {
                     .setParameter("estadoPendiente", Partido.State.PENDIENTE)
                     .getResultList();
 
+            // NUEVO: Comprobar si el equipo tiene algún partido en curso
+            boolean partidoEnCurso = !entityManager
+                    .createQuery("SELECT p FROM Partido p WHERE (p.local.id = :id OR p.visitante.id = :id) AND p.estado = :estadoEnCurso", Partido.class)
+                    .setParameter("id", equipo.getId())
+                    .setParameter("estadoEnCurso", Partido.State.EN_CURSO) // Asegúrate de que EN_CURSO existe en tu enum
+                    .getResultList().isEmpty();
+
             model.addAttribute("equipo", equipo);
             model.addAttribute("competicionesEquipo", competicionesEquipo);
             model.addAttribute("partidosJugados", partidosJugados);
             model.addAttribute("proximosPartidos", proximosPartidos);
+            model.addAttribute("partidoEnCurso", partidoEnCurso); // Lo pasamos a la vista
         } else {
             model.addAttribute("equipo", null);
             model.addAttribute("competicionesEquipo", java.util.Collections.emptyList());
             model.addAttribute("partidosJugados", java.util.Collections.emptyList());
             model.addAttribute("proximosPartidos", java.util.Collections.emptyList());
+            model.addAttribute("partidoEnCurso", false);
         }
         return "equipo";
+    }
+
+    @PostMapping("/titular-user/{id}")
+    @Transactional
+    public String titularUser(
+          @PathVariable("id") long id,
+          HttpSession session,
+          RedirectAttributes redirectAttributes) {
+    
+        User currentUser = (User) session.getAttribute("u");
+        if (currentUser == null) {
+            return "redirect:/login";
+        }
+
+        currentUser = entityManager.find(User.class, currentUser.getId());
+        Equipo equipo = currentUser.getEquipo();
+
+        if (equipo == null || equipo.getCapitan() == null || currentUser.getId() != equipo.getCapitan().getId()) {
+            redirectAttributes.addFlashAttribute("error", "No tienes permisos para modificar jugadores.");
+            return "redirect:/equipo/" + (equipo != null ? equipo.getId() : "");
+        }
+
+        Long partidosEnCurso = entityManager.createQuery(
+                "SELECT COUNT(p) FROM Partido p WHERE (p.local.id = :equipoId OR p.visitante.id = :equipoId) AND p.estado = :estadoEnCurso", Long.class)
+                .setParameter("equipoId", equipo.getId())
+                .setParameter("estadoEnCurso", Partido.State.EN_CURSO)
+                .getSingleResult();
+
+        if (partidosEnCurso > 0) {
+            redirectAttributes.addFlashAttribute("error", "No puedes modificar la alineación mientras hay un partido en curso.");
+            return "redirect:/equipo/" + equipo.getId();
+        }
+
+        User target = entityManager.find(User.class, id);
+        
+        Long titulares = entityManager.createQuery("SELECT COUNT(u) FROM User u WHERE u.titular = true AND u.equipo.id = :equipoId", Long.class)
+                .setParameter("equipoId", equipo.getId())
+                .getSingleResult();
+        
+        if (!target.isTitular()) {
+
+            if (titulares >= 11) {
+                redirectAttributes.addFlashAttribute("error", "No puede haber más de 11 jugadores titulares. Haz suplente a otro jugador primero.");
+                return "redirect:/equipo/" + equipo.getId(); 
+            }
+        }
+
+        target.setTitular(!target.isTitular());
+        return "redirect:/equipo/" + equipo.getId();
     }
 
     @PostMapping("/solicitar")

@@ -101,7 +101,7 @@
                                                 <form th:if="${#lists.size(competition.equipos)} == ${competition.capacidad} and ${#lists.isEmpty(competition.partidos)}"
                                                     th:action="@{/competicion/generar-calendario}" method="post" class="m-0">
                                                     <input type="hidden" name="idCompeticion" th:value="${competition.id}">
-                                                    <button type="submit" class="btn btn-sm btn-outline-primary open-action-modal" title="Generar Calendario">
+                                                    <button type="submit" class="btn btn-sm btn-outline-primary" title="Generar Calendario">
                                                         Generar Calendario
                                                     </button>
                                                 </form>

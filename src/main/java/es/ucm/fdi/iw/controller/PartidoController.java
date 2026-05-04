@@ -36,6 +36,7 @@ import jakarta.transaction.Transactional;
 @RequestMapping("partido")
 public class PartidoController {
     
+    //para websocket
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
 
@@ -94,6 +95,7 @@ public class PartidoController {
         entityManager.persist(acta);
 
         try {
+            
             ObjectMapper mapper = new ObjectMapper();
             ObjectNode mensaje = mapper.createObjectNode(); 
 
