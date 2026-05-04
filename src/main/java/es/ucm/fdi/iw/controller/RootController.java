@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -68,6 +69,12 @@ public class RootController {
 
 	@GetMapping("/")
     public String index(Model model) {
+        List<Partido> proximosPartidos = entityManager.createQuery(
+            "SELECT p FROM Partido p WHERE p.estado = :estado ORDER BY p.fecha ASC", Partido.class)
+            .setParameter("estado", Partido.State.PENDIENTE)
+            .setMaxResults(5)
+            .getResultList();
+        model.addAttribute("proximosPartidos", proximosPartidos);
         return "fragments/index";
     }
 
@@ -251,6 +258,51 @@ public class RootController {
         model.addAttribute("competiciones", competiciones);
 
         return "panelarbitro";   
+    }
+
+    @PostMapping("/arbitro/apuntarse")
+    @Transactional
+    public String apuntarseArbitrar(@RequestParam("idPartido") long idPartido, HttpSession session, RedirectAttributes redir) {
+        User sessionUser = (User) session.getAttribute("u");
+        if (sessionUser == null || !sessionUser.hasRole(User.Role.ARBITRO)) {
+            redir.addFlashAttribute("error", "No tienes permisos de árbitro.");
+            return "redirect:/login"; 
+        }
+
+        Partido partido = entityManager.find(Partido.class, idPartido);
+        
+        if (partido == null) {
+            redir.addFlashAttribute("error", "Partido no encontrado.");
+            return "redirect:/panelarbitro"; 
+        }
+
+        if (partido.getArbitro() != null) {
+            redir.addFlashAttribute("error", "Este partido ya tiene un árbitro asignado.");
+            return "redirect:/panelarbitro";
+        }
+
+        // Buscamos partidos de la competición que estén, pendientes, sin árbitro y con fecha anterior a este
+        long partidosAnterioresSinArbitro = entityManager.createQuery(
+            "SELECT COUNT(p) FROM Partido p WHERE p.competicion.id = :compId " +
+            "AND p.estado = :estadoPendiente " +
+            "AND p.arbitro IS NULL AND p.fecha < :fechaTarget", Long.class)
+            .setParameter("compId", partido.getCompeticion().getId())
+            .setParameter("estadoPendiente", Partido.State.PENDIENTE)
+            .setParameter("fechaTarget", partido.getFecha())
+            .getSingleResult();
+
+        if (partidosAnterioresSinArbitro > 0) {
+            redir.addFlashAttribute("error", "No puedes apuntarte a este partido. Primero deben asignarse los partidos anteriores de esta competición.");
+            return "redirect:/panelarbitro";
+        }
+
+        // Asignamos árbitro
+        User arbitro = entityManager.find(User.class, sessionUser.getId());
+        partido.setArbitro(arbitro);
+        entityManager.merge(partido);
+
+        redir.addFlashAttribute("success", "Te has asignado correctamente para arbitrar el partido: " + partido.getLocal().getNombre() + " vs " + partido.getVisitante().getNombre());
+        return "redirect:/panelarbitro";
     }
 
 }

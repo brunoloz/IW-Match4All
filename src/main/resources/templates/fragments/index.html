@@ -22,9 +22,10 @@
                 <section class="card shadow-sm">
                     <div class="card-header bg-light d-flex justify-content-between align-items-center py-3">
                         <h3 class="h5 mb-0">Próximos Partidos</h3>
-                        <span class="badge bg-secondary text-uppercase" style="font-size: 0.75rem;">Próximas 48h</span>
+                        <span class="badge bg-secondary text-uppercase" style="font-size: 0.75rem;">Calendario Inminente</span>
                     </div>
-                    <div class="table-responsive">
+
+                    <div class="table-responsive" th:if="${not #lists.isEmpty(proximosPartidos)}">
                         <table class="table table-hover mb-0 align-middle">
                             <thead class="table-light">
                                 <tr>
@@ -34,37 +35,35 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
+                                <tr th:each="partido : ${proximosPartidos}">
                                     <td class="ps-3">
-                                        <div class="fw-bold">Mañana, 18:00</div>
-                                        <div class="small text-muted">Campo Nuevo Universitario A</div>
+                                        <div class="fw-bold" th:text="${#temporals.format(partido.fecha, 'dd MMM yyyy')}">23 Feb, 21:15</div>
+                                        <div class="small text-muted" th:text="${partido.ubicacion}">Campo Nuevo Universitario A</div>
                                     </td>
                                     <td class="text-center">
-                                        <span class="fw-bold">Informática A</span>
+                                        <a th:href="@{/equipo/{id}(id=${partido.local.id})}" class="fw-bold text-decoration-none text-dark" th:text="${partido.local.nombre}">Equipo A</a>
                                         <span class="mx-2 text-muted">vs</span>
-                                        <span class="fw-bold">Físicas A</span>
+                                        <a th:href="@{/equipo/{id}(id=${partido.visitante.id})}" class="fw-bold text-decoration-none text-dark" th:text="${partido.visitante.nombre}">Equipo B</a>
                                     </td>
                                     <td>
-                                        <span class="badge rounded-pill bg-light text-dark border">Liga Match4All</span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="ps-3">
-                                        <div class="fw-bold">23 Feb, 21:15</div>
-                                        <div class="small text-muted">Campo Viejo Universitario B</div>
-                                    </td>
-                                    <td class="text-center">
-                                        <span class="fw-bold">Medicina A</span>
-                                        <span class="mx-2 text-muted">vs</span>
-                                        <span class="fw-bold">Geografía e Historia A</span>
-                                    </td>
-                                    <td>
-                                        <span class="badge rounded-pill bg-light text-dark border">Copa Match4All</span>
+                                        <a th:href="@{/competicion/{id}(id=${partido.competicion.id})}" class="text-decoration-none">                                            
+                                            <span class="badge rounded-pill bg-light text-dark border" th:text="${partido.competicion.nombre}">Liga Match4All</span>
+                                        </a>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
+
+                    <div th:if="${#lists.isEmpty(proximosPartidos)}" class="card-body text-center py-5 bg-light">
+                        <i class="bi bi-calendar-x display-4 text-muted mb-3 d-block"></i>
+                        <h5 class="fw-bold text-dark">Sin encuentros programados</h5>
+                        <p class="text-muted mb-4">Actualmente no hay partidos pendientes en nuestras competiciones.</p>
+                        <a th:href="@{/listacompeticiones}" class="btn btn-outline-primary shadow-sm" style="border-color: var(--brand-blue); color: var(--brand-blue);">
+                            <i class="bi bi-trophy me-2"></i>Explorar Ligas y Torneos
+                        </a>
+                    </div>
+                    
                 </section>
             </div>
 

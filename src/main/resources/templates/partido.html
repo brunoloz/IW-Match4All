@@ -260,7 +260,10 @@
 
                         <div class="mb-3">
                             <label for="event-minute" class="form-label">Minuto</label>
-                            <input id="event-minute" name="minuto" type="number" min="0" max="120" class="form-control" placeholder="45" required>
+                            <input id="event-minute" name="minuto" type="number" min="1" max="120" class="form-control" placeholder="45" required>
+                            <div class="invalid-feedback">
+                                El minuto debe estar entre 1 y 120.
+                            </div>
                         </div>
 
                         <div class="mb-3">

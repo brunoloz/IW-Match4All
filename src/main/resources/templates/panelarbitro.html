@@ -72,7 +72,23 @@
                                         <td th:text="${#temporals.format(partido.fecha, 'dd/MM/yyyy')}">01/01/2026</td>
                                         <td th:text="${partido.ubicacion}">Estadio</td>
                                         <td>
-                                            <a th:href="@{/partido/{id}(id=${partido.id})}" class="btn btn-sm btn-outline-primary">Arbitrar</a>
+                                            <!-- Si no hay arbitro asignado-->
+                                            <form th:if="${partido.arbitro == null}" th:action="@{/arbitro/apuntarse}" method="post" class="m-0">
+                                                <input type="hidden" name="idPartido" th:value="${partido.id}">
+                                                <button type="submit" class="btn btn-sm btn-success">
+                                                    <i class="bi bi-hand-index-thumb"></i> Apuntarse
+                                                </button>
+                                            </form>
+
+                                            <!-- Si ya hay arbitro asignado y es user-->  
+                                            <a th:if="${partido.arbitro != null and partido.arbitro.id == session.u.id}" 
+                                                th:href="@{/partido/{id}(id=${partido.id})}" 
+                                                class="btn btn-sm btn-primary">
+                                                    <i class="bi bi-whistle"></i> Arbitrar
+                                            </a>
+
+                                            <!-- Si ya hay arbitro asignado y no es user-->  
+                                            <span th:if="${partido.arbitro != null and partido.arbitro.id != session.u.id}" class="badge bg-secondary">Asignado a otro</span>
                                         </td>
                                     </tr>
                                 </tbody>

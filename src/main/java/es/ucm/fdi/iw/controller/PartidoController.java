@@ -80,7 +80,6 @@ public class PartidoController {
 
         partido.setEstado(Partido.State.EN_CURSO);
 
-
         if(partido.getCompeticion().getTipo() == Competicion.Tipo.LIGA)
             updateClasificacion(partido, null, 0, 0);
 
@@ -167,6 +166,10 @@ public class PartidoController {
         User u = (User) session.getAttribute("u");
         if (u == null || !u.hasRole(User.Role.ARBITRO)) {
             return Map.of("status", "error", "message", "No autorizado");
+        }
+
+        if(minuto < 1 || minuto > 120){
+            return Map.of("status", "error", "message", "El minuto debe ser un valor válido (entre 1 y 120)");
         }
 
         Partido partido = entityManager.find(Partido.class, id);
