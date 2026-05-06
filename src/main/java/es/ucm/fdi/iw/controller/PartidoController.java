@@ -23,10 +23,10 @@ import es.ucm.fdi.iw.model.Acta;
 import es.ucm.fdi.iw.model.Clasificacion;
 import es.ucm.fdi.iw.model.Competicion;
 import es.ucm.fdi.iw.model.Equipo;
+import es.ucm.fdi.iw.model.EstadisticasJugador;
 import es.ucm.fdi.iw.model.Evento;
 import es.ucm.fdi.iw.model.Partido;
 import es.ucm.fdi.iw.model.User;
-import es.ucm.fdi.iw.model.EstadisticasJugador;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.servlet.http.HttpSession;
@@ -129,6 +129,120 @@ public class PartidoController {
         Partido partido = entityManager.find(Partido.class, id);
 
         partido.setEstado(Partido.State.FINALIZADO);
+
+        // Si es competición tipo TORNEO o ROUND_ROBIN_ARBOL y pertenece a un bracket,
+        // enlazamos el ganador con el siguiente partido en la siguiente ronda.
+        try {
+            Acta acta = entityManager.createQuery("SELECT a FROM Acta a WHERE a.partido.id = :id", Acta.class)
+                    .setParameter("id", id)
+                    .getResultList()
+                    .stream()
+                    .findFirst()
+                    .orElse(null);
+
+            Competicion comp = partido.getCompeticion();
+            if (acta != null && (comp.getTipo() == Competicion.Tipo.TORNEO || comp.getTipo() == Competicion.Tipo.ROUND_ROBIN_ARBOL)) {
+                String fase = partido.getFase();
+                if (fase != null && fase.toUpperCase().startsWith("BRACKET - RONDA ")) {
+                    // extraer número de ronda
+                    int ronda = 1;
+                    try {
+                        String suf = fase.substring("BRACKET - RONDA ".length()).trim();
+                        String[] parts = suf.split("\\s+", 2);
+                        ronda = Integer.parseInt(parts[0]);
+                    } catch (Exception e) {
+                        // si no se puede parsear, no hacemos nada
+                        ronda = -1;
+                    }
+
+                    if (ronda > 0) {
+                        String nextFase = "BRACKET - RONDA " + (ronda + 1);
+
+                        List<Partido> matchesThisRound = entityManager.createQuery(
+                                "SELECT p FROM Partido p WHERE p.competicion.id = :compId AND p.fase = :fase ORDER BY p.id ASC", Partido.class)
+                                .setParameter("compId", comp.getId())
+                                .setParameter("fase", fase)
+                                .getResultList();
+
+                        int idx = -1;
+                        for (int i = 0; i < matchesThisRound.size(); i++) {
+                            if (matchesThisRound.get(i).getId() == partido.getId()) {
+                                idx = i;
+                                break;
+                            }
+                        }
+
+                        if (idx >= 0) {
+                            int targetIndex = idx / 2;
+
+                                // determinar ganador (si hay empate, no enlazamos automáticamente)
+                                Equipo ganador = null;
+                                if (acta.getGoles_local() > acta.getGoles_visitante()) {
+                                    ganador = partido.getLocal();
+                                } else if (acta.getGoles_visitante() > acta.getGoles_local()) {
+                                    ganador = partido.getVisitante();
+                                }
+
+                                // Si esta ronda tiene un solo partido, es la final: no crear partido siguiente.
+                                if (matchesThisRound.size() == 1) {
+                                    if (ganador != null) {
+                                        comp.setEstado(Competicion.Estado.FINALIZADA);
+                                        entityManager.merge(comp);
+                                    }
+                                } else {
+                                    List<Partido> nextMatches = entityManager.createQuery(
+                                            "SELECT p FROM Partido p WHERE p.competicion.id = :compId AND p.fase = :fase ORDER BY p.id ASC", Partido.class)
+                                            .setParameter("compId", comp.getId())
+                                            .setParameter("fase", nextFase)
+                                            .getResultList();
+
+                                    Partido target;
+                                    if (nextMatches.size() > targetIndex) {
+                                        target = nextMatches.get(targetIndex);
+                                    } else {
+                                        // crear partido vacío en la siguiente ronda con equipos "Pendiente"
+                                        Equipo placeholder = getOrCreatePlaceholderEquipo(comp);
+                                        target = new Partido();
+                                        target.setCompeticion(comp);
+                                        target.setFase(nextFase);
+                                        target.setFecha(partido.getFecha().plusDays(1 + targetIndex));
+                                        target.setEstado(Partido.State.PENDIENTE);
+                                        target.setUbicacion("Por determinar");
+                                        // Asignamos placeholder en ambos lados; luego sobrescribiremos el correspondiente
+                                        target.setLocal(placeholder);
+                                        target.setVisitante(placeholder);
+                                        entityManager.persist(target);
+                                    }
+
+                                    if (ganador != null) {
+                                        if (idx % 2 == 0) {
+                                            target.setLocal(ganador);
+                                        } else {
+                                            target.setVisitante(ganador);
+                                        }
+                                        entityManager.merge(target);
+
+                                        // notificar actualización de bracket
+                                        try {
+                                            ObjectMapper mapper = new ObjectMapper();
+                                            ObjectNode msg = mapper.createObjectNode();
+                                            msg.put("tipo", "UPDATE_BRACKET");
+                                            msg.put("partidoId", target.getId());
+                                            msg.put("equipoId", ganador.getId());
+                                            msg.put("lado", (idx % 2 == 0) ? "local" : "visitante");
+                                            messagingTemplate.convertAndSend("/topic/competicion/" + comp.getId(), mapper.writeValueAsString(msg));
+                                        } catch (Exception ex) {
+                                            ex.printStackTrace();
+                                        }
+                                    }
+                                }
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         Competicion comp = partido.getCompeticion();
         Long partidosPendientes = entityManager.createQuery(
@@ -427,6 +541,21 @@ public class PartidoController {
             return stat;
         }
         return stats.get(0);
+    }
+
+    private Equipo getOrCreatePlaceholderEquipo(Competicion comp) {
+        String nombre = "PENDIENTE";
+        List<Equipo> existentes = entityManager.createQuery("SELECT e FROM Equipo e WHERE e.nombre = :nombre", Equipo.class)
+                .setParameter("nombre", nombre)
+                .getResultList();
+        if (!existentes.isEmpty()) return existentes.get(0);
+
+        Equipo e = new Equipo();
+        e.setNombre(nombre);
+        e.setDescripcion("Equipo marcador de posición");
+        e.setUbicacion("Por determinar");
+        entityManager.persist(e);
+        return e;
     }
 
 }

@@ -73,7 +73,7 @@
                                         <td th:text="${partido.ubicacion}">Estadio</td>
                                         <td>
                                             <!-- Si no hay arbitro asignado-->
-                                            <form th:if="${partido.arbitro == null}" th:action="@{/arbitro/apuntarse}" method="post" class="m-0">
+                                            <form th:if="${partido.arbitro == null and partido.local.nombre != 'PENDIENTE' and partido.visitante.nombre != 'PENDIENTE'}" th:action="@{/arbitro/apuntarse}" method="post" class="m-0">
                                                 <input type="hidden" name="idPartido" th:value="${partido.id}">
                                                 <button type="submit" class="btn btn-sm btn-success">
                                                     <i class="bi bi-hand-index-thumb"></i> Apuntarse

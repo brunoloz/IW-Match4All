@@ -7,6 +7,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import es.ucm.fdi.iw.model.Acta;
 import es.ucm.fdi.iw.model.Clasificacion;
 import es.ucm.fdi.iw.model.Competicion;
 import es.ucm.fdi.iw.model.Equipo;
@@ -101,6 +104,18 @@ public class CompeticionController {
 
         model.addAttribute("partidos", partidos);
 
+        List<Acta> actasCompeticion = entityManager
+                .createQuery("SELECT a FROM Acta a WHERE a.partido.competicion.id = :idCompeticion", Acta.class)
+                .setParameter("idCompeticion", id)
+                .getResultList();
+        Map<Long, Acta> actasPorPartido = new LinkedHashMap<>();
+        for (Acta acta : actasCompeticion) {
+            if (acta.getPartido() != null) {
+                actasPorPartido.put(acta.getPartido().getId(), acta);
+            }
+        }
+        model.addAttribute("actasPorPartido", actasPorPartido);
+
         List<Partido> partidosRoundRobin = new ArrayList<>();
         Map<String, List<Partido>> partidosRoundRobinPorGrupo = new LinkedHashMap<>();
         Map<String, Map<Long, Equipo>> equiposRoundRobinTemp = new LinkedHashMap<>();
@@ -161,6 +176,63 @@ public class CompeticionController {
         model.addAttribute("equiposRoundRobinPorGrupo", equiposRoundRobinPorGrupo);
         model.addAttribute("matrizRoundRobinPorGrupo", matrizRoundRobinPorGrupo);
         model.addAttribute("bracketPartidosPorFase", bracketPartidosPorFase);
+
+        if (competicion != null && competicion.getEstado() == Competicion.Estado.FINALIZADA
+            && (competicion.getTipo() == Competicion.Tipo.TORNEO || competicion.getTipo() == Competicion.Tipo.ROUND_ROBIN_ARBOL)) {
+            Equipo ganador = null;
+            int maxRonda = -1;
+            List<Partido> finalMatches = null;
+
+            Pattern p = Pattern.compile("BRACKET - RONDA (\\d+)", Pattern.CASE_INSENSITIVE);
+            for (String faseKey : bracketPartidosPorFase.keySet()) {
+                Matcher m = p.matcher(faseKey);
+                if (m.find()) {
+                    try {
+                        int r = Integer.parseInt(m.group(1));
+                        if (r > maxRonda) {
+                            maxRonda = r;
+                            finalMatches = bracketPartidosPorFase.get(faseKey);
+                        }
+                    } catch (NumberFormatException e) {
+                    }
+                }
+            }
+
+            if (finalMatches != null && !finalMatches.isEmpty()) {
+                Partido finalPartido = finalMatches.get(0);
+                Acta actaFinal = entityManager.createQuery("SELECT a FROM Acta a WHERE a.partido.id = :id", Acta.class)
+                        .setParameter("id", finalPartido.getId())
+                        .getResultList()
+                        .stream()
+                        .findFirst()
+                        .orElse(null);
+
+                if (actaFinal != null) {
+                    if (actaFinal.getGoles_local() > actaFinal.getGoles_visitante()) {
+                        ganador = finalPartido.getLocal();
+                    } else if (actaFinal.getGoles_visitante() > actaFinal.getGoles_local()) {
+                        ganador = finalPartido.getVisitante();
+                    }
+                }
+            }
+
+            if (ganador != null) {
+                Clasificacion fake = new Clasificacion();
+                fake.setCompeticion(competicion);
+                fake.setEquipo(ganador);
+                fake.setPuntos(0);
+                fake.setPartidos_jugados(0);
+                fake.setVictorias(0);
+                fake.setEmpates(0);
+                fake.setDerrotas(0);
+                fake.setGoles_a_favor(0);
+                fake.setGoles_en_contra(0);
+
+                List<Clasificacion> nueva = new ArrayList<>();
+                nueva.add(fake);
+                model.addAttribute("clasificacion", nueva);
+            }
+        }
 
 
         return "competiciones";
@@ -312,7 +384,6 @@ public class CompeticionController {
             }
             case ROUND_ROBIN_ARBOL -> {
                 Integer equiposPorGrupo = comp.getEquiposPorGrupo();
-                Integer equiposClasificanArbol = comp.getEquiposClasificanArbol();
 
                 List<List<Equipo>> grupos = repartirEquiposEnGrupos(equipos, equiposPorGrupo);
                 int numeroGrupos = grupos.size();
