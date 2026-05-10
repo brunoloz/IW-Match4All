@@ -128,6 +128,20 @@ public class PartidoController {
 
         Partido partido = entityManager.find(Partido.class, id);
 
+        // Validación: si la competición es TORNEO o ROUND_ROBIN_ARBOL, no permitir finalizar en empate
+        Acta actaTmp = entityManager.createQuery("SELECT a FROM Acta a WHERE a.partido.id = :id", Acta.class)
+                .setParameter("id", id)
+                .getResultList()
+                .stream()
+                .findFirst()
+                .orElse(null);
+        Competicion compTmp = partido.getCompeticion();
+        if (actaTmp != null && compTmp != null && (compTmp.getTipo() == Competicion.Tipo.TORNEO || compTmp.getTipo() == Competicion.Tipo.ROUND_ROBIN_ARBOL)) {
+            if (actaTmp.getGoles_local() == actaTmp.getGoles_visitante()) {
+                return Map.of("status", "error", "message", "No se puede finalizar un partido en empate para esta competición. Introduzca un ganador.");
+            }
+        }
+
         partido.setEstado(Partido.State.FINALIZADO);
 
         // Si es competición tipo TORNEO o ROUND_ROBIN_ARBOL y pertenece a un bracket,

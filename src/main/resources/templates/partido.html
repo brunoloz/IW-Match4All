@@ -473,11 +473,12 @@
                         'X-CSRF-TOKEN': csrfToken
                     }
                 })
-                .then(response => {
-                    if (!response.ok) throw new Error("Error en el servidor al procesar la petición.");
-                    return response.json();
-                })
+                .then(response => response.json())
                 .then(data => {
+                    if (data && data.status === 'error') {
+                        alert(data.message || data.error || 'No se puede finalizar el partido.');
+                        return;
+                    }
                     console.log("Partido terminado:", data);
                     setTimeout(() => window.location.reload(), 500);
                 })
