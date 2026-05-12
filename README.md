@@ -26,8 +26,7 @@ En la raíz del proyecto, junto al `pom.xml`, se encuentran herramientas clave p
 - **pom.xml:** Archivo de configuración de Maven que define las dependencias del proyecto.
 
 ## Estructura de la base de datos
-<img width="4552" height="2428" alt="bd" src="https://github.com/user-attachments/assets/5473ed1c-edda-4e30-8f19-65affdd0d425" />
-
+<img width="4540" height="2428" alt="bd_match4all" src="https://github.com/user-attachments/assets/ec376b04-6c00-4a18-9b79-46795b605ade" />
 
 ## Estado actual de la aplicación (Entrega Intermedia 25 de marzo)
 
@@ -98,3 +97,18 @@ Para probarla tiene que estar la aplicación lanzada y ejecutar el comando mvn t
 ### Despliegue de la aplicación
 Aplicación desplegada correctamente en el contenedor proporcionado para la asignatura.
 [vm041.containers.fdi.ucm.es](https://vm041.containers.fdi.ucm.es/)
+
+### Lista de Usuarios
+Usuarios con el rol de capitán:
+- Username: kgarcia  Password: pass
+- Username: hmallo  Password: pass
+- Username: sramos  Password: pass
+- Username: lmessi  Password: pass
+Usuarios con el rol de árbitro:
+- Username: arbitro  Password: 1234
+- Username: arbitro2  Password: arbitro2
+Usuarios con el rol de jugador (sin equipo):
+- Username: jugador  Password: jugador
+- Username: jugador2  Password: jugador2
+Administrador:
+- Username: admin  Password: 1234  
