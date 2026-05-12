@@ -104,11 +104,14 @@ Usuarios con el rol de capitán:
 - Username: hmallo  Password: pass
 - Username: sramos  Password: pass
 - Username: lmessi  Password: pass
+
 Usuarios con el rol de árbitro:
 - Username: arbitro  Password: 1234
 - Username: arbitro2  Password: arbitro2
+
 Usuarios con el rol de jugador (sin equipo):
 - Username: jugador  Password: jugador
 - Username: jugador2  Password: jugador2
+
 Administrador:
 - Username: admin  Password: 1234  
