@@ -2,6 +2,7 @@ package es.ucm.fdi.iw.controller;
 
 import es.ucm.fdi.iw.LocalData;
 import es.ucm.fdi.iw.model.Message;
+import es.ucm.fdi.iw.model.Partido;
 import es.ucm.fdi.iw.model.Transferable;
 import es.ucm.fdi.iw.model.User;
 import es.ucm.fdi.iw.model.User.Role;
@@ -116,9 +117,37 @@ public class UserController {
    * Landing page for a user profile
    */
   @GetMapping("{id}")
+  @Transactional
   public String index(@PathVariable long id, Model model, HttpSession session) {
     User target = entityManager.find(User.class, id);
     model.addAttribute("user", target);
+
+    Partido proximoPartido = null;
+    if (target != null) {
+      if (target.hasRole(User.Role.ARBITRO)) {
+        List<Partido> matches = entityManager.createQuery(
+              "SELECT p FROM Partido p LEFT JOIN FETCH p.local LEFT JOIN FETCH p.visitante "
+                  + "LEFT JOIN FETCH p.competicion WHERE p.arbitro.id = :userId AND p.estado = :estado ORDER BY p.fecha ASC", Partido.class)
+            .setParameter("userId", target.getId())
+            .setParameter("estado", Partido.State.PENDIENTE)
+            .getResultList();
+        if (!matches.isEmpty()) {
+          proximoPartido = matches.get(0);
+        }
+      } else if (target.getEquipo() != null) {
+        List<Partido> matches = entityManager.createQuery(
+              "SELECT p FROM Partido p LEFT JOIN FETCH p.local LEFT JOIN FETCH p.visitante "
+                  + "LEFT JOIN FETCH p.competicion WHERE (p.local.id = :equipoId OR p.visitante.id = :equipoId) "
+                  + "AND p.estado = :estado ORDER BY p.fecha ASC", Partido.class)
+            .setParameter("equipoId", target.getEquipo().getId())
+            .setParameter("estado", Partido.State.PENDIENTE)
+            .getResultList();
+        if (!matches.isEmpty()) {
+          proximoPartido = matches.get(0);
+        }
+      }
+    }
+    model.addAttribute("proximoPartido", proximoPartido);
     return "user";
   }
 

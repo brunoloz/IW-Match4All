@@ -13,15 +13,15 @@ Scenario: Un usuario logueado sin equipo crea un equipo exitosamente
 
     * click("a.btn.btn-brand-blue")
     * delay(2000)
-    * waitForUrl(baseUrl + '/vistacrearequipo')
+    * waitForUrl(baseUrl + '/crearequipo')
     * match html('title') contains 'Crear Equipo'
 
-    * input('#nombre', 'Getafe CF')
+    * input('#nombre', 'Ciudad de Getafe CF')
     * input('#escudo', 'escudogetafe.png')
     * input('#descripcion', 'Equipo luchador y con garra')
     * input('#ubicacion', 'Getafe, Madrid')
 
     * click("button.btn.btn-brand-blue[type=submit]")
     * delay(2000)
-    * waitForUrl(baseUrl + '/vistagestionequipo')
-    * match html('title') contains 'Gestión del Equipo'
+    * waitForUrl(baseUrl + '/user/403')
+    * match html('title') contains 'Perfil de Usuario'

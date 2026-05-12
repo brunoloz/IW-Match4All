@@ -107,26 +107,39 @@
                     <!-- Sección cuando el usuario sí pertenece a un equipo -->
                     <div th:if="${user.equipo != null}" class="card-blue text-white rounded-4 shadow hover-lift p-5 flex-grow-1 d-flex flex-column justify-content-center" style="background-color: var(--brand-blue);">
                         <h5 class="text-white-50 text-uppercase mb-5" style="letter-spacing: 2px;">Próximo Partido</h5>
-                        
-                        <div class="display-4 fw-bolder font-monospace text-center">
-                            <p class="small text-white-50 mb-1">Empieza en </p>
-                            4D 05H 26M
-                        </div>
-                        
-                        <div class="text-center">
-                            <div class="bg-white rounded-circle p-2 shadow d-inline-block mb-2">
-                                <img src="/img/logomatch4all.png" alt="Escudo rival" class="rounded-circle" style="width: 180px; height: 180px; object-fit: contain;">
+
+                        <div th:if="${proximoPartido != null}">
+                            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-4">
+                                <div class="d-flex gap-3 align-items-center">
+                                    <div class="text-center">
+                                        <img th:src="@{'/img/equipos/' + ${proximoPartido.local.escudo}}" alt="Equipo local" style="width: 200px; height: 200px; object-fit: contain;" />
+                                        <p class="small text-white-50 mt-2" th:text="${proximoPartido.local.nombre}">Local</p>
+                                    </div>
+                                    <div class="text-center">
+                                        <div class="fs-3 fw-bold text-white">VS</div>
+                                    </div>
+                                    <div class="text-center">
+                                        <img th:src="@{'/img/equipos/' + ${proximoPartido.visitante.escudo}}" alt="Equipo visitante" style="width: 200px; height: 200px; object-fit: contain;" />
+                                        <p class="small text-white-50 mt-2" th:text="${proximoPartido.visitante.nombre}">Visitante</p>
+                                    </div>
+                                </div>
+
+                                <div class="text-center text-md-end">
+                                    <p class="small text-white-50 mb-1 text-uppercase">Competición</p>
+                                    <p class="fs-5 fw-bold mb-2" th:text="${proximoPartido.competicion.nombre}">Liga Primera</p>
+                                    <p class="small text-white-50 mb-1 text-uppercase">Fecha</p>
+                                    <p class="fs-5 fw-bold mb-2" th:text="${#temporals.format(proximoPartido.fecha, 'dd MMM yyyy')}">01 Ene 2026</p>
+                                    <p class="small text-white-50 mb-1 text-uppercase">Ubicación</p>
+                                    <p class="fs-5 fw-bold mb-3" th:text="${proximoPartido.ubicacion}">Campo Central</p>
+                                    <a th:href="@{/partido/{id}(id=${proximoPartido.id})}" class="btn btn-light btn-sm text-uppercase fw-bold">Ver partido</a>
+                                </div>
                             </div>
-                            <p class="small text-white-50 mb-0 fw-bold text-uppercase">Rival</p>
                         </div>
-                        
-                        <div class="text-center text-md-end">
-                            <p class="small text-white-50 mb-1 text-uppercase">Competición</p>
-                            <p class="fs-4 fw-bold mb-3">Liga Primera</p>
-                            <p class="small text-white-50 mb-1 text-uppercase">Ubicación</p>
-                            <p class="fs-5 fw-bold mb-0">Campo Central</p>
+
+                        <div th:if="${proximoPartido == null}" class="text-center">
+                            <p class="text-white-50 mb-0">No tienes ningún próximo partido programado.</p>
                         </div>
-                </div>
+                    </div>
 
                     <div th:if="${user.equipo != null}" class="card-red rounded-4 shadow hover-lift p-5 flex-grow-1 d-flex flex-column justify-content-center" style="background-color:#fff; border:4px solid var(--brand-blue);">
                         <h5 class="text-uppercase mb-5" style="letter-spacing: 2px; color: var(--brand-blue);">Estadísticas</h5>
@@ -168,42 +181,39 @@
                             </a>
                         </div>
                     </div>
-                    
-                    <!--<div class="card-blue text-white rounded-4 shadow hover-lift p-5 flex-grow-1 d-flex flex-column justify-content-center" style="background-color: var(--brand-blue);">
+
+                    <div class="card-blue text-white rounded-4 shadow hover-lift p-5 flex-grow-1 d-flex flex-column justify-content-center" style="background-color: var(--brand-blue);" th:if="${proximoPartido != null}">
                         <h5 class="text-white-50 text-uppercase mb-5" style="letter-spacing: 2px;">Próximo Partido</h5>
-                        
-                        <div class="display-4 fw-bolder font-monospace text-center">
-                            <p class="small text-white-50 mb-1">Empieza en </p>
-                            4D 05H 26M
-                        </div>
-                        
-                        <div class="d-flex justify-content-center align-items-center gap-4">
-                            <div class="text-center">
-                                <div class="bg-white rounded-circle p-2 shadow d-inline-block mb-2">
-                                    <img src="/img/logomatch4all.png" alt="Escudo local" class="rounded-circle" style="width: 180px; height: 180px; object-fit: contain;">
+                        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-4">
+                            <div class="d-flex gap-3 align-items-center">
+                                <div class="text-center">
+                                    <img th:src="@{'/img/equipos/' + ${proximoPartido.local.escudo}}" alt="Equipo local" style="width: 200px; height: 200px; object-fit: contain;" />
+                                    <p class="small text-white-50 mt-2" th:text="${proximoPartido.local.nombre}">Local</p>
                                 </div>
-                                <p class="small text-white-50 mb-0 fw-bold text-uppercase">Local</p>
-                            </div>
-                            
-                            <div class="text-center">
-                                <p class="small text-white-50 mb-0 fw-bold">VS</p>
-                            </div>
-                            
-                            <div class="text-center">
-                                <div class="bg-white rounded-circle p-2 shadow d-inline-block mb-2">
-                                    <img src="/img/logomatch4all.png" alt="Escudo visitante" class="rounded-circle" style="width: 180px; height: 180px; object-fit: contain;">
+                                <div class="text-center">
+                                    <div class="fs-3 fw-bold text-white">VS</div>
                                 </div>
-                                <p class="small text-white-50 mb-0 fw-bold text-uppercase">Visitante</p>
+                                <div class="text-center">
+                                    <img th:src="@{'/img/equipos/' + ${proximoPartido.visitante.escudo}}" alt="Equipo visitante" style="width: 200px; height: 200px; object-fit: contain;" />
+                                    <p class="small text-white-50 mt-2" th:text="${proximoPartido.visitante.nombre}">Visitante</p>
+                                </div>
+                            </div>
+                            <div class="text-center text-md-end">
+                                <p class="small text-white-50 mb-1 text-uppercase">Competición</p>
+                                <p class="fs-5 fw-bold mb-2" th:text="${proximoPartido.competicion.nombre}">Liga Primera</p>
+                                <p class="small text-white-50 mb-1 text-uppercase">Fecha</p>
+                                <p class="fs-5 fw-bold mb-2" th:text="${#temporals.format(proximoPartido.fecha, 'dd MMM yyyy')}">01 Ene 2026</p>
+                                <p class="small text-white-50 mb-1 text-uppercase">Ubicación</p>
+                                <p class="fs-5 fw-bold mb-3" th:text="${proximoPartido.ubicacion}">Campo Central</p>
+                                <a th:href="@{/partido/{id}(id=${proximoPartido.id})}" class="btn btn-light btn-sm text-uppercase fw-bold">Ver partido</a>
                             </div>
                         </div>
-                        
-                        <div class="text-center text-md-end">
-                            <p class="small text-white-50 mb-1 text-uppercase">Competición</p>
-                            <p class="fs-4 fw-bold mb-3">Liga Primera</p>
-                            <p class="small text-white-50 mb-1 text-uppercase">Ubicación</p>
-                            <p class="fs-5 fw-bold mb-0">Campo Central</p>
-                        </div>
-                    </div>-->
+                    </div>
+
+                    <div class="card-blue text-white rounded-4 shadow hover-lift p-5 flex-grow-1 d-flex flex-column justify-content-center" style="background-color: var(--brand-blue);" th:if="${proximoPartido == null}">
+                        <h5 class="text-white-50 text-uppercase mb-5" style="letter-spacing: 2px;">Próximo Partido</h5>
+                        <p class="text-white-50 mb-0">No tienes ningún próximo partido de árbitro asignado.</p>
+                    </div>
 
                     <div class="card-red rounded-4 shadow hover-lift p-5 flex-grow-1 d-flex flex-column justify-content-center" style="background-color:#fff; border:4px solid var(--brand-blue);">
                         <h5 class="text-uppercase mb-5" style="letter-spacing: 2px; color: var(--brand-blue);">Estadísticas</h5>

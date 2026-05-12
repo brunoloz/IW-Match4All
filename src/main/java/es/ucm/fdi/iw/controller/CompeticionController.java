@@ -533,6 +533,7 @@ public class CompeticionController {
         partido.setUbicacion(ubicacion);
 
         entityManager.persist(partido);
+        entityManager.flush();
     }
 
     private List<List<Equipo>> repartirEquiposEnGrupos(List<Equipo> equipos, int equiposPorGrupoObjetivo) {
