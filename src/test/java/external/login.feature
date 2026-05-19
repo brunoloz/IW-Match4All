@@ -20,6 +20,22 @@ Scenario: login malo en github
     Then karate.stop(9000)
     Then match html('.error') contains 'Error en nombre de usuario o contraseña'
 
+  @login_capitan
+    Scenario: login correcto como jugador
+    Given driver baseUrl + '/login'
+    And input('#username', 'hmallo')
+    And input('#password', 'pass')
+    When submit().click(".form-signin button")
+    Then waitForUrl(baseUrl + '/user/24')
+
+  @login_arbitro
+    Scenario: login correcto como jugador
+    Given driver baseUrl + '/login'
+    And input('#username', 'arbitro')
+    And input('#password', '1234')
+    When submit().click(".form-signin button")
+    Then waitForUrl(baseUrl + '/user/2')
+
   @login_b
   Scenario: login correcto como jugador
     Given driver baseUrl + '/login'
@@ -31,15 +47,16 @@ Scenario: login malo en github
   @login_a
   Scenario: login correcto como a
     Given driver baseUrl + '/login'
-    And input('#username', 'a')
-    And input('#password', 'aa')
+    And input('#username', 'admin')
+    And input('#password', '1234')
     When submit().click(".form-signin button")
-    Then waitForUrl(baseUrl + '/admin')
+    Then waitForUrl(baseUrl + '/user/1')
 
+  @logout
   Scenario: logout after login
     Given driver baseUrl + '/login'
-    And input('#username', 'a')
-    And input('#password', 'aa')
+    And input('#username', 'admin')
+    And input('#password', '1234')
     When submit().click(".form-signin button")
     Then waitForUrl(baseUrl + '/admin')
     When submit().click("{button}logout")
