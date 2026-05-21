@@ -20,7 +20,7 @@ El sistema conecta a organizadores, jugadores y árbitros en un ecosistema unifi
 ## Estructura de la base de datos
 <img width="4540" height="2428" alt="bd_match4all" src="https://github.com/user-attachments/assets/ec376b04-6c00-4a18-9b79-46795b605ade" />
 
-## Estado actual de la aplicación (Entrega 12 de mayo)
+## Estado actual de la aplicación
 
 ### Funcionalidades generales
 En nuestra aplicación, cualquier usuario que realice el login tendrá acceso a:
@@ -48,8 +48,12 @@ Un usuario con el rol de admin puede:
 - **Deshabilitar usuarios.**
 
 ### Pruebas Externas
-Actualmente sólo hemos elaborado la prueba externa de Crear un Equipo en el archivo crearEquipo.feauture. El resto de pruebas se implementarán para la próxima entrega.
-Para probarla tiene que estar la aplicación lanzada y ejecutar el comando mvn test -Dtest=ExternalRunner en la terminal de Visual Studio Code.
+Se han elaborado las siguientes pruebas externas:
+- **crearEquipo.feature:** Un usuario loggeado sin equipo crea un equipo exitosamente.
+- **crearLiga.feature:** El administrador crea una nueva competición de tipo LIGA.
+- **inscribirEquipo.feature:** Un capitán inscribe a su equipo en una competición.
+- **partido.feature:** Un árbitro inicia un partido de una competición, registra distintos eventos y finaliza el partido.
+Para probar estas pruebas tiene que estar la aplicación lanzada y ejecutar el comando mvn test -Dtest=ExternalRunner en la terminal de Visual Studio Code.
 
 ### Despliegue de la aplicación
 Aplicación desplegada correctamente en el contenedor proporcionado para la asignatura.
@@ -61,6 +65,7 @@ Usuarios con el rol de capitán:
 - Username: hmallo  Password: pass
 - Username: sramos  Password: pass
 - Username: lmessi  Password: pass
+- Username: mtorres Password: pass
 
 Usuarios con el rol de árbitro:
 - Username: arbitro  Password: 1234

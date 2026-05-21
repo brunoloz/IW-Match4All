@@ -34,34 +34,10 @@ class ExternalRunner {
         return Karate.run("partido").relativeTo(getClass());
     }*/
 
-    /*@Karate.Test
+    @Karate.Test
     Karate test() {
         return Karate.run("crearEquipo", "crearLiga", "inscribirEquipo", "partido").relativeTo(getClass());
-    }*/
-
-    @Karate.Test
-    Karate testGenerarCalendario() {
-        return Karate.run("generarCalendario").relativeTo(getClass());
     }
 
-    @Karate.Test
-    Karate testApuntarsePartido() {
-        return Karate.run("apuntarsePartido").relativeTo(getClass());
-    }
-
-    @Karate.Test
-    Karate testRegistrarEvento() {
-        return Karate.run("registrarEvento").relativeTo(getClass());
-    }
-
-    @Karate.Test
-    Karate testAceptarEquipo() {
-        return Karate.run("aceptarEquipo").relativeTo(getClass());
-    }
-
-    @Karate.Test
-    Karate testFinalizarPartido() {
-        return Karate.run("finalizarPartido").relativeTo(getClass());
-    }
     
 }
