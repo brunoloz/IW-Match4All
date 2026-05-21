@@ -10,22 +10,33 @@
     <header th:replace="~{fragments/nav.html :: nav}"></header>
 
     <main class="flex-shrink-0">
-        <div class="container">
-            <form class="form-signin" method="post" th:action="@{/login}">
-                <h2 class="form-signin-heading">Please sign in</h2>
-                <p th:if="${loginError != false}" class="error">
-                    Error en nombre de usuario o contraseña
-                </p>
-                <p>
-                    <label for="username" class="visually-hidden">Username</label>
-                    <input type="text" id="username" name="username" class="form-control" placeholder="Username" required="required">
-                </p>
-                <p>
-                    <label for="password" class="visually-hidden">Password</label>
-                    <input type="password" id="password" name="password" class="form-control" placeholder="Password" required="required">
-                </p>
-                <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
-            </form>
+        <div class="container min-vh-75 d-flex align-items-center justify-content-center">
+            <div class="row justify-content-center align-items-center w-100 gx-5">
+                <div class="col-12 col-lg-5">
+                    <div class="card shadow-sm login-card" style="border: 2px solid var(--brand-blue);">
+                        <div class="card-body p-4">
+                            <h2 class="card-title mb-4 text-center" style="color: var(--brand-blue);">Inicia sesión</h2>
+                            <form class="form-signin" method="post" th:action="@{/login}">
+                                <p th:if="${loginError != false}" class="text-danger mb-3">
+                                    Error en nombre de usuario o contraseña
+                                </p>
+                                <div class="mb-3">
+                                    <label for="username" class="form-label">Usuario</label>
+                                    <input type="text" id="username" name="username" class="form-control" placeholder="Username" required="required">
+                                </div>
+                                <div class="mb-4">
+                                    <label for="password" class="form-label">Contraseña</label>
+                                    <input type="password" id="password" name="password" class="form-control" placeholder="Password" required="required">
+                                </div>
+                                <button class="btn btn-lg btn-primary w-100" type="submit">Sign in</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-5 text-center">
+                    <img th:src="@{/img/roles.png}" alt="Roles" class="img-fluid rounded" style="max-height: 420px; object-fit: contain;">
+                </div>
+            </div>
         </div>
     </main>
 

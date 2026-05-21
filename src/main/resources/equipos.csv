@@ -19,4 +19,16 @@ id,nom,descripcion,ubicacion,id_capitan,escudo
 18,Levante UD,Equipo granota,Valencia,345,levante.png
 19,Atlético Madrid,Equipo colchonero,Madrid,368,atletico.png
 20,Sevilla FC,Equipo de Nervión,Sevilla,384,sevilla.png
+21,Moratalaz CF,Equipo de Moratalaz,Moratalaz,406,moratalaz.png
+22,Sporting CF,Equipo de Sporting,Ciudad,426,sporting.png
+23,Toronto FC,Equipo de Toronto,Toronto,446,toronto.png
+24,Juarez FC,Equipo de Juarez,Juarez,466,juarezfc.png
+25,Club León,Equipo de León,León,486,leon.png
+26,Aucas FC,Equipo de Aucas,Quito,506,aucas.png
+27,Cusco FC,Equipo de Cusco,Cusco,526,cusco.png
+28,Austin FC,Equipo de Austin,Austin,546,austin.png
+29,San Diego FC,Equipo de San Diego,San Diego,566,sandiego.png
+30,Hércules CF,Equipo herculano,Alicante,586,hercules.png
+31,Real Jaén,Equipo lagarto,Jaén,606,jaen.png
+32,Guadalajara,El Rebaño Sagrado,Guadalajara,626,guadalajara.png
 
