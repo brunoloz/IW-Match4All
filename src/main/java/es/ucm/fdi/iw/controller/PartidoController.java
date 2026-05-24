@@ -144,6 +144,28 @@ public class PartidoController {
 
         partido.setEstado(Partido.State.FINALIZADO);
 
+        // Incrementar partidos jugados para los titulares de ambos equipos
+        List<User> titularesLocal = entityManager.createQuery(
+                "SELECT u FROM User u WHERE u.equipo.id = :equipoId AND u.titular = true", User.class)
+                .setParameter("equipoId", partido.getLocal().getId())
+                .getResultList();
+        
+        List<User> titularesVisitante = entityManager.createQuery(
+                "SELECT u FROM User u WHERE u.equipo.id = :equipoId AND u.titular = true", User.class)
+                .setParameter("equipoId", partido.getVisitante().getId())
+                .getResultList();
+
+
+        for (User titular : titularesLocal) {
+            titular.setPartidosJugados(titular.getPartidosJugados() + 1);
+            entityManager.merge(titular);
+        }
+
+        for (User titular : titularesVisitante) {
+            titular.setPartidosJugados(titular.getPartidosJugados() + 1);
+            entityManager.merge(titular);
+        }
+
         // Si es competición tipo TORNEO o ROUND_ROBIN_ARBOL y pertenece a un bracket,
         // enlazamos el ganador con el siguiente partido en la siguiente ronda.
         try {

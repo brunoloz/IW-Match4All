@@ -66,6 +66,16 @@ public class EquipoController {
                     .setParameter("estadoEnCurso", Partido.State.EN_CURSO) // Asegúrate de que EN_CURSO existe en tu enum
                     .getResultList().isEmpty();
 
+            // Contar titulares en el equipo
+            Long numTitulares = entityManager.createQuery("SELECT COUNT(u) FROM User u WHERE u.titular = true AND u.equipo.id = :equipoId", Long.class)
+                    .setParameter("equipoId", equipo.getId())
+                    .getSingleResult();
+
+            // Si hay menos de 11 titulares, mostrar mensaje de aviso
+            if (numTitulares < 11) {
+                model.addAttribute("warning", "¡La plantilla no tiene suficientes titulares! Añade jugadores titulares. Titulares: " + numTitulares + "/11");
+            }
+
             model.addAttribute("equipo", equipo);
             model.addAttribute("competicionesEquipo", competicionesEquipo);
             model.addAttribute("partidosJugados", partidosJugados);
@@ -222,29 +232,38 @@ public class EquipoController {
         Equipo equipo = capitan.getEquipo();
         if (equipo == null || equipo.getCapitan().getId() != capitan.getId()) {
             redir.addFlashAttribute("error", "No tienes permisos para expulsar jugadores.");
-            return "redirect:/gestionequipo";
+            return "redirect:/equipo/" + equipo.getId();
         }
 
         User jugadorAExpulsar = entityManager.find(User.class, idUsuario);
         if (jugadorAExpulsar == null) {
             redir.addFlashAttribute("error", "El jugador no existe.");
-            return "redirect:/gestionequipo";
+            return "redirect:/equipo/" + equipo.getId();
         }
 
         if (jugadorAExpulsar.getEquipo() == null || jugadorAExpulsar.getEquipo().getId() != equipo.getId()) {
             redir.addFlashAttribute("error", "Ese jugador no pertenece a tu equipo.");
-            return "redirect:/gestionequipo";
+            return "redirect:/equipo/" + equipo.getId();
         }
 
         if (jugadorAExpulsar.getId() == capitan.getId()) {
             redir.addFlashAttribute("error",
-                    "No puedes expulsarte a ti mismo. Para salir, debes disolver el equipo o ceder la capitanía.");
-            return "redirect:/gestionequipo";
+                    "No puedes expulsarte a ti mismo.");
+            return "redirect:/equipo/" + equipo.getId();
         }
+
+        if(jugadorAExpulsar.isTitular()){
+
+            redir.addFlashAttribute("error",
+                    "No puedes expulsar a un jugador titular. Debes hacerle suplente si deseas expulsarle");
+            return "redirect:/equipo/" + equipo.getId();
+        }
+
+
 
         jugadorAExpulsar.setEquipo(null);
         entityManager.merge(jugadorAExpulsar);
         redir.addFlashAttribute("success", "Has expulsado a " + jugadorAExpulsar.getUsername() + " del equipo.");
-        return "redirect:/gestionequipo";
+        return "redirect:/equipo/" + equipo.getId();
     }
 }

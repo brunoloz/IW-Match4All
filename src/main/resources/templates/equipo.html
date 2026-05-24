@@ -20,6 +20,10 @@
 					<i class="bi bi-exclamation-triangle-fill me-2"></i><span th:text="${error}"></span>
 					<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 				</div>
+				<div th:if="${warning}" class="alert alert-warning alert-dismissible fade show shadow-sm" role="alert">
+					<i class="bi bi-exclamation-circle-fill me-2"></i><span th:text="${warning}"></span>
+					<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+				</div>
 			</div>
 		</div>
 
@@ -43,7 +47,7 @@
 									</tr>
 								</thead>
 								<tbody id="player-list">
-									<tr th:each="jugador : ${equipo != null ? equipo.jugadores : {}}">
+									<tr th:each="jugador : ${equipo != null ? equipo.jugadores : {}}" th:classappend="${session.u != null and session.u.id == jugador.id} ? 'table-success' : ''">
 										<td>
 											<div class="d-flex align-items-center gap-2">
 												<a th:href="@{/perfil/{id}(id=${jugador.id})}" class="d-flex align-items-center gap-2 link-primary" style="text-decoration:none;">
@@ -68,7 +72,7 @@
 										</td>
 										<td class="text-end" style="width: 56px;">
 											<div class="d-flex gap-2 text-end">
-												<form th:if="${session.u != null and equipo.capitan != null and session.u.id == equipo.capitan.id and jugador.id != session.u.id}" 
+												<form th:if="${session.u != null and equipo.capitan != null and session.u.id == equipo.capitan.id}" 
 													th:action="@{/equipo/titular-user/{id}(id=${jugador.id})}" method="post" class="m-0">
 													<button type="submit" class="btn btn-sm"
 															th:classappend="${jugador.titular} ? ' btn-outline-primary' : ' btn-outline-success'"
@@ -77,7 +81,7 @@
 														<span th:text="${jugador.titular} ? 'Suplente' : 'Titular'">Titular</span>
 													</button>
 												</form>
-												<form th:if="${session.u != null and equipo.capitan != null and session.u.id == equipo.capitan.id and jugador.id != session.u.id}" 
+												<form th:if="${session.u != null and equipo.capitan != null and session.u.id == equipo.capitan.id}" 
 													th:action="@{/equipo/expulsar}" method="post" class="m-0"
 													onsubmit="return confirm('¿Estás seguro de que quieres expulsar a este jugador de la plantilla?');">
 													<input type="hidden" name="idUsuario" th:value="${jugador.id}">

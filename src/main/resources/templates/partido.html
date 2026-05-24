@@ -492,39 +492,6 @@
 
     <script th:inline="javascript">
 
-        if (formIniciar) {
-            formIniciar.addEventListener('submit', (e) => {
-                e.preventDefault(); 
-                
-            const btn = document.querySelector("button[onclick='iniciarPartido()']");
-                if (btn) btn.disabled = true;
-
-            go(config.rootUrl + "/partido/iniciar/" + id_partido, 'POST')
-                .then(d => {
-                    console.log("Petición procesada");
-                })
-                .catch(e => {
-                    if (e.name === 'AbortError' || !e.message || e.message.includes('fetch')) {
-                        console.log("Conexión abortada por recarga de página: ignorando error.");
-                    } else {
-                        console.error("Error real:", e);
-                        alert("Error al iniciar el partido");
-                        if (btn) btn.disabled = false;
-                    }
-                });
-            });
-        }
-
-        if (formFinalizar) {
-            formFinalizar.addEventListener('submit', (e) => {
-                e.preventDefault(); 
-                
-                go(formFinalizar.action, 'POST', {})
-                    .then(data => console.log("Señal de fin enviada"))
-                    .catch(err => console.error("Error al finalizar", err));
-            });
-        }
-
         const formEvento = document.getElementById('form-evento');
         if (formEvento) {
             formEvento.addEventListener('submit', function(e) {
