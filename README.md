@@ -20,7 +20,9 @@ El sistema conecta a organizadores, jugadores y árbitros en un ecosistema unifi
 ## Estructura de la base de datos
 <img width="4540" height="2428" alt="bd_match4all" src="https://github.com/user-attachments/assets/ec376b04-6c00-4a18-9b79-46795b605ade" />
 
-## Estado actual de la aplicación
+## Estado final de la aplicación
+
+Todas las funcionalidades han sido desarrolladas al completo.
 
 ### Funcionalidades generales
 En nuestra aplicación, cualquier usuario que realice el login tendrá acceso a:
@@ -33,7 +35,7 @@ En nuestra aplicación, cualquier usuario que realice el login tendrá acceso a:
 - **Crear un equipo nuevo:** Un usuario (jugador) sin equipo puede crear su propio equipo y convertirse en su capitán.
 - **Inscripción de un equipo en una competición:** El capitán del equipo puede solicitar la inscripción de su equipo a cualquier competición disponible. Será el administrador quién acepte la solicitud.
 - **Aceptar la inscripción de un jugador en un equipo:** Un usuario (jugador) sin equipo puede solicitar inscribirse a cualquier equipo ya creado. Será el capitán del equipo quien acepte la solicitud.
-- **Asignar titularidades:** Como capitán, puede decidir que jugadores de la plantilla adquieren el rol de suplente o de titular.
+- **Asignar titularidades:** Como capitán, puede decidir que jugadores de la plantilla adquieren el rol de suplente o de titular. El número máximo de titulares que puede tener un equipo es 11. Para hacer titular a un suplente, el usuario primero debe disminuir el número de titulares (hacer suplente a algún titular) y después añadir un nuevo titular (hacer titular a un suplente). Si el número de titulares es menor que 11, se avisará al usuario para que añada más titulares.
 
 ### Funcionalidades designadas al Árbitro
 Un usuario registrado con el rol de árbitro puede:
